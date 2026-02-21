@@ -16,7 +16,7 @@ public abstract class MixinLivingEntityRenderer<T extends LivingEntity, S extend
 
     @ModifyExpressionValue(method = "extractRenderState(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;rotLerp(FFF)F"))
     private float hookHeadYaw(float original, LivingEntity entity, S state, float partialTick) {
-        if (entity == Minecraft.getInstance().player && Managers.ROTATION != null) {
+        if (entity == Minecraft.getInstance().player) {
             Vector2f rotation = Managers.ROTATION.animationRotation;
             Vector2f lastRotation = Managers.ROTATION.lastAnimationRotation;
             if (rotation != null && lastRotation != null && Managers.ROTATION.isActive()) {
@@ -31,7 +31,7 @@ public abstract class MixinLivingEntityRenderer<T extends LivingEntity, S extend
 
     @ModifyExpressionValue(method = "extractRenderState(Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/client/renderer/entity/state/LivingEntityRenderState;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;getXRot(F)F"))
     private float hookPitch(float original, LivingEntity entity, S state, float partialTick) {
-        if (entity == Minecraft.getInstance().player && Managers.ROTATION != null) {
+        if (entity == Minecraft.getInstance().player) {
             Vector2f rotation = Managers.ROTATION.animationRotation;
             Vector2f lastRotation = Managers.ROTATION.lastAnimationRotation;
             if (rotation != null && lastRotation != null && Managers.ROTATION.isActive()) {
@@ -41,7 +41,7 @@ public abstract class MixinLivingEntityRenderer<T extends LivingEntity, S extend
                 return lastPitch + diff * partialTick;
             }
         }
-        return entity.getXRot(partialTick);
+        return original;
     }
 
 }

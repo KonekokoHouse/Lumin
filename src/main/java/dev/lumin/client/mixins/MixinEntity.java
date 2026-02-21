@@ -20,7 +20,7 @@ public abstract class MixinEntity {
     @Redirect(method = "getViewVector", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;calculateViewVector(FF)Lnet/minecraft/world/phys/Vec3;"))
     private Vec3 redirectGetViewYRot(Entity instance, float xRot, float yRot) {
         if (instance == Minecraft.getInstance().player) {
-            RayTraceEvent event = NeoForge.EVENT_BUS.post(new RayTraceEvent(instance, xRot, yRot));
+            RayTraceEvent event = NeoForge.EVENT_BUS.post(new RayTraceEvent(instance, yRot, xRot));
             return this.calculateViewVector(event.getPitch(), event.getYaw());
         }
         return this.calculateViewVector(xRot, yRot);

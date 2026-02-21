@@ -214,8 +214,7 @@ public class RotationManager {
     @SubscribeEvent
     private void onMoveInput(MovementInputUpdateEvent event) {
         if (active && correctMovement == MovementFix.NORMAL && rotations != null) {
-            final float yaw = rotations.x;
-            MoveUtil.fixMovement(event, yaw);
+            //MoveUtil.fixMovement(event, rotations.x);
         }
     }
 
@@ -301,15 +300,6 @@ public class RotationManager {
             mc.player.setYRot(fixedRotations.x);
             mc.player.setXRot(Mth.clamp(fixedRotations.y, -90.0f, 90.0f));
         }
-    }
-
-    public void lookAt(Vec3 target, double speed) {
-        lookAt(target, speed, Priority.Lowest);
-    }
-
-    public void lookAt(Vec3 target, double speed, Priority priority) {
-        Vector2f rotation = RotationUtil.calculate(target);
-        setRotations(rotation, speed, MovementFix.OFF, priority);
     }
 
 }
