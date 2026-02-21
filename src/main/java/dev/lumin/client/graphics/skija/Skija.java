@@ -1,10 +1,11 @@
 package dev.lumin.client.graphics.skija;
 
 import com.mojang.blaze3d.opengl.GlTexture;
-import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.textures.GpuTexture;
 import dev.lumin.client.graphics.skija.util.state.States;
 import io.github.humbleui.skija.*;
 import net.minecraft.client.Minecraft;
+import net.neoforged.neoforge.client.blaze3d.validation.ValidationGpuTexture;
 
 import java.util.function.Consumer;
 
@@ -38,12 +39,24 @@ public class Skija {
     }
 
     public static int getMinecraftFBO() {
-        RenderTarget renderTarget = mc.getMainRenderTarget();
-        GlTexture colorTexture = (GlTexture) renderTarget.getColorTexture();
-        return colorTexture != null ? colorTexture.glId() : 0;
+        GpuTexture gpuTexture = mc.getMainRenderTarget().getColorTexture();
+
+        if (gpuTexture instanceof ValidationGpuTexture validationTexture) {
+            gpuTexture = validationTexture.getRealTexture();
+        }
+
+        if (gpuTexture instanceof GlTexture glTexture) {
+            return glTexture.glId();
+        }
+
+        return 0;
     }
 
     public static void draw(Consumer<Canvas> drawingLogic) {
+        if (context == null) {
+            initSkia();
+        }
+
         States.INSTANCE.push();
         context.resetGLAll();
         canvas.save();

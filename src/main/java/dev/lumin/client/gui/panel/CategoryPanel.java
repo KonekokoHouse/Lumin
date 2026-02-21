@@ -7,6 +7,7 @@ import dev.lumin.client.gui.animation.Easing;
 import dev.lumin.client.gui.component.Component;
 import dev.lumin.client.gui.element.ModuleElement;
 import dev.lumin.client.gui.theme.Theme;
+import dev.lumin.client.managers.Managers;
 import dev.lumin.client.modules.Category;
 import dev.lumin.client.modules.Module;
 import io.github.humbleui.skija.Canvas;
@@ -41,10 +42,10 @@ public class CategoryPanel extends Component {
         this.height = 400f;
     }
 
-    public void setModules(List<Module> modules) {
+    public void setModules() {
         moduleElements.clear();
-        for (Module module : modules) {
-            if (module.category == category && !module.isHidden()) {
+        for (Module module : Managers.MODULE.getModules()) {
+            if (module.category == category) {
                 ModuleElement element = new ModuleElement(module);
                 element.setWidth(width - SIDE_PADDING * 2);
                 moduleElements.add(element);

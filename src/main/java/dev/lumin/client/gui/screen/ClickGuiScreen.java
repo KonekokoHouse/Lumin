@@ -9,10 +9,11 @@ import dev.lumin.client.gui.panel.CategoryPanel;
 import dev.lumin.client.gui.panel.NavigationBar;
 import dev.lumin.client.gui.theme.Theme;
 import dev.lumin.client.modules.Category;
-import dev.lumin.client.modules.Module;
+import dev.lumin.client.modules.impl.client.ClickGui;
 import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Font;
 import io.github.humbleui.skija.Paint;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -20,13 +21,9 @@ import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ClickGuiScreen extends Screen {
-
-    private final List<Module> modules;
-
     private float windowX = 100f;
     private float windowY = 50f;
     private static final float WINDOW_WIDTH = 420f;
@@ -47,9 +44,21 @@ public class ClickGuiScreen extends Screen {
     private Animation openAnimation;
     private float openProgress = 0f;
 
-    public ClickGuiScreen(List<Module> modules) {
+    public ClickGuiScreen() {
         super(Component.literal("ClickGUI"));
-        this.modules = modules;
+    }
+
+    @Override
+    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    }
+
+    @Override
+    public void onClose() {
+        super.onClose();
+        ClickGui cgui = ClickGui.INSTANCE;
+        if (cgui.isEnabled()) {
+            cgui.toggle();
+        }
     }
 
     @Override
@@ -62,7 +71,7 @@ public class ClickGuiScreen extends Screen {
 
         for (Category category : Category.values()) {
             CategoryPanel panel = new CategoryPanel(category);
-            panel.setModules(modules);
+            panel.setModules();
             categoryPanels.put(category, panel);
         }
 
@@ -76,7 +85,7 @@ public class ClickGuiScreen extends Screen {
     private void onCategoryChanged(Category category) {
         CategoryPanel panel = categoryPanels.get(category);
         if (panel != null) {
-            panel.setModules(modules);
+            panel.setModules();
         }
     }
 

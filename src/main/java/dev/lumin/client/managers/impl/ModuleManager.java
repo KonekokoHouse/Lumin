@@ -29,6 +29,10 @@ public class ModuleManager {
         );
     }
 
+    public List<Module> getModules() {
+        return modules;
+    }
+
     public void onKeyPress(int keyCode) {
         for (final var module : modules) {
             if (module.keyBind == keyCode) {
