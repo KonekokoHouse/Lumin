@@ -1,6 +1,7 @@
 package dev.lumin.client.gui.screen;
 
 import dev.lumin.client.graphics.skija.Skija;
+import dev.lumin.client.graphics.skija.font.FontLoader;
 import dev.lumin.client.graphics.skija.util.SkijaHelper;
 import dev.lumin.client.gui.animation.Animation;
 import dev.lumin.client.gui.animation.AnimationUtil;
@@ -10,9 +11,12 @@ import dev.lumin.client.gui.panel.NavigationBar;
 import dev.lumin.client.gui.theme.Theme;
 import dev.lumin.client.modules.Category;
 import dev.lumin.client.modules.impl.client.ClickGui;
+import dev.lumin.client.modules.impl.client.InterFace;
 import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Font;
+import io.github.humbleui.skija.MaskFilter;
 import io.github.humbleui.skija.Paint;
+import io.github.humbleui.types.RRect;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.KeyEvent;
@@ -24,8 +28,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ClickGuiScreen extends Screen {
-    private float windowX = 100f;
-    private float windowY = 50f;
+    private float windowX;
+    private float windowY;
     private static final float WINDOW_WIDTH = 420f;
     private static final float WINDOW_HEIGHT = 400f;
     private static final float TITLE_BAR_HEIGHT = 32f;
@@ -42,7 +46,9 @@ public class ClickGuiScreen extends Screen {
     private float dragWindowY = 0;
 
     private Animation openAnimation;
+    private Animation closeAnimation;
     private float openProgress = 0f;
+    private boolean closing = false;
 
     public ClickGuiScreen() {
         super(Component.literal("ClickGUI"));
@@ -54,16 +60,33 @@ public class ClickGuiScreen extends Screen {
 
     @Override
     public void onClose() {
-        super.onClose();
+        if (!closing) {
+            startCloseAnimation();
+        }
+    }
+
+    private void startCloseAnimation() {
+        closing = true;
+        closeAnimation = new Animation(1f, 0f, AnimationUtil.DURATION_NORMAL, Easing.EASE_IN_CUBIC);
+        closeAnimation.start();
+    }
+
+    private void finishClose() {
         ClickGui cgui = ClickGui.INSTANCE;
         if (cgui.isEnabled()) {
             cgui.toggle();
         }
+        super.onClose();
     }
 
     @Override
     protected void init() {
         super.init();
+
+        if (windowX == 0 && windowY == 0) {
+            windowX = (this.width - WINDOW_WIDTH) / 2f;
+            windowY = (this.height - WINDOW_HEIGHT) / 2f;
+        }
 
         navigationBar = new NavigationBar(this::onCategoryChanged);
         navigationBar.setX(windowX + CONTENT_PADDING);
@@ -86,6 +109,7 @@ public class ClickGuiScreen extends Screen {
         CategoryPanel panel = categoryPanels.get(category);
         if (panel != null) {
             panel.setModules();
+            updatePanelPositions();
         }
     }
 
@@ -111,6 +135,16 @@ public class ClickGuiScreen extends Screen {
             }
         }
 
+        if (closeAnimation != null) {
+            closeAnimation.update();
+            openProgress = closeAnimation.getValue();
+            if (closeAnimation.isFinished()) {
+                closeAnimation = null;
+                finishClose();
+                return;
+            }
+        }
+
         Skija.draw(canvas -> renderGui(canvas, mouseX, mouseY));
     }
 
@@ -119,8 +153,16 @@ public class ClickGuiScreen extends Screen {
 
         float centerX = windowX + WINDOW_WIDTH / 2f;
         float centerY = windowY + WINDOW_HEIGHT / 2f;
-        float scale = 0.95f + 0.05f * openProgress;
-        float alpha = openProgress;
+        float scale;
+        float alpha;
+
+        if (closing) {
+            scale = 0.95f + 0.05f * openProgress;
+            alpha = openProgress;
+        } else {
+            scale = 0.95f + 0.05f * openProgress;
+            alpha = openProgress;
+        }
 
         canvas.translate(centerX, centerY);
         canvas.scale(scale, scale);
@@ -135,6 +177,17 @@ public class ClickGuiScreen extends Screen {
     }
 
     private void renderWindow(Canvas canvas, float alpha) {
+        // 阴影，可以用bloom代替
+        try (Paint shadowPaint = new Paint()) {
+            shadowPaint.setColor(Theme.withAlpha(0xFF000000, alpha * 0.3f));
+            shadowPaint.setMaskFilter(MaskFilter.makeBlur(
+                    InterFace.INSTANCE.filterBlurMode(), 20f));
+            canvas.drawRRect(
+                    RRect.makeXYWH(windowX - 5, windowY - 5, WINDOW_WIDTH + 10, WINDOW_HEIGHT + 10, Theme.Radius.LARGE + 2),
+                    shadowPaint
+            );
+        }
+
         int bgColor = Theme.withAlpha(Theme.PANEL_BG, alpha * 0.85f);
         SkijaHelper.drawRRect(windowX, windowY, WINDOW_WIDTH, WINDOW_HEIGHT, Theme.Radius.LARGE, bgColor);
 
@@ -142,8 +195,8 @@ public class ClickGuiScreen extends Screen {
     }
 
     private void renderTitleBar(Canvas canvas, float alpha) {
-        Font titleFont = new Font(null, 16);
-        Font versionFont = new Font(null, 11);
+        Font titleFont = FontLoader.semibold(16);
+        Font versionFont = FontLoader.light(11);
 
         try (Paint paint = new Paint()) {
             paint.setAntiAlias(true);
@@ -207,6 +260,8 @@ public class ClickGuiScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean transferFocus) {
+        if (closing) return false;
+
         double mouseX = event.x();
         double mouseY = event.y();
         int button = event.button();
@@ -302,13 +357,24 @@ public class ClickGuiScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
+        if (closing) return true;
+
+        Category selectedCategory = navigationBar.getSelectedCategory();
+        CategoryPanel panel = categoryPanels.get(selectedCategory);
+
+        if (panel != null && panel.hasListeningElement()) {
+            if (panel.keyPressed(event.key(), event.scancode(), event.modifiers())) {
+                return true;
+            }
+        }
+
         if (event.key() == GLFW.GLFW_KEY_ESCAPE) {
             this.onClose();
             return true;
         }
 
-        for (CategoryPanel panel : categoryPanels.values()) {
-            if (panel.keyPressed(event.key(), event.scancode(), event.modifiers())) {
+        for (CategoryPanel p : categoryPanels.values()) {
+            if (p.keyPressed(event.key(), event.scancode(), event.modifiers())) {
                 return true;
             }
         }

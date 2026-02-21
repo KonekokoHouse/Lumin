@@ -27,7 +27,7 @@ public class Module {
 
     public final List<AbstractSetting<?>> settings = new ArrayList<>();
 
-    private final BoolSetting hidden;
+    private final BoolSetting hidden; // 控制是否在ModuleListHud中显示
 
     protected Minecraft mc;
 

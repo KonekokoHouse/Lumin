@@ -1,5 +1,6 @@
 package dev.lumin.client.gui.panel;
 
+import dev.lumin.client.graphics.skija.font.FontLoader;
 import dev.lumin.client.graphics.skija.util.SkijaHelper;
 import dev.lumin.client.gui.animation.Animation;
 import dev.lumin.client.gui.component.Component;
@@ -87,7 +88,7 @@ public class NavigationBar extends Component {
     }
 
     private void renderItems(Canvas canvas, float mouseX, float mouseY) {
-        Font font = new Font(null, 13);
+        Font font = FontLoader.regular(13);
 
         for (int i = 0; i < CATEGORIES.length; i++) {
             float itemY = y + PADDING + i * ITEM_HEIGHT;
@@ -112,7 +113,7 @@ public class NavigationBar extends Component {
             color = Theme.TEXT_DISABLED;
         }
 
-        Font iconFont = new Font(null, 11);
+        Font iconFont = FontLoader.light(11);
         try (Paint paint = new Paint()) {
             paint.setAntiAlias(true);
             paint.setColor(color);

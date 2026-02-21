@@ -1,5 +1,6 @@
 package dev.lumin.client.gui.panel;
 
+import dev.lumin.client.graphics.skija.font.FontLoader;
 import dev.lumin.client.graphics.skija.util.SkijaHelper;
 import dev.lumin.client.gui.animation.Animation;
 import dev.lumin.client.gui.animation.AnimationUtil;
@@ -44,6 +45,10 @@ public class CategoryPanel extends Component {
 
     public void setModules() {
         moduleElements.clear();
+        scrollOffset = 0f;
+        targetScrollOffset = 0f;
+        expandedElement = null;
+
         for (Module module : Managers.MODULE.getModules()) {
             if (module.category == category) {
                 ModuleElement element = new ModuleElement(module);
@@ -85,7 +90,7 @@ public class CategoryPanel extends Component {
     }
 
     private void renderHeader(Canvas canvas) {
-        Font titleFont = new Font(null, 16);
+        Font titleFont = FontLoader.semibold(16);
 
         try (Paint paint = new Paint()) {
             paint.setAntiAlias(true);
@@ -113,6 +118,12 @@ public class CategoryPanel extends Component {
         );
         canvas.clipRRect(clipRect, ClipMode.INTERSECT);
 
+        if (moduleElements.isEmpty()) {
+            renderEmptyMessage(canvas);
+            canvas.restore();
+            return;
+        }
+
         float elementY = y + HEADER_HEIGHT + ELEMENT_PADDING - scrollOffset;
         float contentHeight = height - HEADER_HEIGHT;
 
@@ -133,6 +144,22 @@ public class CategoryPanel extends Component {
         }
 
         canvas.restore();
+    }
+
+    private void renderEmptyMessage(Canvas canvas) {
+        Font emptyFont = FontLoader.light(13);
+
+        try (Paint paint = new Paint()) {
+            paint.setAntiAlias(true);
+            paint.setColor(Theme.TEXT_DISABLED);
+
+            String message = "No modules in this category";
+            float textWidth = SkijaHelper.measureTextWidth(message, emptyFont);
+            float textX = x + (width - textWidth) / 2f;
+            float textY = y + HEADER_HEIGHT + (height - HEADER_HEIGHT) / 2f;
+
+            canvas.drawString(message, textX, textY, emptyFont, paint);
+        }
     }
 
     private void renderScrollBar(Canvas canvas) {
@@ -232,6 +259,25 @@ public class CategoryPanel extends Component {
             );
             scrollAnimation.start();
         }
+    }
+
+    @Override
+    protected boolean onKeyPress(int keyCode, int scanCode, int modifiers) {
+        for (ModuleElement element : moduleElements) {
+            if (element.isListeningForKey()) {
+                return element.keyPressed(keyCode, scanCode, modifiers);
+            }
+        }
+        return false;
+    }
+
+    public boolean hasListeningElement() {
+        for (ModuleElement element : moduleElements) {
+            if (element.isListeningForKey()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String getCategoryDisplayName() {

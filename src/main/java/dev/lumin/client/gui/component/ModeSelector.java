@@ -1,11 +1,11 @@
 package dev.lumin.client.gui.component;
 
+import dev.lumin.client.graphics.skija.font.FontLoader;
 import dev.lumin.client.gui.animation.Animation;
 import dev.lumin.client.gui.animation.AnimationUtil;
 import dev.lumin.client.gui.animation.Easing;
 import dev.lumin.client.gui.theme.Theme;
 import io.github.humbleui.skija.Canvas;
-import io.github.humbleui.skija.Font;
 import io.github.humbleui.skija.Paint;
 import io.github.humbleui.types.RRect;
 
@@ -78,13 +78,7 @@ public class ModeSelector extends Component {
                 float textX = currentX + ITEM_PADDING;
                 float textY = y + height / 2f + 4f;
 
-                canvas.drawString(
-                        mode,
-                        textX,
-                        textY,
-                        new Font(null, 12),
-                        paint
-                );
+                canvas.drawString(mode, textX, textY, FontLoader.regular(12), paint);
 
                 currentX += textWidth + ITEM_PADDING * 2;
             }

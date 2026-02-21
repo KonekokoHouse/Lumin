@@ -28,7 +28,7 @@ public class Skija {
     private static int lastWidth = -1;
     private static int lastHeight = -1;
 
-    public static void initSkia(int fboId, int width, int height) {
+    private static void initSkia(int fboId, int width, int height) {
         if (context == null) {
             context = DirectContext.makeGL();
         }

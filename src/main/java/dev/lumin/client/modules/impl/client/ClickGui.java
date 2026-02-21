@@ -3,6 +3,7 @@ package dev.lumin.client.modules.impl.client;
 import dev.lumin.client.gui.screen.ClickGuiScreen;
 import dev.lumin.client.modules.Category;
 import dev.lumin.client.modules.Module;
+import net.minecraft.client.gui.screens.Screen;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_SHIFT;
 
@@ -23,6 +24,10 @@ public class ClickGui extends Module {
 
     @Override
     protected void onDisable() {
+        Screen currentScreen = mc.screen;
+        if (currentScreen instanceof ClickGuiScreen) {
+            mc.setScreen(null);
+        }
     }
 
 }

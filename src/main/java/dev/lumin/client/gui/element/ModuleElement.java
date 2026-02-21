@@ -1,5 +1,6 @@
 package dev.lumin.client.gui.element;
 
+import dev.lumin.client.graphics.skija.font.FontLoader;
 import dev.lumin.client.graphics.skija.util.SkijaHelper;
 import dev.lumin.client.gui.animation.Animation;
 import dev.lumin.client.gui.animation.AnimationUtil;
@@ -8,12 +9,14 @@ import dev.lumin.client.gui.component.*;
 import dev.lumin.client.gui.component.Component;
 import dev.lumin.client.gui.theme.Theme;
 import dev.lumin.client.modules.Module;
+import dev.lumin.client.modules.impl.client.InterFace;
 import dev.lumin.client.settings.AbstractSetting;
 import dev.lumin.client.settings.impl.*;
 import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Font;
 import io.github.humbleui.skija.Paint;
 import io.github.humbleui.types.RRect;
+import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -27,6 +30,9 @@ public class ModuleElement extends Component {
     private Animation expandAnimation;
 
     private final List<Component> settingComponents = new ArrayList<>();
+
+    private boolean listeningForKey = false;
+    private Animation listeningAnimation;
 
     private static final float HEIGHT_COLLAPSED = 40f;
     private static final float HEIGHT_EXPANDED_BASE = 40f;
@@ -127,7 +133,7 @@ public class ModuleElement extends Component {
 
             try (Paint glowPaint = SkijaHelper.createPaint(Theme.withAlpha(Theme.PRIMARY, 0.3f))) {
                 glowPaint.setMaskFilter(io.github.humbleui.skija.MaskFilter.makeBlur(
-                        io.github.humbleui.skija.FilterBlurMode.NORMAL, 4f));
+                        InterFace.INSTANCE.filterBlurMode(), 4f));
                 canvas.drawCircle(indicatorX, indicatorY, INDICATOR_SIZE / 2f + 2f, glowPaint);
             }
         } else {
@@ -136,8 +142,8 @@ public class ModuleElement extends Component {
     }
 
     private void renderText(Canvas canvas) {
-        Font titleFont = new Font(null, 14);
-        Font descFont = new Font(null, 11);
+        Font titleFont = FontLoader.medium(14);
+        Font descFont = FontLoader.light(11);
 
         String name = module.chineseName != null ? module.chineseName : module.englishName;
 
@@ -148,20 +154,42 @@ public class ModuleElement extends Component {
             canvas.drawString(name, x + TEXT_MARGIN, y + 16, titleFont, paint);
         }
 
-        if (module.keyBind > 0) {
+        String keyName;
+        int keyColor;
+
+        if (listeningForKey) {
+            keyName = "[...]";
+            keyColor = Theme.PRIMARY;
+        } else if (module.keyBind > 0) {
+            String rawKeyName = org.lwjgl.glfw.GLFW.glfwGetKeyName(module.keyBind, 0);
+            if (rawKeyName == null) {
+                keyName = "[" + module.keyBind + "]";
+            } else {
+                keyName = "[" + rawKeyName.toUpperCase() + "]";
+            }
+            keyColor = Theme.TEXT_DISABLED;
+        } else {
+            keyName = null;
+            keyColor = Theme.TEXT_DISABLED;
+        }
+
+        if (keyName != null) {
+            float keyWidth = SkijaHelper.measureTextWidth(keyName, descFont);
+            float keyX = x + width - keyWidth - 12;
+
             try (Paint paint = new Paint()) {
                 paint.setAntiAlias(true);
-                paint.setColor(Theme.TEXT_DISABLED);
+                paint.setColor(keyColor);
+                canvas.drawString(keyName, keyX, y + 16, descFont, paint);
+            }
 
-                String keyName = org.lwjgl.glfw.GLFW.glfwGetKeyName(module.keyBind, 0);
-                if (keyName == null) {
-                    keyName = "[" + module.keyBind + "]";
-                } else {
-                    keyName = "[" + keyName.toUpperCase() + "]";
+            if (listeningForKey) {
+                float pulse = (float) Math.sin(System.currentTimeMillis() / 150.0) * 0.3f + 0.7f;
+                try (Paint bgPaint = new Paint()) {
+                    bgPaint.setAntiAlias(true);
+                    bgPaint.setColor(Theme.withAlpha(Theme.PRIMARY, 0.2f * pulse));
+                    SkijaHelper.drawRRect(keyX - 4, y + 4, keyWidth + 8, 16, 4, Theme.withAlpha(Theme.PRIMARY, 0.2f * pulse));
                 }
-
-                float keyWidth = SkijaHelper.measureTextWidth(keyName, descFont);
-                canvas.drawString(keyName, x + width - keyWidth - 12, y + 16, descFont, paint);
             }
         }
     }
@@ -187,7 +215,7 @@ public class ModuleElement extends Component {
 
             if (setting == null) continue;
 
-            Font labelFont = new Font(null, 12);
+            Font labelFont = FontLoader.regular(12);
             try (Paint paint = new Paint()) {
                 paint.setAntiAlias(true);
                 paint.setColor(Theme.TEXT_DESCRIPTION);
@@ -233,7 +261,12 @@ public class ModuleElement extends Component {
     protected void onClick(double mouseX, double mouseY, int button) {
         if (button == 0) {
             if (mouseY <= y + HEIGHT_COLLAPSED) {
-                if (mouseX >= x + TEXT_MARGIN) {
+                if (isClickOnKeybindArea(mouseX)) {
+                    listeningForKey = !listeningForKey;
+                    if (listeningForKey) {
+                        startListeningAnimation();
+                    }
+                } else if (mouseX >= x + TEXT_MARGIN) {
                     module.toggle();
                 } else {
                     toggleExpand();
@@ -250,9 +283,38 @@ public class ModuleElement extends Component {
             }
         } else if (button == 1) {
             if (mouseY <= y + HEIGHT_COLLAPSED) {
-                toggleExpand();
+                if (listeningForKey) {
+                    listeningForKey = false;
+                    module.keyBind = 0;
+                } else {
+                    toggleExpand();
+                }
             }
         }
+    }
+
+    private boolean isClickOnKeybindArea(double mouseX) {
+        Font descFont = FontLoader.light(11);
+        String keyName = listeningForKey ? "[...]" :
+                (module.keyBind > 0 ? "[" + getKeyDisplayName(module.keyBind) + "]" : null);
+        if (keyName == null) return false;
+
+        float keyWidth = SkijaHelper.measureTextWidth(keyName, descFont);
+        float keyX = x + width - keyWidth - 12;
+        return mouseX >= keyX - 8 && mouseX <= x + width - 4;
+    }
+
+    private String getKeyDisplayName(int keyCode) {
+        String name = GLFW.glfwGetKeyName(keyCode, 0);
+        if (name != null) {
+            return name.toUpperCase();
+        }
+        return String.valueOf(keyCode);
+    }
+
+    private void startListeningAnimation() {
+        listeningAnimation = new Animation(0f, 1f, 200L, Easing.EASE_OUT);
+        listeningAnimation.start();
     }
 
     @Override
@@ -269,14 +331,29 @@ public class ModuleElement extends Component {
         }
     }
 
+    @Override
+    protected boolean onKeyPress(int keyCode, int scanCode, int modifiers) {
+        if (listeningForKey) {
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                module.keyBind = 0;
+            } else if (keyCode == GLFW.GLFW_KEY_DELETE || keyCode == GLFW.GLFW_KEY_BACKSPACE) {
+                module.keyBind = 0;
+            } else {
+                module.keyBind = keyCode;
+            }
+            listeningForKey = false;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isListeningForKey() {
+        return listeningForKey;
+    }
+
     public void toggleExpand() {
         expanded = !expanded;
-        expandAnimation = new Animation(
-                expandProgress,
-                expanded ? 1f : 0f,
-                AnimationUtil.DURATION_NORMAL,
-                Easing.EASE_OUT_CUBIC
-        );
+        expandAnimation = new Animation(expandProgress, expanded ? 1f : 0f, AnimationUtil.DURATION_NORMAL, Easing.EASE_OUT_CUBIC);
         expandAnimation.start();
     }
 

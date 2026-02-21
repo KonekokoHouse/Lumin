@@ -2,6 +2,7 @@ package dev.lumin.client.managers.impl;
 
 import dev.lumin.client.modules.Module;
 import dev.lumin.client.modules.impl.client.ClickGui;
+import dev.lumin.client.modules.impl.client.InterFace;
 import dev.lumin.client.modules.impl.movement.Sprint;
 import dev.lumin.client.modules.impl.visual.RenderTest;
 
@@ -25,7 +26,8 @@ public class ModuleManager {
                 RenderTest.INSTANCE,
 
                 // Client
-                ClickGui.INSTANCE
+                ClickGui.INSTANCE,
+                InterFace.INSTANCE
         );
     }
 
