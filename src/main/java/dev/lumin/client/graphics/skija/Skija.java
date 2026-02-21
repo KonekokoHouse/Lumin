@@ -1,5 +1,7 @@
 package dev.lumin.client.graphics.skija;
 
+import com.mojang.blaze3d.opengl.GlTexture;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import dev.lumin.client.graphics.skija.util.state.States;
 import io.github.humbleui.skija.*;
 import net.minecraft.client.Minecraft;
@@ -32,24 +34,29 @@ public class Skija {
             render.close();
         }
 
-        renderTarget = BackendRenderTarget.makeGL(mc.getWindow().getWidth(), mc.getWindow().getHeight(), 0, 8, getMinecraftFBO()/*fbo*/, FramebufferFormat.GR_GL_RGBA8);
+        renderTarget = BackendRenderTarget.makeGL(mc.getWindow().getWidth(), mc.getWindow().getHeight(), 0, 8, getMinecraftFBO(), FramebufferFormat.GR_GL_RGBA8);
         BackendRenderTarget target = renderTarget;
         surface = Surface.wrapBackendRenderTarget(context, target, SurfaceOrigin.BOTTOM_LEFT, ColorType.RGBA_8888, ColorSpace.getSRGB());
         canvas = surface.getCanvas();
     }
 
     public static int getMinecraftFBO() {
-        return mc.frameBufferId;
+        RenderTarget renderTarget = mc.getMainRenderTarget();
+        GlTexture colorTexture = (GlTexture) renderTarget.getColorTexture();
+        return colorTexture != null ? colorTexture.glId() : 0;
     }
 
     public static void draw(Consumer<Canvas> drawingLogic) {
         States.INSTANCE.push();
         context.resetGLAll();
         canvas.save();
+
+        float scaleFactor = mc.getWindow().getGuiScale();
+        canvas.scale(scaleFactor, scaleFactor);
+
         drawingLogic.accept(canvas);
         canvas.restore();
-        surface.flush();
-        context.flush();
+        context.flush(surface);
         States.INSTANCE.pop();
     }
 

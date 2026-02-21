@@ -3,6 +3,7 @@ package dev.lumin.client.graphics.skija.font;
 
 import io.github.humbleui.skija.Data;
 import io.github.humbleui.skija.Font;
+import io.github.humbleui.skija.FontMgr;
 import io.github.humbleui.skija.Typeface;
 
 import java.util.HashMap;
@@ -44,9 +45,9 @@ public class FontManager {
      * @throws IllegalArgumentException If the font data could not be found.
      */
     private static Typeface loadTypeface(String font, FontType type) {
-        Optional<Data> fontDataOptional = ResourceUtil.convertToData("/assets/alisa/fonts/ui/" + font);
+        Optional<Data> fontDataOptional = ResourceUtil.convertToData("/assets/lumin/fonts/" + font);
         return fontDataOptional
-                .map(Typeface::makeFromData)
+                .map(data -> FontMgr.getDefault().makeFromData(data))
                 .orElseThrow(() -> new IllegalArgumentException("Font not found: " + font));
     }
 

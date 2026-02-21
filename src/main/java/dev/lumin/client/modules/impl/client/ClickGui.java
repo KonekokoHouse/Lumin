@@ -12,4 +12,14 @@ public class ClickGui extends Module {
 
         keyBind = GLFW.GLFW_KEY_RIGHT_SHIFT;
     }
+
+    @Override
+    protected void onEnable() {
+        // 打开ClickGuiScreen
+    }
+
+    @Override
+    protected void onDisable() {
+
+    }
 }

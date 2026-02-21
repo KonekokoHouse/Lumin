@@ -1,7 +1,5 @@
 package dev.lumin.client.graphics.skija.font;
 
-import lombok.Getter;
-
 /**
  * FontType is an enumeration representing the different types of font formats supported.
  * It provides a way to map file extensions to their respective font types.
@@ -12,7 +10,6 @@ import lombok.Getter;
  * You are free to share and adapt this code, provided appropriate credit is given to the original author.
  * For more details, visit: <a href="https://creativecommons.org/licenses/by/4.0/deed.en">Creative Commons</a>
  */
-@Getter
 public enum FontType {
     TTF("ttf"),
     OTF("otf");
@@ -21,6 +18,10 @@ public enum FontType {
 
     FontType(String string) {
         this.string = string;
+    }
+
+    public String getString() {
+        return string;
     }
 
     /**

@@ -2,7 +2,7 @@ package dev.lumin.client.modules;
 
 import dev.lumin.client.Lumin;
 import dev.lumin.client.settings.AbstractSetting;
-import dev.lumin.client.settings.impl.BoolSetting;
+import dev.lumin.client.settings.impl.*;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.common.NeoForge;
 
@@ -91,8 +91,9 @@ public class Module {
         }
     }
 
-    private void addSetting(AbstractSetting<?> setting) {
+    private <T extends AbstractSetting<?>> T addSetting(T setting) {
         settings.add(setting);
+        return setting;
     }
 
     public boolean isHidden() {
@@ -109,6 +110,54 @@ public class Module {
 
     public void setBindMode(BindMode bindMode) {
         this.bindMode = bindMode;
+    }
+
+    protected IntSetting intSetting(String englishName, String chineseName, int defaultValue, int min, int max, int step, AbstractSetting.Dependency dependency) {
+        return addSetting(new IntSetting(englishName, chineseName, defaultValue, min, max, step, dependency));
+    }
+
+    protected IntSetting intSetting(String englishName, String chineseName, int defaultValue, int min, int max, int step) {
+        return addSetting(new IntSetting(englishName, chineseName, defaultValue, min, max, step));
+    }
+
+    protected BoolSetting boolSetting(String englishName, String chineseName, boolean defaultValue, AbstractSetting.Dependency dependency) {
+        return addSetting(new BoolSetting(englishName, chineseName, defaultValue, dependency));
+    }
+
+    protected BoolSetting boolSetting(String englishName, String chineseName, boolean defaultValue) {
+        return addSetting(new BoolSetting(englishName, chineseName, defaultValue));
+    }
+
+    protected DoubleSetting doubleSetting(String englishName, String chineseName, double defaultValue, double min, double max, double step, AbstractSetting.Dependency dependency) {
+        return addSetting(new DoubleSetting(englishName, chineseName, defaultValue, min, max, step, dependency));
+    }
+
+    protected DoubleSetting doubleSetting(String englishName, String chineseName, double defaultValue, double min, double max, double step) {
+        return addSetting(new DoubleSetting(englishName, chineseName, defaultValue, min, max, step));
+    }
+
+    protected StringSetting stringSetting(String englishName, String chineseName, String defaultValue, AbstractSetting.Dependency dependency) {
+        return addSetting(new StringSetting(englishName, chineseName, defaultValue, dependency));
+    }
+
+    protected StringSetting stringSetting(String englishName, String chineseName, String defaultValue) {
+        return addSetting(new StringSetting(englishName, chineseName, defaultValue));
+    }
+
+    protected ModeSetting modeSetting(String englishName, String chineseName, String defaultValue, String[] modes, AbstractSetting.Dependency dependency) {
+        return addSetting(new ModeSetting(englishName, chineseName, defaultValue, modes, dependency));
+    }
+
+    protected ModeSetting modeSetting(String englishName, String chineseName, String defaultValue, String[] modes) {
+        return addSetting(new ModeSetting(englishName, chineseName, defaultValue, modes));
+    }
+
+    protected ColorSetting colorSetting(String englishName, String chineseName, java.awt.Color defaultValue, AbstractSetting.Dependency dependency) {
+        return addSetting(new ColorSetting(englishName, chineseName, defaultValue, dependency));
+    }
+
+    protected ColorSetting colorSetting(String englishName, String chineseName, java.awt.Color defaultValue) {
+        return addSetting(new ColorSetting(englishName, chineseName, defaultValue));
     }
 
 }

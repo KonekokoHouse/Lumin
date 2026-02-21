@@ -1,5 +1,6 @@
 package dev.lumin.client.graphics.skija.util;
 
+import com.mojang.blaze3d.opengl.GlTexture;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import dev.lumin.client.graphics.skija.Skija;
 import dev.lumin.client.modules.impl.client.InterFace;
@@ -75,12 +76,13 @@ public class SkijaHelper {
     public static Image getMinecraftAsImage() {
         RenderTarget fb = mc.getMainRenderTarget();
 
-        int tex = fb.getColorTextureId();
-        int width = fb.viewWidth;
-        int height = fb.viewHeight;
+        GlTexture colorTexture = (GlTexture) fb.getColorTexture();
+        int tex = colorTexture != null ? colorTexture.glId() : 0;
+        int width = fb.width;
+        int height = fb.height;
         Image img = textures.get(tex);
         if (img == null || img.getWidth() != width || img.getHeight() != height) {
-            img = Image.adoptGLTextureFrom(Skija.context, fb.getColorTextureId(), GL11.GL_TEXTURE_2D, width, height, GL11.GL_RGBA8, SurfaceOrigin.BOTTOM_LEFT, ColorType.RGBA_8888);
+            img = Image.adoptGLTextureFrom(Skija.context, tex, GL11.GL_TEXTURE_2D, width, height, GL11.GL_RGBA8, SurfaceOrigin.BOTTOM_LEFT, ColorType.RGBA_8888);
             textures.put(tex, img);
         }
         return img;
@@ -99,7 +101,7 @@ public class SkijaHelper {
      */
     public static float drawGlowingString(String text, float x, float y, Font font, Paint textPaint, float glowRadius) {
         Rect bounds = font.measureText(text);
-        MaskFilter blurMask = MaskFilter.makeBlur(InterFace.filterBlurMode(), glowRadius);
+        MaskFilter blurMask = MaskFilter.makeBlur(InterFace.INSTANCE.filterBlurMode(), glowRadius);
 
         float drawX = adjustTextX(x);
         float drawY = adjustTextY(y, bounds.getHeight());
@@ -170,7 +172,7 @@ public class SkijaHelper {
     }
 
     public static void drawRoundRectBloom(float x, float y, float w, float h, float radius, Paint paint) {
-        getCanvas().drawRRect(RRect.makeXYWH(x, y, w, h, radius), paint.setMaskFilter(MaskFilter.makeBlur(InterFace.filterBlurMode(), 8)));
+        getCanvas().drawRRect(RRect.makeXYWH(x, y, w, h, radius), paint.setMaskFilter(MaskFilter.makeBlur(InterFace.INSTANCE.filterBlurMode(), 8)));
     }
 
     /**
