@@ -1,8 +1,8 @@
-package dev.lumin.client.skija.util;
+package dev.lumin.client.graphics.skija.util;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import dev.lumin.client.graphics.skija.Skija;
 import dev.lumin.client.modules.impl.client.InterFace;
-import dev.lumin.client.skija.Skija;
 import io.github.humbleui.skija.*;
 import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Font;

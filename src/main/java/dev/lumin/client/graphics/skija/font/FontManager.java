@@ -1,4 +1,4 @@
-package dev.lumin.client.skija.font;
+package dev.lumin.client.graphics.skija.font;
 
 
 import io.github.humbleui.skija.Data;

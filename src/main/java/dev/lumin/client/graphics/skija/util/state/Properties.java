@@ -1,4 +1,4 @@
-package dev.lumin.client.skija.util.state;
+package dev.lumin.client.graphics.skija.util.state;
 
 import lombok.Getter;
 import lombok.Setter;

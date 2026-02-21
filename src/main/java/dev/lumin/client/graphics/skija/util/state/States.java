@@ -1,4 +1,4 @@
-package dev.lumin.client.skija.util.state;
+package dev.lumin.client.graphics.skija.util.state;
 
 import org.lwjgl.opengl.GL30;
 

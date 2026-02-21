@@ -1,6 +1,6 @@
-package dev.lumin.client.skija;
+package dev.lumin.client.graphics.skija;
 
-import dev.lumin.client.skija.util.state.States;
+import dev.lumin.client.graphics.skija.util.state.States;
 import io.github.humbleui.skija.*;
 import net.minecraft.client.Minecraft;
 
