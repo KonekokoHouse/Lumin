@@ -3,6 +3,7 @@ package dev.lumin.client.modules;
 import dev.lumin.client.Lumin;
 import dev.lumin.client.settings.AbstractSetting;
 import dev.lumin.client.settings.impl.BoolSetting;
+import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class Module {
 
     public enum BindMode {Toggle, Hold}
 
-    public BindMode bindMode = BindMode.Toggle;
+    private BindMode bindMode = BindMode.Toggle;
 
     private boolean enabled;
 
@@ -27,11 +28,20 @@ public class Module {
 
     private final BoolSetting hidden;
 
+    protected Minecraft mc;
+
     public Module(String englishName, String chineseName, Category category) {
         this.englishName = englishName;
         this.chineseName = chineseName;
         this.category = category;
         addSetting(this.hidden = new BoolSetting("Hidden", "隐藏", false));
+        mc = Minecraft.getInstance();
+    }
+
+    protected void onEnable() {
+    }
+
+    protected void onDisable() {
     }
 
     public void toggle() {
@@ -44,12 +54,16 @@ public class Module {
             } catch (Exception ignored) {
             }
 
+            onEnable();
+
             Lumin.LOGGER.info("{} has been enabled", englishName);
         } else {
             try {
                 NeoForge.EVENT_BUS.unregister(this);
             } catch (Exception ignored) {
             }
+
+            onDisable();
 
             Lumin.LOGGER.info("{} has been disabled", englishName);
         }
@@ -83,6 +97,14 @@ public class Module {
 
     public List<AbstractSetting<?>> getSettings() {
         return settings;
+    }
+
+    public BindMode getBindMode() {
+        return bindMode;
+    }
+
+    public void setBindMode(BindMode bindMode) {
+        this.bindMode = bindMode;
     }
 
 }
