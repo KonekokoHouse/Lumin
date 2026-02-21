@@ -8,19 +8,10 @@ import dev.lumin.client.modules.impl.visual.RenderTest;
 import java.util.List;
 
 public class ModuleManager {
-
-    private static ModuleManager INSTANCE = null;
     private List<Module> modules;
 
-    private ModuleManager() {
+    public ModuleManager() {
         initModules();
-    }
-
-    public static ModuleManager getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new ModuleManager();
-        }
-        return INSTANCE;
     }
 
     private void initModules() {

@@ -3,6 +3,11 @@
   "package": "dev.lumin.client.mixins",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "IClientInput",
+    "MixinEntity",
+    "MixinLivingEntity",
+    "MixinLivingEntityRenderer",
+    "MixinLocalPlayer",
     "MixinMinecraft"
   ],
   "injectors": {

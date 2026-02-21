@@ -2,7 +2,7 @@ package dev.lumin.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import dev.lumin.client.graphics.LuminRenderPipelines;
-import dev.lumin.client.managers.impl.ModuleManager;
+import dev.lumin.client.managers.Managers;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -20,7 +20,7 @@ public class EventHandler {
     @SubscribeEvent
     static void onKeyPress(InputEvent.Key event) {
         if (event.getAction() != InputConstants.PRESS) return;
-        ModuleManager.getInstance().onKeyPress(event.getKey());
+        Managers.MODULE.onKeyPress(event.getKey());
     }
 
 }
