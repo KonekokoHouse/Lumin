@@ -1,6 +1,7 @@
 package dev.lumin.client;
 
 import com.mojang.logging.LogUtils;
+import dev.lumin.client.graphics.skija.Skija;
 import dev.lumin.client.managers.Managers;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -86,6 +87,8 @@ public class Lumin {
 
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
+        Skija.initSkia();
+
         Managers.initManagers();
 
         Lumin.LOGGER.info("Lumin initialized");

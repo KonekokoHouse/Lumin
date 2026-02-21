@@ -36,4 +36,17 @@ public class ModeSetting extends AbstractSetting<String> {
         }
     }
 
+    public String[] getModes() {
+        return modes;
+    }
+
+    public int getModeIndex() {
+        for (int i = 0; i < modes.length; i++) {
+            if (modes[i].equalsIgnoreCase(value)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
 }

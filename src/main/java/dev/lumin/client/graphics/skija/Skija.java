@@ -24,19 +24,16 @@ public class Skija {
             context = DirectContext.makeGL();
         }
 
-        Surface face = surface;
-        if (face != null) {
-            face.close();
+        if (surface != null) {
+            surface.close();
         }
 
-        BackendRenderTarget render = renderTarget;
-        if (render != null) {
-            render.close();
+        if (renderTarget != null) {
+            renderTarget.close();
         }
 
         renderTarget = BackendRenderTarget.makeGL(mc.getWindow().getWidth(), mc.getWindow().getHeight(), 0, 8, getMinecraftFBO(), FramebufferFormat.GR_GL_RGBA8);
-        BackendRenderTarget target = renderTarget;
-        surface = Surface.wrapBackendRenderTarget(context, target, SurfaceOrigin.BOTTOM_LEFT, ColorType.RGBA_8888, ColorSpace.getSRGB());
+        surface = Surface.wrapBackendRenderTarget(context, renderTarget, SurfaceOrigin.BOTTOM_LEFT, ColorType.RGBA_8888, ColorSpace.getSRGB());
         canvas = surface.getCanvas();
     }
 
@@ -55,6 +52,7 @@ public class Skija {
         canvas.scale(scaleFactor, scaleFactor);
 
         drawingLogic.accept(canvas);
+
         canvas.restore();
         context.flush(surface);
         States.INSTANCE.pop();

@@ -31,9 +31,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SkijaHelper {
 
+    static Minecraft mc = Minecraft.getInstance();
+
     private static final Map<String, MaskFilter> BLUR_MASK_CACHE = new ConcurrentHashMap<>();
     private static final Map<Integer, Image> textures = new HashMap<>();
-    private static Minecraft mc = Minecraft.getInstance();
 
     /**
      * Retrieves the current {@link Canvas} instance used for drawing with Skia.
@@ -453,5 +454,77 @@ public class SkijaHelper {
         float descent = Math.abs(metrics.getDescent());
         float leading = metrics.getLeading();
         return ascent + descent + leading;
+    }
+
+    public static void drawLine(float x1, float y1, float x2, float y2, Paint paint) {
+        getCanvas().drawLine(x1, y1, x2, y2, paint);
+    }
+
+    public static void drawRRect(float x, float y, float w, float h, float radius, int color) {
+        try (Paint paint = new Paint()) {
+            paint.setColor(color);
+            paint.setAntiAlias(true);
+            getCanvas().drawRRect(RRect.makeXYWH(x, y, w, h, radius), paint);
+        }
+    }
+
+    public static void drawRRectStroke(float x, float y, float w, float h, float radius, int color, float strokeWidth) {
+        try (Paint paint = new Paint()) {
+            paint.setColor(color);
+            paint.setAntiAlias(true);
+            paint.setMode(PaintMode.STROKE);
+            paint.setStrokeWidth(strokeWidth);
+            getCanvas().drawRRect(RRect.makeXYWH(x, y, w, h, radius), paint);
+        }
+    }
+
+    public static Paint createPaint(int color) {
+        Paint paint = new Paint();
+        paint.setColor(color);
+        paint.setAntiAlias(true);
+        return paint;
+    }
+
+    public static Paint createPaint(int color, boolean antiAlias) {
+        Paint paint = new Paint();
+        paint.setColor(color);
+        paint.setAntiAlias(antiAlias);
+        return paint;
+    }
+
+    public static void drawCircle(float x, float y, float radius, int color) {
+        try (Paint paint = new Paint()) {
+            paint.setColor(color);
+            paint.setAntiAlias(true);
+            getCanvas().drawCircle(x, y, radius, paint);
+        }
+    }
+
+    public static void drawCircleStroke(float x, float y, float radius, int color, float strokeWidth) {
+        try (Paint paint = new Paint()) {
+            paint.setColor(color);
+            paint.setAntiAlias(true);
+            paint.setMode(PaintMode.STROKE);
+            paint.setStrokeWidth(strokeWidth);
+            getCanvas().drawCircle(x, y, radius, paint);
+        }
+    }
+
+    public static void drawRect(float x, float y, float w, float h, int color) {
+        try (Paint paint = new Paint()) {
+            paint.setColor(color);
+            paint.setAntiAlias(true);
+            getCanvas().drawRect(Rect.makeXYWH(x, y, w, h), paint);
+        }
+    }
+
+    public static float measureTextWidth(String text, Font font) {
+        if (text == null || text.isEmpty()) return 0;
+        return font.measureTextWidth(text);
+    }
+
+    public static float measureTextHeight(String text, Font font) {
+        if (text == null || text.isEmpty()) return 0;
+        return font.measureText(text).getHeight();
     }
 }

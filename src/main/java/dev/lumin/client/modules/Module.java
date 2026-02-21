@@ -6,6 +6,7 @@ import dev.lumin.client.settings.impl.*;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.common.NeoForge;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -152,11 +153,11 @@ public class Module {
         return addSetting(new ModeSetting(englishName, chineseName, defaultValue, modes));
     }
 
-    protected ColorSetting colorSetting(String englishName, String chineseName, java.awt.Color defaultValue, AbstractSetting.Dependency dependency) {
+    protected ColorSetting colorSetting(String englishName, String chineseName, Color defaultValue, AbstractSetting.Dependency dependency) {
         return addSetting(new ColorSetting(englishName, chineseName, defaultValue, dependency));
     }
 
-    protected ColorSetting colorSetting(String englishName, String chineseName, java.awt.Color defaultValue) {
+    protected ColorSetting colorSetting(String englishName, String chineseName, Color defaultValue) {
         return addSetting(new ColorSetting(englishName, chineseName, defaultValue));
     }
 
