@@ -56,7 +56,11 @@ public class TtfFontFile {
                     xOff, yOff
             );
 
-            return new TtfGlyph(sdfPixels, width.get(), height.get(), xOff.get(), yOff.get());
+            final var advance = stack.callocInt(1);
+            final var lsb = stack.callocInt(1);
+            STBTruetype.stbtt_GetGlyphHMetrics(fontInfo, glyphIndex, advance, lsb);
+
+            return new TtfGlyph(sdfPixels, width.get(), height.get(), xOff.get(), yOff.get(), (int) (advance.get() * scale));
         }
     }
 

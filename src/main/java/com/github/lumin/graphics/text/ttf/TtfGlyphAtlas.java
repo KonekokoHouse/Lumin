@@ -17,7 +17,7 @@ public class TtfGlyphAtlas {
     private int currentX = 1;
     private int currentY = 1;
     private int currentRowHeight = 0;
-    private static final int SPACING = 2;
+    private static final int SPACING = 0;
 
     public TtfGlyphAtlas(int atlasId) {
         final var texture = RenderSystem.getDevice().createTexture(
@@ -68,11 +68,13 @@ public class TtfGlyphAtlas {
                 glyph.height()
         );
 
+        int spacePixel = 1;
+
         GlyphUV uv = new GlyphUV(
-                (float) currentX / SIZE,
-                (float) currentY / SIZE,
-                (float) (currentX + glyph.width()) / SIZE,
-                (float) (currentY + glyph.height()) / SIZE
+                (float) (currentX + spacePixel) / SIZE,
+                (float) (currentY + spacePixel) / SIZE,
+                (float) (currentX + glyph.width() - 2 * spacePixel) / SIZE,
+                (float) (currentY + glyph.height() - 2 * spacePixel) / SIZE
         );
 
         currentX += glyph.width() + SPACING;

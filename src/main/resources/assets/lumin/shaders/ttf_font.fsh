@@ -12,7 +12,7 @@ layout(std140) uniform TtfInfo {
 layout(location = 0) out vec4 f_Color;
 
 void main() {
-    float distance = texture(Sampler0, v_TexCoord).r;
+    float distance = 1.0f - texture(Sampler0, v_TexCoord).r;
 
     float afwidth = fwidth(distance) * 0.5;
 

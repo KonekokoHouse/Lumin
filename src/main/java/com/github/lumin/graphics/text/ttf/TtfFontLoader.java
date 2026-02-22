@@ -20,7 +20,7 @@ public class TtfFontLoader implements IFontLoader {
     private int atlasId = 0;
 
     public TtfFontLoader(Identifier ttfFile) {
-        this.fontFile = new TtfFontFile(ttfFile, 32, 5);
+        this.fontFile = new TtfFontFile(ttfFile, 64, 8);
     }
 
     @Override
@@ -42,7 +42,12 @@ public class TtfFontLoader implements IFontLoader {
         }
 
         if (uv != null) {
-            glyphMap.put(ch, new GlyphDescriptor(currentAtlas, uv, glyph.width(), glyph.height(), glyph.xOffset(), glyph.yOffset()));
+            glyphMap.put(ch, new GlyphDescriptor(
+                    currentAtlas, uv,
+                    glyph.width(), glyph.height(),
+                    glyph.xOffset(), glyph.yOffset(),
+                    glyph.advance()
+            ));
         }
 
         STBTruetype.stbtt_FreeSDF(glyph.glyphData());

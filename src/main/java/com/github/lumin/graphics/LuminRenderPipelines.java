@@ -31,6 +31,7 @@ public class LuminRenderPipelines {
             .withVertexShader(ResourceLocationUtils.getIdentifier("ttf_font"))
             .withFragmentShader(ResourceLocationUtils.getIdentifier("ttf_font"))
             .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+            .withSampler("Sampler0")
             .withCull(false)
             .build();
 

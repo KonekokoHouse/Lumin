@@ -7,6 +7,7 @@ public record TtfGlyph(
         int width,
         int height,
         int xOffset,
-        int yOffset
+        int yOffset,
+        int advance
 ) {
 }
