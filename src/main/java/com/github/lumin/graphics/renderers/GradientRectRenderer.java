@@ -20,9 +20,10 @@ import java.util.OptionalInt;
 
 public class GradientRectRenderer implements IRenderer {
 
+    private static final long BUFFER_SIZE = 512 * 1024;
     private static final int STRIDE = 36;
 
-    private final LuminBuffer buffer = new LuminBuffer(512 * 1024, GpuBuffer.USAGE_VERTEX);
+    private final LuminBuffer buffer = new LuminBuffer(BUFFER_SIZE, GpuBuffer.USAGE_VERTEX);
     private long currentOffset = 0;
     private int vertexCount = 0;
 
