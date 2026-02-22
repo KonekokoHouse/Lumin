@@ -35,6 +35,15 @@ public class LuminRenderPipelines {
             .withCull(false)
             .build();
 
+    public final static RenderPipeline ROUND_RECT = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
+            .withLocation(ResourceLocationUtils.getIdentifier("pipelines/round_rectangle"))
+            .withVertexFormat(LuminVertexFormats.ROUND_RECT, VertexFormat.Mode.QUADS)
+            .withVertexShader(ResourceLocationUtils.getIdentifier("round_rectangle"))
+            .withFragmentShader(ResourceLocationUtils.getIdentifier("round_rectangle"))
+            .withDepthTestFunction(DepthTestFunction.NO_DEPTH_TEST)
+            .withCull(false)
+            .build();
+
     public static void onRegisterRenderPipelines(RegisterRenderPipelinesEvent event) {
         event.registerPipeline(RECTANGLE);
     }

@@ -1,9 +1,12 @@
 package com.github.lumin.modules.impl.visual;
 
 import com.github.lumin.graphics.renderers.RectRenderer;
+import com.github.lumin.graphics.renderers.RoundRectRenderer;
 import com.github.lumin.graphics.renderers.TextRenderer;
 import com.github.lumin.modules.Category;
 import com.github.lumin.modules.Module;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import org.lwjgl.glfw.GLFW;
@@ -19,18 +22,20 @@ public class RenderTest extends Module {
         keyBind = GLFW.GLFW_KEY_U;
     }
 
-    private final RectRenderer rectRenderer = new RectRenderer();
-    private final TextRenderer textRenderer = new TextRenderer();
+    private final Supplier<RectRenderer> rectRenderer = Suppliers.memoize(RectRenderer::new);
+    private final Supplier<TextRenderer> textRenderer = Suppliers.memoize(TextRenderer::new);
+    private final Supplier<RoundRectRenderer> roundRectRenderer = Suppliers.memoize(RoundRectRenderer::new);
 
     @SubscribeEvent
     public void onRenderGui(RenderGuiEvent.Post event) {
 
-        rectRenderer.addRect(10, 10, 100, 100, Color.WHITE);
-        rectRenderer.drawAndClear();
+        rectRenderer.get().addRect(10, 10, 200, 200, Color.WHITE);
+        textRenderer.get().addText("Minecraft 原神 启动！", 10.0f, 10.0f, Color.BLACK, 1.0f);
+        roundRectRenderer.get().addRoundRect(100, 100, 100, 100, 10.0f, Color.CYAN);
 
-
-        textRenderer.addText("What The Fuck", 50, 50, Color.BLACK, 1.0f);
-        textRenderer.drawAndClear();
+        rectRenderer.get().drawAndClear();
+        roundRectRenderer.get().drawAndClear();
+        textRenderer.get().drawAndClear();
 
     }
 
