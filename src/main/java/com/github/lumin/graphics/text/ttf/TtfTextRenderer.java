@@ -45,7 +45,8 @@ public class TtfTextRenderer implements ITextRenderer {
     private long currentOffset = 0;
     private int totalVertexCount = 0;
 
-    private record AtlasBatch(long startOffset, int vertexCount) {}
+    private record AtlasBatch(long startOffset, int vertexCount) {
+    }
 
     @Override
     public void addText(String text, float x, float y, Color color, float scale) {
