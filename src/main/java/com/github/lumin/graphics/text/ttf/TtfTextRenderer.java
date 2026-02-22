@@ -30,7 +30,7 @@ public class TtfTextRenderer implements ITextRenderer {
 
     private final HashMap<TtfGlyphAtlas, BufferBuilder> buffers = new HashMap<>();
     private final TtfFontLoader fontLoader =
-            new TtfFontLoader(ResourceLocationUtils.getIdentifier("font/PingFangSC-Regular.otf"));
+            new TtfFontLoader(ResourceLocationUtils.getIdentifier("fonts/pingfang.ttf"));
 
     private GpuBuffer ttfInfoUniformBuf = null;
 

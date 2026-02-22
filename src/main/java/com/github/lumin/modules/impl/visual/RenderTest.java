@@ -1,9 +1,9 @@
 package com.github.lumin.modules.impl.visual;
 
+import com.github.lumin.graphics.renderers.RectRenderer;
+import com.github.lumin.graphics.renderers.TextRenderer;
 import com.github.lumin.modules.Category;
 import com.github.lumin.modules.Module;
-import dev.lumin.client.graphics.skija.Skija;
-import dev.lumin.client.graphics.skija.util.SkijaHelper;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import org.lwjgl.glfw.GLFW;
@@ -19,10 +19,17 @@ public class RenderTest extends Module {
         keyBind = GLFW.GLFW_KEY_U;
     }
 
+    private final RectRenderer rectRenderer = new RectRenderer();
+    private final TextRenderer textRenderer = new TextRenderer();
+
     @SubscribeEvent
     public void onRenderGui(RenderGuiEvent.Post event) {
 
-        Skija.draw(canvas -> SkijaHelper.drawRoundRect(10, 10, 100, 100, 2, SkijaHelper.paintColor(Color.BLACK)));
+        rectRenderer.addRect(10, 10, 100, 100, Color.WHITE);
+        textRenderer.addText("What The Fuck", 50, 50, Color.BLACK, 1.0f);
+
+
+        rectRenderer.drawAndClear();
 
     }
 
