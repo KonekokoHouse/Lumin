@@ -29,6 +29,7 @@ import java.util.OptionalInt;
 public class TtfTextRenderer implements ITextRenderer {
 
     private static final float DEFAULT_SCALE = 0.35f;
+    private static final float SPACING = 2f;
 
     private final HashMap<TtfGlyphAtlas, BufferBuilder> buffers = new HashMap<>();
     private final TtfFontLoader fontLoader =
@@ -50,9 +51,12 @@ public class TtfTextRenderer implements ITextRenderer {
             BufferBuilder buffer = buffers.computeIfAbsent(glyph.atlas(), a ->
                     Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR));
 
+            float baselineY = y + (fontLoader.fontFile.pixelAscent * scale);
+
             float x1 = x + xOffset;
             float x2 = x1 + glyph.width() * scale;
-            float y1 = y + glyph.yOffset() * scale;
+
+            float y1 = baselineY + glyph.yOffset() * scale;
             float y2 = y1 + glyph.height() * scale;
 
             buffer.addVertex(x1, y1, 0).setUv(glyph.uv().u0(), glyph.uv().v0()).setColor(color.getRGB());
@@ -60,7 +64,7 @@ public class TtfTextRenderer implements ITextRenderer {
             buffer.addVertex(x2, y2, 0).setUv(glyph.uv().u1(), glyph.uv().v1()).setColor(color.getRGB());
             buffer.addVertex(x2, y1, 0).setUv(glyph.uv().u1(), glyph.uv().v0()).setColor(color.getRGB());
 
-            xOffset += glyph.advance() * scale;
+            xOffset += glyph.advance() * scale + SPACING;
         }
     }
 
@@ -83,7 +87,7 @@ public class TtfTextRenderer implements ITextRenderer {
                     .mapBuffer(ttfInfoUniformBuf, false, true)
             ) {
                 Std140Builder.intoBuffer(mappedView.data())
-                        .putFloat(0.52f);
+                        .putFloat(0.5f);
             }
         }
 

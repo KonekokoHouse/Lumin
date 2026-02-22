@@ -14,8 +14,10 @@ public class TtfFontFile {
     private final ByteBuffer fontData;
     private final STBTTFontinfo fontInfo;
 
-    private final int totalHeight;
     private final int padding;
+
+    public final float scale;
+    public final int pixelAscent;
 
     public TtfFontFile(Identifier ttfFile, int totalHeight, int padding) {
         fontData = ResourceLocationUtils.loadResource(ttfFile);
@@ -27,12 +29,21 @@ public class TtfFontFile {
             throw new IllegalStateException("STB TrueType failed to load ttf font: " + ttfFile);
         }
 
-        this.totalHeight = totalHeight;
         this.padding = padding;
+
+        this.scale = STBTruetype.stbtt_ScaleForPixelHeight(fontInfo, totalHeight - padding * 2);
+
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            final var ascent = stack.callocInt(1);
+            final var descent = stack.callocInt(1);
+            final var lineGap = stack.mallocInt(1);
+            STBTruetype.stbtt_GetFontVMetrics(fontInfo, ascent, descent, lineGap);
+
+            this.pixelAscent = (int) (ascent.get() * scale);
+        }
     }
 
     public TtfGlyph generateGlyph(char ch) {
-        final var scale = STBTruetype.stbtt_ScaleForPixelHeight(fontInfo, totalHeight - padding * 2);
         final var glyphIndex = STBTruetype.stbtt_FindGlyphIndex(fontInfo, ch);
 
         byte onEdgeValue = (byte) 128;

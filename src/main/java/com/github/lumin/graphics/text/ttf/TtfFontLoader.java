@@ -11,7 +11,7 @@ import java.util.List;
 
 public class TtfFontLoader implements IFontLoader {
 
-    private final TtfFontFile fontFile;
+    public final TtfFontFile fontFile;
 
     private final HashMap<Character, GlyphDescriptor> glyphMap = new HashMap<>();
     private final List<TtfGlyphAtlas> atlases = new ArrayList<>();

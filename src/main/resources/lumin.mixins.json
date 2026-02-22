@@ -9,7 +9,8 @@
     "MixinLivingEntityRenderer",
     "MixinLocalPlayer",
     "MixinMinecraft",
-    "MixinWindow"
+    "MixinWindow",
+    "MixinGlDebug"
   ],
   "injectors": {
     "defaultRequire": 1
