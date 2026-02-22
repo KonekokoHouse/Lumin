@@ -48,6 +48,8 @@ public class LuminRenderPipelines {
 
     public static void onRegisterRenderPipelines(RegisterRenderPipelinesEvent event) {
         event.registerPipeline(RECTANGLE);
+        event.registerPipeline(TTF_FONT);
+        event.registerPipeline(ROUND_RECT);
     }
 
 }

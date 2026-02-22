@@ -30,7 +30,7 @@ import java.util.OptionalInt;
 public class TtfTextRenderer implements ITextRenderer {
 
     private static final float DEFAULT_SCALE = 0.35f;
-    private static final float SPACING = 2f;
+    private static final float SPACING = 1f;
     private static final int STRIDE = 24; // Pos(12) + UV(8) + Color(4)
 
     private static final long BUFFER_SIZE = 4 * 1024 * 1024; // 4MB
@@ -49,7 +49,7 @@ public class TtfTextRenderer implements ITextRenderer {
 
     @Override
     public void addText(String text, float x, float y, Color color, float scale) {
-        scale = scale * DEFAULT_SCALE;
+        final var finalScale = scale * DEFAULT_SCALE;
         fontLoader.checkAndLoadChars(text);
         int argb = ARGB.toABGR(color.getRGB());
         float xOffset = 0f;
@@ -59,12 +59,12 @@ public class TtfTextRenderer implements ITextRenderer {
             if (glyph == null) continue;
 
             TtfGlyphAtlas atlas = glyph.atlas();
-            float baselineY = y + (fontLoader.fontFile.pixelAscent * scale);
+            float baselineY = y + (fontLoader.fontFile.pixelAscent * finalScale);
 
             float x1 = x + xOffset;
-            float x2 = x1 + glyph.width() * scale;
-            float y1 = baselineY + glyph.yOffset() * scale;
-            float y2 = y1 + glyph.height() * scale;
+            float x2 = x1 + glyph.width() * finalScale;
+            float y1 = baselineY + glyph.yOffset() * finalScale;
+            float y2 = y1 + glyph.height() * finalScale;
 
             long glyphOffset = currentOffset;
 
@@ -77,7 +77,7 @@ public class TtfTextRenderer implements ITextRenderer {
             batches.merge(atlas, new AtlasBatch(glyphOffset, 4),
                     (old, val) -> new AtlasBatch(old.startOffset(), old.vertexCount() + 4));
 
-            xOffset += glyph.advance() * scale + SPACING;
+            xOffset += glyph.advance() * finalScale + SPACING * scale;
         }
     }
 
