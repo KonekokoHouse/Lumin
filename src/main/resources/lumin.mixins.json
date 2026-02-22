@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "dev.lumin.client.mixins",
+  "package": "com.github.lumin.mixins",
   "compatibilityLevel": "JAVA_21",
   "client": [
     "IClientInput",
