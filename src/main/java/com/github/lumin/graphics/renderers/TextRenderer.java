@@ -8,10 +8,26 @@ import java.awt.*;
 
 public class TextRenderer implements IRenderer {
 
-    private final ITextRenderer textRenderer = new TtfTextRenderer();
+    private final ITextRenderer textRenderer;
+
+    public TextRenderer(long bufferSize) {
+        textRenderer = new TtfTextRenderer(bufferSize);
+    }
+
+    public TextRenderer() {
+        textRenderer = new TtfTextRenderer();
+    }
 
     public void addText(String text, float x, float y, Color color, float scale) {
         textRenderer.addText(text, x, y, color, scale);
+    }
+
+    public void addText(String text, float x, float y, Color color) {
+        addText(text, x, y, color, 1.0f);
+    }
+
+    public float getHeight(float scale) {
+        return textRenderer.getHeight(scale);
     }
 
     @Override
@@ -24,5 +40,10 @@ public class TextRenderer implements IRenderer {
     @Override
     public void clear() {
         textRenderer.clear();
+    }
+
+    @Override
+    public void close() {
+        textRenderer.close();
     }
 }

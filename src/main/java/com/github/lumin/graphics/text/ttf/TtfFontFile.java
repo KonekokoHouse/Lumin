@@ -18,6 +18,7 @@ public class TtfFontFile {
 
     public final float scale;
     public final int pixelAscent;
+    public final int fontHeight;
 
     public TtfFontFile(Identifier ttfFile, int totalHeight, int padding) {
         fontData = ResourceLocationUtils.loadResource(ttfFile);
@@ -34,13 +35,21 @@ public class TtfFontFile {
         this.scale = STBTruetype.stbtt_ScaleForPixelHeight(fontInfo, totalHeight - padding * 2);
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            final var ascent = stack.callocInt(1);
-            final var descent = stack.callocInt(1);
-            final var lineGap = stack.mallocInt(1);
-            STBTruetype.stbtt_GetFontVMetrics(fontInfo, ascent, descent, lineGap);
+            final var ascentBuf = stack.callocInt(1);
+            final var descentBuf = stack.callocInt(1);
+            final var lineGapBuf = stack.mallocInt(1);
+            STBTruetype.stbtt_GetFontVMetrics(fontInfo, ascentBuf, descentBuf, lineGapBuf);
 
-            this.pixelAscent = (int) (ascent.get() * scale);
+            final var ascent = ascentBuf.get();
+            final var descent = descentBuf.get();
+            final var lineGap = lineGapBuf.get();
+
+            this.pixelAscent = (int) (ascent * scale);
+            this.fontHeight = (int) ((ascent - descent + lineGap) * scale);
         }
+
+//        this.fontHeight = totalHeight - padding * 2;
+
     }
 
     public TtfGlyph generateGlyph(char ch) {

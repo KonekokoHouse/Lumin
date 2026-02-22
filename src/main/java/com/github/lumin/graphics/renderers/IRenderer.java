@@ -11,4 +11,6 @@ public interface IRenderer {
         clear();
     }
 
+    void close();
+
 }

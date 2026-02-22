@@ -115,4 +115,10 @@ public class LineRenderer implements IRenderer {
         vertexCount = 0;
         currentOffset = 0;
     }
+
+    @Override
+    public void close() {
+        clear();
+        buffer.close();
+    }
 }

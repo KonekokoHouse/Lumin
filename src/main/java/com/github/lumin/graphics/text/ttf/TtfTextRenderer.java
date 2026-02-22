@@ -22,30 +22,29 @@ import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 
 import java.awt.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.OptionalDouble;
-import java.util.OptionalInt;
+import java.util.*;
 
 public class TtfTextRenderer implements ITextRenderer {
 
     private static final float DEFAULT_SCALE = 0.35f;
     private static final float SPACING = 1f;
-    private static final int STRIDE = 24; // Pos(12) + UV(8) + Color(4)
-
-    private static final long BUFFER_SIZE = 4 * 1024 * 1024; // 4MB
-    private final LuminBuffer buffer = new LuminBuffer(BUFFER_SIZE, GpuBuffer.USAGE_VERTEX);
-
-    private final Map<TtfGlyphAtlas, AtlasBatch> batches = new LinkedHashMap<>();
+    private static final int STRIDE = 24;
+    private final long bufferSize;
 
     private final TtfFontLoader fontLoader =
             new TtfFontLoader(ResourceLocationUtils.getIdentifier("fonts/pingfang.ttf"));
 
-    private GpuBuffer ttfInfoUniformBuf = null;
-    private long currentOffset = 0;
-    private int totalVertexCount = 0;
+    private final Map<TtfGlyphAtlas, LuminBuffer> atlasBuffers = new LinkedHashMap<>();
+    private final Map<TtfGlyphAtlas, Long> atlasOffsets = new HashMap<>();
 
-    private record AtlasBatch(long startOffset, int vertexCount) {
+    private GpuBuffer ttfInfoUniformBuf = null;
+
+    public TtfTextRenderer(long bufferSize) {
+        this.bufferSize = bufferSize;
+    }
+
+    public TtfTextRenderer() {
+        this(2 * 1024 * 1024);
     }
 
     @Override
@@ -53,53 +52,74 @@ public class TtfTextRenderer implements ITextRenderer {
         final var finalScale = scale * DEFAULT_SCALE;
         fontLoader.checkAndLoadChars(text);
         int argb = ARGB.toABGR(color.getRGB());
+
         float xOffset = 0f;
+        float yOffset = 0f;
 
         for (char ch : text.toCharArray()) {
+            boolean skipCurrent = false;
+            switch (ch) {
+                case ' ': {
+                    xOffset += 3.0f * scale;
+                    skipCurrent = true;
+                    break;
+                }
+                case '\n': {
+                    xOffset = 0f;
+                    yOffset += fontLoader.fontFile.fontHeight * finalScale;
+                    skipCurrent = true;
+                    break;
+                }
+            }
+
+            if (skipCurrent) continue;
+
             GlyphDescriptor glyph = fontLoader.getGlyph(ch);
             if (glyph == null) continue;
 
             TtfGlyphAtlas atlas = glyph.atlas();
-            float baselineY = y + (fontLoader.fontFile.pixelAscent * finalScale);
 
+            LuminBuffer buffer = atlasBuffers.computeIfAbsent(atlas,
+                    k -> new LuminBuffer(bufferSize, GpuBuffer.USAGE_VERTEX));
+            long currentOffset = atlasOffsets.getOrDefault(atlas, 0L);
+
+            float baselineY = yOffset + y + (fontLoader.fontFile.pixelAscent * finalScale);
             float x1 = x + xOffset;
             float x2 = x1 + glyph.width() * finalScale;
             float y1 = baselineY + glyph.yOffset() * finalScale;
             float y2 = y1 + glyph.height() * finalScale;
 
-            long glyphOffset = currentOffset;
+            long baseAddr = MemoryUtil.memAddress(buffer.getMappedBuffer());
+            long p = baseAddr + currentOffset;
 
-            addVertex(x1, y1, glyph.uv().u0(), glyph.uv().v0(), argb);
-            addVertex(x1, y2, glyph.uv().u0(), glyph.uv().v1(), argb);
-            addVertex(x2, y2, glyph.uv().u1(), glyph.uv().v1(), argb);
-            addVertex(x2, y1, glyph.uv().u1(), glyph.uv().v0(), argb);
+            writeToAddr(p, x1, y1, glyph.uv().u0(), glyph.uv().v0(), argb);
+            writeToAddr(p + STRIDE, x1, y2, glyph.uv().u0(), glyph.uv().v1(), argb);
+            writeToAddr(p + STRIDE * 2, x2, y2, glyph.uv().u1(), glyph.uv().v1(), argb);
+            writeToAddr(p + STRIDE * 3, x2, y1, glyph.uv().u1(), glyph.uv().v0(), argb);
 
-            // Update the batch information of the atlas
-            batches.merge(atlas, new AtlasBatch(glyphOffset, 4),
-                    (old, val) -> new AtlasBatch(old.startOffset(), old.vertexCount() + 4));
-
+            atlasOffsets.put(atlas, currentOffset + (STRIDE * 4));
             xOffset += glyph.advance() * finalScale + SPACING * scale;
         }
     }
 
-    private void addVertex(float vx, float vy, float u, float v, int color) {
-        long baseAddr = MemoryUtil.memAddress(buffer.getMappedBuffer());
-        long p = baseAddr + currentOffset;
-
-        MemoryUtil.memPutFloat(p, vx);
-        MemoryUtil.memPutFloat(p + 4, vy);
+    private void writeToAddr(long p, float x, float y, float u, float v, int color) {
+        MemoryUtil.memPutFloat(p, x);
+        MemoryUtil.memPutFloat(p + 4, y);
         MemoryUtil.memPutFloat(p + 8, 0.0f);
         MemoryUtil.memPutFloat(p + 12, u);
         MemoryUtil.memPutFloat(p + 16, v);
         MemoryUtil.memPutInt(p + 20, color);
+    }
 
-        currentOffset += STRIDE;
-        totalVertexCount++;
+    @Override
+    public float getHeight(float scale) {
+        return fontLoader.fontFile.pixelAscent * DEFAULT_SCALE * scale;
     }
 
     @Override
     public void draw() {
-        if (totalVertexCount == 0) return;
+        if (atlasBuffers.isEmpty()) return;
+
         LuminRenderSystem.applyOrthoProjection();
 
         if (ttfInfoUniformBuf == null) {
@@ -109,8 +129,7 @@ public class TtfTextRenderer implements ITextRenderer {
 
             try (GpuBuffer.MappedView mappedView = RenderSystem.getDevice().createCommandEncoder()
                     .mapBuffer(ttfInfoUniformBuf, false, true)) {
-                Std140Builder.intoBuffer(mappedView.data())
-                        .putFloat(0.5f);
+                Std140Builder.intoBuffer(mappedView.data()).putFloat(0.5f);
             }
         }
 
@@ -122,12 +141,15 @@ public class TtfTextRenderer implements ITextRenderer {
                 new Vector3f(0, 0, 0), TextureTransform.DEFAULT_TEXTURING.getMatrix()
         );
 
-        for (Map.Entry<TtfGlyphAtlas, AtlasBatch> entry : batches.entrySet()) {
+        for (Map.Entry<TtfGlyphAtlas, LuminBuffer> entry : atlasBuffers.entrySet()) {
             TtfGlyphAtlas atlas = entry.getKey();
-            AtlasBatch batch = entry.getValue();
+            LuminBuffer luminBuffer = entry.getValue();
+            long writtenBytes = atlasOffsets.getOrDefault(atlas, 0L);
 
-            int indexCount = batch.vertexCount() / 4 * 6;
-            int vertexOffset = (int) (batch.startOffset() / STRIDE);
+            if (writtenBytes == 0) continue;
+
+            int vertexCount = (int) (writtenBytes / STRIDE);
+            int indexCount = (vertexCount / 4) * 6;
 
             RenderSystem.AutoStorageIndexBuffer autoIndices =
                     RenderSystem.getSequentialBuffer(VertexFormat.Mode.QUADS);
@@ -144,19 +166,27 @@ public class TtfTextRenderer implements ITextRenderer {
                 pass.setUniform("DynamicTransforms", dynamicUniforms);
                 pass.setUniform("TtfInfo", ttfInfoUniformBuf);
 
-                pass.setVertexBuffer(0, buffer.getGpuBuffer());
+                pass.setVertexBuffer(0, luminBuffer.getGpuBuffer());
                 pass.setIndexBuffer(ibo, autoIndices.type());
                 pass.bindTexture("Sampler0", atlas.getTexture().textureView(), atlas.getTexture().sampler());
 
-                pass.drawIndexed(0, vertexOffset, indexCount, 1);
+                pass.drawIndexed(0, 0, indexCount, 1);
             }
         }
     }
 
     @Override
     public void clear() {
-        currentOffset = 0;
-        totalVertexCount = 0;
-        batches.clear();
+        atlasOffsets.replaceAll((a, v) -> 0L);
+    }
+
+    @Override
+    public void close() {
+        for (LuminBuffer buffer : atlasBuffers.values()) {
+            buffer.getGpuBuffer().close();
+        }
+        atlasBuffers.clear();
+        atlasOffsets.clear();
+        if (ttfInfoUniformBuf != null) ttfInfoUniformBuf.close();
     }
 }

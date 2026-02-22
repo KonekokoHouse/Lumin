@@ -23,17 +23,17 @@ public class RoundRectRenderer implements IRenderer {
         float y2 = y + height;
 
         float expand = radius + 1.0f;
-        float vx1 = x - expand;
-        float vy1 = y - expand;
-        float vx2 = x2 + expand;
-        float vy2 = y2 + expand;
+        float vx1 = x + expand;
+        float vy1 = y + expand;
+        float vx2 = x2 - expand;
+        float vy2 = y2 - expand;
 
         int argb = color.getRGB();
 
-        addVertex(vx1, vy1, x, y, x2, y2, radius, argb);
-        addVertex(vx1, vy2, x, y, x2, y2, radius, argb);
-        addVertex(vx2, vy2, x, y, x2, y2, radius, argb);
-        addVertex(vx2, vy1, x, y, x2, y2, radius, argb);
+        addVertex(x, y, vx1, vy1, vx2, vy2, radius, argb);
+        addVertex(x, y2, vx1, vy1, vx2, y2, radius, argb);
+        addVertex(x2, y2, vx1, vy1, vx2, vy2, radius, argb);
+        addVertex(x2, y, vx1, vy1, vx2, vy2, radius, argb);
     }
 
     private long currentOffset = 0;
@@ -86,5 +86,11 @@ public class RoundRectRenderer implements IRenderer {
     public void clear() {
         vertexCount = 0;
         currentOffset = 0;
+    }
+
+    @Override
+    public void close() {
+        clear();
+        buffer.close();
     }
 }

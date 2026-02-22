@@ -10,4 +10,8 @@ public interface ITextRenderer {
 
     void clear();
 
+    void close();
+
+    float getHeight(float scale);
+
 }

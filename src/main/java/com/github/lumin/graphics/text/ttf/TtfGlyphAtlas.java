@@ -14,10 +14,9 @@ public class TtfGlyphAtlas {
     private static final int SIZE = 512;
     private final LuminTexture texture;
 
-    private int currentX = 1;
-    private int currentY = 1;
+    private int currentX = 0;
+    private int currentY = 0;
     private int currentRowHeight = 0;
-    private static final int SPACING = 0;
 
     public TtfGlyphAtlas(int atlasId) {
         final var texture = RenderSystem.getDevice().createTexture(
@@ -46,14 +45,14 @@ public class TtfGlyphAtlas {
     public GlyphUV appendGlyph(TtfGlyph glyph) {
         if (glyph.glyphData() == null) return null;
 
-        if (currentX + glyph.width() + SPACING >= SIZE) {
-            currentX = 1;
-            currentY += currentRowHeight + SPACING;
+        if (currentX + glyph.width() >= SIZE) {
+            currentX = 0;
+            currentY += currentRowHeight;
             currentRowHeight = 0;
         }
 
         // Return null if glyph atlas is full
-        if (currentY + glyph.height() + SPACING >= SIZE) {
+        if (currentY + glyph.height() >= SIZE) {
             return null;
         }
 
@@ -77,7 +76,7 @@ public class TtfGlyphAtlas {
                 (float) (currentY + glyph.height() - 2 * spacePixel) / SIZE
         );
 
-        currentX += glyph.width() + SPACING;
+        currentX += glyph.width();
         currentRowHeight = Math.max(currentRowHeight, glyph.height());
 
         return uv;

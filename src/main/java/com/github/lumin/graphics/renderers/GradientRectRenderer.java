@@ -146,4 +146,10 @@ public class GradientRectRenderer implements IRenderer {
         currentOffset = 0;
     }
 
+    @Override
+    public void close() {
+        clear();
+        buffer.close();
+    }
+
 }
