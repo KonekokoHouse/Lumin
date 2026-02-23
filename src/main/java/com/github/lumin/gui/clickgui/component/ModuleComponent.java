@@ -20,9 +20,9 @@ public class ModuleComponent implements IComponent {
             if (setting instanceof BoolSetting boolValue) {
                 settings.add(new BoolSettingComponent(boolValue));
             } else if (setting instanceof IntSetting intSetting) {
-                settings.add(new NumberSettingComponent(intSetting));
+                settings.add(new IntSettingComponent(intSetting));
             } else if (setting instanceof DoubleSetting doubleSetting) {
-                settings.add(new NumberSettingComponent(doubleSetting));
+                settings.add(new DoubleSettingComponent(doubleSetting));
             } else if (setting instanceof ModeSetting modeSetting) {
                 settings.add(new ModeSettingComponent(modeSetting));
             } else if (setting instanceof ColorSetting colorSetting) {

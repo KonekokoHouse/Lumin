@@ -17,6 +17,10 @@ public interface IComponent {
         return false;
     }
 
+    default boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        return false;
+    }
+
     default boolean keyPressed(KeyEvent input) {
         return false;
     }

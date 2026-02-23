@@ -38,7 +38,6 @@ public class MathUtil {
             min = max;
             max = temp;
         }
-        // ThreadLocalRandom doesn't have nextFloat(min, max) directly usually, but nextDouble works
         return (float) ThreadLocalRandom.current().nextDouble(min, max);
     }
 
