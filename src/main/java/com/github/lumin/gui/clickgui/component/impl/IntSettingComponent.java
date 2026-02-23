@@ -4,7 +4,6 @@ import com.github.lumin.gui.Component;
 import com.github.lumin.modules.impl.client.InterFace;
 import com.github.lumin.settings.impl.IntSetting;
 import com.github.lumin.utils.render.ColorUtils;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.MouseButtonEvent;
 
 import java.awt.*;

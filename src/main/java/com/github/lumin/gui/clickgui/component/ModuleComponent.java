@@ -10,7 +10,6 @@ import com.github.lumin.settings.impl.*;
 import com.github.lumin.utils.render.ColorUtils;
 import com.github.lumin.utils.render.MouseUtils;
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -20,6 +19,7 @@ import java.awt.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ModuleComponent implements IComponent {
+
     private static final int MODULE_HEIGHT = 18;
 
     private float x, y, width, height = MODULE_HEIGHT;
@@ -82,12 +82,12 @@ public class ModuleComponent implements IComponent {
 
         float nameScale = 0.85f * scale;
         float textHeight = set.textRenderer().getHeight(nameScale);
-        float textY = y + (MODULE_HEIGHT * scale - textHeight) / 2f;
+        float textY = y + (MODULE_HEIGHT * scale - textHeight) / 2f - scale;
         set.textRenderer().addText(module.getDisplayName(), x + 4 * scale, textY, Color.WHITE, nameScale);
 //        set.textRenderer().drawAndClear();
 
-        float boxWidth = 18 * scale;
-        float boxHeight = 8 * scale;
+        float boxWidth = 25 * scale;
+        float boxHeight = 12 * scale;
         float boxX = x + width - boxWidth - 4 * scale;
         float boxY = y + (scaledHeight - boxHeight) / 2;
 
@@ -107,18 +107,23 @@ public class ModuleComponent implements IComponent {
             borderColor = ColorUtils.applyOpacity(themeColor, hasKey ? 0.9f : 0.5f);
         }
 
-        set.roundRectRenderer().addRoundRect(boxX, boxY, boxWidth, boxHeight, 2 * scale, bgColor);
+        set.roundRectRenderer().addRoundRect(boxX, boxY, boxWidth, boxHeight, 2.5f * scale, bgColor);
         //drawRoundRectOutline(boxX, boxY, boxWidth, boxHeight, 2 * scale, 0.5f * scale, borderColor);
 //        set.roundRectRenderer().drawAndClear();
 
-        float fontSize = 0.65f * scale;
+        float fontScale = 0.65f * scale;
         String displayText = listening ? "..." : (hasKey ? getKeyName(keyCode) : "");
-        float textWidth = set.textRenderer().getWidth(displayText, fontSize);
+        float maxTextWidth = boxWidth - 4 * scale;
+        float textWidth = set.textRenderer().getWidth(displayText, fontScale);
+        if (textWidth > maxTextWidth) {
+            fontScale = fontScale * (maxTextWidth / textWidth);
+            textWidth = maxTextWidth;
+        }
         float textX = boxX + (boxWidth - textWidth) / 2;
-        float bindTextHeight = set.textRenderer().getHeight(fontSize);
-        float bindTextY = boxY + (boxHeight - bindTextHeight) / 2f;
+        float bindTextHeight = set.textRenderer().getHeight(fontScale);
+        float bindTextY = boxY + (boxHeight - bindTextHeight) / 2f - scale;
         if (!displayText.isEmpty()) {
-            set.textRenderer().addText(displayText, textX, bindTextY, Color.WHITE, fontSize);
+            set.textRenderer().addText(displayText, textX, bindTextY, Color.WHITE, fontScale);
         }
 //        set.textRenderer().drawAndClear();
 
@@ -142,7 +147,7 @@ public class ModuleComponent implements IComponent {
             }
         }
 
-//        IComponent.super.render(guiGraphics, mouseX, mouseY, partialTicks);
+//        IComponent.super.render(set, mouseX, mouseY, partialTicks);
     }
 
     @Override
@@ -319,4 +324,5 @@ public class ModuleComponent implements IComponent {
             return "?";
         }
     }
+
 }

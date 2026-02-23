@@ -3,7 +3,6 @@ package com.github.lumin.gui.clickgui.panel;
 import com.github.lumin.graphics.renderers.RectRenderer;
 import com.github.lumin.graphics.renderers.RoundRectRenderer;
 import com.github.lumin.graphics.renderers.TextRenderer;
-import com.github.lumin.graphics.shaders.BlurShader;
 import com.github.lumin.gui.IComponent;
 import com.github.lumin.gui.clickgui.component.ModuleComponent;
 import com.github.lumin.managers.Managers;
@@ -12,7 +11,6 @@ import com.github.lumin.modules.impl.client.InterFace;
 import com.github.lumin.utils.render.ColorUtils;
 import com.github.lumin.utils.render.MouseUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -65,12 +63,12 @@ public class CategoryPanel implements IComponent {
 
         Color bgColor = InterFace.INSTANCE.backgroundColor.getValue();
         roundRectRenderer.addRoundRect(x, y - 1, scaledWidth, height, 7, ColorUtils.applyOpacity(bgColor, 0.9f));
-        float textHeight = textRenderer.getHeight(0.9f * guiScale);
-        float textY = y + (18f * guiScale - textHeight) / 2f;
-        textRenderer.addText(category.getName(), x + 4 * guiScale, textY, Color.WHITE, 0.9f * guiScale);
-
-        // todo:画icon
-        //(category.icon, x + 4 * guiScale + scaledWidth - NanoVGHelper.getTextWidth(category.icon, FontLoader.icons(), iconSize) - (category == Category.Render ? 7 : 3) * guiScale, y + 13f * guiScale, FontLoader.icons(), iconSize, new Color(255, 255, 255, 255));
+        float fontScale = 0.9f * guiScale;
+        float textHeight = textRenderer.getHeight(fontScale);
+        float textWidth = textRenderer.getWidth(category.getName(), fontScale);
+        float textY = y + (18f * guiScale - textHeight) / 2f - guiScale;
+        float textX = x + (scaledWidth - textWidth) / 2f;
+        textRenderer.addText(category.getName(), textX, textY, Color.WHITE, fontScale);
 
 //        roundRectRenderer.drawAndClear();
 //        textRenderer.drawAndClear();

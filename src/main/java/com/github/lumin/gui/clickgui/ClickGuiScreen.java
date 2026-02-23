@@ -1,7 +1,6 @@
 package com.github.lumin.gui.clickgui;
 
 import com.github.lumin.graphics.renderers.RectRenderer;
-import com.github.lumin.graphics.shaders.BlurShader;
 import com.github.lumin.gui.clickgui.panel.CategoryPanel;
 import com.github.lumin.modules.Category;
 import com.github.lumin.modules.impl.client.ClickGui;
