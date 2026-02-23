@@ -3,7 +3,7 @@ package com.github.lumin.gui.clickgui.panel;
 import com.github.lumin.graphics.renderers.RectRenderer;
 import com.github.lumin.graphics.renderers.TextRenderer;
 import com.github.lumin.graphics.renderers.TextureRenderer;
-import com.github.lumin.gui.clickgui.componet.ModuleComponet;
+import com.github.lumin.gui.clickgui.component.ModuleComponent;
 import com.github.lumin.managers.Managers;
 import com.github.lumin.modules.Category;
 import com.github.lumin.modules.Module;
@@ -37,7 +37,7 @@ public class CategoryPanel {
     private float scroll;
     private Module selectedModule;
 
-    private final List<ModuleComponet> modules = new ArrayList<>();
+    private final List<ModuleComponent> modules = new ArrayList<>();
 
     public CategoryPanel(float x, float y, Category category) {
         this.x = x;
@@ -60,7 +60,7 @@ public class CategoryPanel {
         modules.clear();
         for (Module module : Managers.MODULE.getModules()) {
             if (module.category != category) continue;
-            modules.add(new ModuleComponet(module));
+            modules.add(new ModuleComponent(module));
         }
     }
 
@@ -87,7 +87,7 @@ public class CategoryPanel {
         float listBottom = listY + LIST_HEIGHT;
 
         for (int i = 0; i < modules.size(); i++) {
-            ModuleComponet comp = modules.get(i);
+            ModuleComponent comp = modules.get(i);
             float rowY = listY + i * ROW_HEIGHT - scroll;
             if (rowY + ROW_HEIGHT < listY || rowY > listBottom) continue;
 
