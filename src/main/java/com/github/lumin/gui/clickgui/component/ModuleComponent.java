@@ -59,10 +59,21 @@ public class ModuleComponent implements IComponent {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         float scaledHeight = MODULE_HEIGHT * scale;
-        boolean hasVisibleSettings = recalculateLayout();
+        float yOffset = scaledHeight;
 
-        final boolean finalHasVisibleSettings = hasVisibleSettings;
-        final float finalYOffset = height;
+        boolean hasVisibleSettings = false;
+        for (Component component : settings) {
+            if (!component.isVisible()) continue;
+            hasVisibleSettings = true;
+            component.setScale(scale);
+            yOffset += component.getHeight() * 1.0f/*animation*/;
+        }
+
+        if (hasVisibleSettings && opened/*后面改成动画检测，不再检测opened*/) {
+            yOffset += 3 * scale * 1.0f/*animation因子*/;
+        }
+
+        this.height = yOffset;
 
         if (module.isEnabled()) {
             rectRenderer.addHorizontalGradient(x, y, width, scaledHeight, InterFace.getMainColor(), InterFace.getSecondColor());
@@ -70,14 +81,16 @@ public class ModuleComponent implements IComponent {
 
         rectRenderer.addRect(x, y, width, scaledHeight, InterFace.INSTANCE.backgroundColor.getValue());
 
-        if (opened && finalHasVisibleSettings) {
-            float expandedHeight = finalYOffset - scaledHeight;
+        if (/*后面改成动画检测，不再检测opened*/opened && hasVisibleSettings) {
+            float expandedHeight = yOffset - scaledHeight;
             rectRenderer.addRect(x, y + scaledHeight, width, expandedHeight, InterFace.INSTANCE.expandedBackgroundColor.getValue());
         }
         rectRenderer.drawAndClear();
 
         float nameScale = 0.85f * scale;
-        textRenderer.addText(module.getDisplayName(), x + 4 * scale, y + 11 * scale, Color.WHITE, nameScale);
+        float textHeight = textRenderer.getHeight(nameScale);
+        float textY = y + (MODULE_HEIGHT * scale - textHeight) / 2f;
+        textRenderer.addText(module.getDisplayName(), x + 4 * scale, textY, Color.WHITE, nameScale);
         textRenderer.drawAndClear();
 
         float boxWidth = 18 * scale;
@@ -142,11 +155,11 @@ public class ModuleComponent implements IComponent {
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean focused) {
         boolean handled = false;
-
         if (isBindBoxHovered(event)) {
-            switch (event.button()) {
-                case 0 -> listening = !listening;
-                case 2 -> module.setBindMode(module.getBindMode() == Module.BindMode.Toggle ? Module.BindMode.Hold : Module.BindMode.Toggle);
+            if (event.button() == 0) {
+                listening = !listening;
+            } else if (event.button() == 2) {
+                module.setBindMode(module.getBindMode() == Module.BindMode.Toggle ? Module.BindMode.Hold : Module.BindMode.Toggle);
             }
             handled = true;
         } else if (listening) {
@@ -154,32 +167,27 @@ public class ModuleComponent implements IComponent {
             handled = true;
         }
 
-        if (isHeaderHovered(event.x(), event.y()) && !isBindBoxHovered(event)) {
+        if (isHovered((int) event.x(), (int) event.y()) && !isBindBoxHovered(event)) {
             switch (event.button()) {
                 case 0 -> module.toggle();
-                case 1 -> {
-                    opened = !opened;
-                    recalculateLayout();
-                }
+                case 1 -> opened = !opened;
             }
             handled = true;
         }
-
-        if (opened && !isHeaderHovered(event.x(), event.y())) {
+        if (opened && !isHovered((int) event.x(), (int) event.y())) {
             for (Component setting : settings) {
                 if (setting.mouseClicked(event, focused)) {
                     handled = true;
                 }
             }
         }
-
         return handled || IComponent.super.mouseClicked(event, focused);
     }
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
         boolean handled = false;
-        if (opened && !isHeaderHovered(event.x(), event.y())) {
+        if (opened && !isHovered((int) event.x(), (int) event.y())) {
             for (Component setting : settings) {
                 if (setting.mouseReleased(event)) {
                     handled = true;
@@ -288,32 +296,9 @@ public class ModuleComponent implements IComponent {
 
     public void setScale(float scale) {
         this.scale = scale;
-        recalculateLayout();
     }
 
-    private boolean recalculateLayout() {
-        float scaledHeight = MODULE_HEIGHT * scale;
-        float yOffset = scaledHeight;
-
-        boolean hasVisibleSettings = false;
-        if (opened) {
-            for (Component component : settings) {
-                if (!component.isVisible()) continue;
-                hasVisibleSettings = true;
-                component.setScale(scale);
-                yOffset += component.getHeight();
-            }
-
-            if (hasVisibleSettings) {
-                yOffset += 3f * scale;
-            }
-        }
-
-        this.height = yOffset;
-        return hasVisibleSettings;
-    }
-
-    private boolean isHeaderHovered(double mouseX, double mouseY) {
+    public boolean isHovered(int mouseX, int mouseY) {
         return MouseUtils.isHovering(x, y, width, MODULE_HEIGHT * scale, mouseX, mouseY);
     }
 
