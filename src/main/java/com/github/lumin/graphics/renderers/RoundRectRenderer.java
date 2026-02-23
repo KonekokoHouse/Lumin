@@ -78,6 +78,8 @@ public class RoundRectRenderer implements IRenderer {
             pass.setVertexBuffer(0, buffer.getGpuBuffer());
             pass.setIndexBuffer(info.ibo(), info.autoIndices().type());
 
+            ScissorStack.applyToPass(pass);
+
             pass.drawIndexed(0, 0, info.indexCount(), 1);
         }
     }
