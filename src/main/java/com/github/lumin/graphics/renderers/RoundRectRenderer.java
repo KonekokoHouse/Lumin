@@ -40,6 +40,34 @@ public class RoundRectRenderer implements IRenderer {
         addVertex(x2, y, vx1, vy1, vx2, vy2, radius, argb);
     }
 
+    public void addRoundRectBloom(float x, float y, float width, float height, float radius, float glowRadius, Color color) {
+        float baseAlpha = color.getAlpha() / 255.0f;
+        int glowSteps = (int) Math.max(10, glowRadius * 2);
+
+        int r = color.getRed();
+        int g = color.getGreen();
+        int b = color.getBlue();
+
+        for (int i = 0; i < glowSteps; i++) {
+            float progress = (float) i / glowSteps;
+            float offset = glowRadius * progress;
+
+            float alphaFactor = (float) Math.cos(progress * (Math.PI / 2));
+            float currentAlpha = baseAlpha * alphaFactor * 0.3f;
+
+            if (currentAlpha <= 0.005f) continue;
+
+            int a = (int) (currentAlpha * 255.0f);
+            Color glowColor = new Color(r, g, b, a);
+
+            addRoundRect(x - offset, y - offset, width + offset * 2, height + offset * 2, radius + offset, glowColor);
+        }
+    }
+
+    public void addRoundRectBloom(float x, float y, float width, float height, float radius, Color color) {
+        addRoundRectBloom(x, y, width, height, radius, 7.0f, color);
+    }
+
     private long currentOffset = 0;
     private int vertexCount = 0;
 

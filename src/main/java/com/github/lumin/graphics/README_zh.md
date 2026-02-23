@@ -14,11 +14,12 @@ Lumin Graphics 是一个为现代 Minecraft 模组开发设计的轻量化、高
 ---
 
 [!CAUTION]
+
 ## 💡警告
 
 ### 生命周期同步限制
 
-在单帧渲染循环内，严禁在调用一次或多次 Renderer.draw() 之后再调用 Renderer.clear() 
+在单帧渲染循环内，严禁在调用一次或多次 Renderer.draw() 之后再调用 Renderer.clear()
 并再次对同一个实例调用 draw()。这会导致 CPU 写入与 GPU 读取之间的严重同步冲突，
 从而引发闪烁或图元的消失。
 
@@ -44,7 +45,8 @@ Lumin Graphics 的所有渲染操作均通过专门的 **Renderer（渲染器）
 
 ### 初始化与线程安全
 
-渲染器 **必须** 在 **渲染线程（Render Thread）** 上进行初始化。我们建议使用 `Suppliers.memoize`（来自 Guava 或 Minecraft 库）来确保安全且延迟的初始化。
+渲染器 **必须** 在 **渲染线程（Render Thread）** 上进行初始化。我们建议使用 `Suppliers.memoize`（来自 Guava 或 Minecraft
+库）来确保安全且延迟的初始化。
 
 ```java
 // 推荐的初始化方式
@@ -92,7 +94,8 @@ rectRenderer.get().draw(); // 内容会一直保存在 GPU 缓冲区中，直到
 
 ### 💡 优化建议
 
-在使用 **Lumin Graphics** 时请记住：多次调用 `.draw()` 而不调用 `.clear()` 是极其高效的。它仅会重新触发现有 GPU 数据的绘制指令，而无需重新上传顶点数据。
+在使用 **Lumin Graphics** 时请记住：多次调用 `.draw()` 而不调用 `.clear()` 是极其高效的。它仅会重新触发现有 GPU
+数据的绘制指令，而无需重新上传顶点数据。
 
 ---
 

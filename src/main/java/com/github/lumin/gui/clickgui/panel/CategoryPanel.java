@@ -61,8 +61,12 @@ public class CategoryPanel implements IComponent {
             BlurShader.drawRoundedBlur(x, y - 1, scaledWidth, height, 7f * guiScale, InterFace.INSTANCE.blurStrength.getValue().floatValue());
         }
 
+
+        // 最底下的面板
         Color bgColor = InterFace.INSTANCE.backgroundColor.getValue();
-        bottomRoundRect.addRoundRect(x, y - 1, scaledWidth, height, 7f * guiScale, ColorUtils.applyOpacity(bgColor, 0.9f));
+        bottomRoundRect.addRoundRectBloom(x, y - 1, scaledWidth, height, 7f * guiScale, ColorUtils.applyOpacity(bgColor, 0.9f));
+
+
         float fontScale = 0.9f * guiScale;
         float textHeight = font.getHeight(fontScale);
         float textWidth = font.getWidth(category.getName(), fontScale);
