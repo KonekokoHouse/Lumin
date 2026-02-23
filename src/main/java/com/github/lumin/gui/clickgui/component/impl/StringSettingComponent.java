@@ -1,12 +1,8 @@
 package com.github.lumin.gui.clickgui.component.impl;
 
-import com.github.lumin.graphics.renderers.RectRenderer;
-import com.github.lumin.graphics.renderers.RoundRectRenderer;
-import com.github.lumin.graphics.renderers.TextRenderer;
 import com.github.lumin.gui.Component;
 import com.github.lumin.modules.impl.client.InterFace;
 import com.github.lumin.settings.impl.StringSetting;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -18,10 +14,6 @@ public class StringSettingComponent extends Component {
     private final StringSetting setting;
     private boolean editing;
     private String editingValue = "";
-
-    private final TextRenderer textRenderer = new TextRenderer();
-    private final RectRenderer rectRenderer = new RectRenderer();
-    private final RoundRectRenderer roundRectRenderer = new RoundRectRenderer();
 
     public StringSettingComponent(StringSetting setting) {
         this.setting = setting;
@@ -39,13 +31,13 @@ public class StringSettingComponent extends Component {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaTicks) {
+    public void render(RendererSet set, int mouseX, int mouseY, float deltaTicks) {
         String name = InterFace.isEnglish() ? setting.getEnglishName() : setting.getChineseName();
         float fontScale = 0.8f * scale;
-        float textHeight = textRenderer.getHeight(fontScale);
+        float textHeight = set.textRenderer().getHeight(fontScale);
         float headerH = 12.0f * scale;
         float textY = getY() + (headerH - textHeight) / 2f;
-        textRenderer.addText(name, getX(), textY, Color.WHITE, fontScale);
+        set.textRenderer().addText(name, getX(), textY, Color.WHITE, fontScale);
 
         float boxW = Math.min(60.0f * scale, getWidth() * 0.55f);
         float boxH = 8.0f * scale;
@@ -54,18 +46,18 @@ public class StringSettingComponent extends Component {
 
         Color base = InterFace.getMainColor();
         Color boxBg = editing ? new Color(base.getRed(), base.getGreen(), base.getBlue(), 120) : new Color(255, 255, 255, 30);
-        roundRectRenderer.addRoundRect(boxX, boxY, boxW, boxH, 2.0f * scale, boxBg);
+        set.roundRectRenderer().addRoundRect(boxX, boxY, boxW, boxH, 2.0f * scale, boxBg);
 
         String text = editing ? editingValue : setting.getValue();
         if (text == null) text = "";
         if (text.length() > 18) text = text.substring(0, 17) + ".";
-        float textW = textRenderer.getWidth(text, fontScale);
+        float textW = set.textRenderer().getWidth(text, fontScale);
         float valY = boxY + (boxH - textHeight) / 2f;
-        textRenderer.addText(text, boxX + (boxW - textW) / 2.0f, valY, Color.WHITE, fontScale);
+        set.textRenderer().addText(text, boxX + (boxW - textW) / 2.0f, valY, Color.WHITE, fontScale);
 
-        roundRectRenderer.drawAndClear();
-        rectRenderer.drawAndClear();
-        textRenderer.drawAndClear();
+//        set.roundRectRenderer().drawAndClear();
+//        set.rectRenderer().drawAndClear();
+//        set.textRenderer().drawAndClear();
     }
 
     @Override

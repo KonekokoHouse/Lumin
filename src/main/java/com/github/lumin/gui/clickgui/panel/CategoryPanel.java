@@ -30,6 +30,10 @@ public class CategoryPanel implements IComponent {
     private final RoundRectRenderer roundRectRenderer = new RoundRectRenderer();
     private final TextRenderer textRenderer = new TextRenderer();
 
+    private final RendererSet set = new RendererSet(
+            rectRenderer, textRenderer, roundRectRenderer
+    );
+
     public CategoryPanel(Category category) {
         this.category = category;
         this.opened = true;
@@ -37,7 +41,7 @@ public class CategoryPanel implements IComponent {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(RendererSet set0, int mouseX, int mouseY, float partialTicks) {
         update(mouseX, mouseY);
 
         float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
@@ -56,7 +60,7 @@ public class CategoryPanel implements IComponent {
         height = componentOffsetY + 9 * guiScale;
 
         if (InterFace.INSTANCE.backgroundBlur.getValue() && InterFace.INSTANCE.blurMode.is("OnlyCategory")) {
-            BlurShader.drawRoundedBlur(x, y - 1, scaledWidth, height, 7.0f, InterFace.INSTANCE.blurStrength.getValue().floatValue());
+//            BlurShader.drawRoundedBlur(x, y - 1, scaledWidth, height, 7.0f, InterFace.INSTANCE.blurStrength.getValue().floatValue());
         }
 
         Color bgColor = InterFace.INSTANCE.backgroundColor.getValue();
@@ -73,11 +77,11 @@ public class CategoryPanel implements IComponent {
 
         if (opened) {
             for (ModuleComponent component : moduleComponents) {
-                component.render(guiGraphics, mouseX, mouseY, partialTicks);
+                component.render(this.set, mouseX, mouseY, partialTicks);
             }
         }
 
-        IComponent.super.render(guiGraphics, mouseX, mouseY, partialTicks);
+//        IComponent.super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override

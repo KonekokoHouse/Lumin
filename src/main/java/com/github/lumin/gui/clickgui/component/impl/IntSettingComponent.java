@@ -1,7 +1,5 @@
 package com.github.lumin.gui.clickgui.component.impl;
 
-import com.github.lumin.graphics.renderers.RectRenderer;
-import com.github.lumin.graphics.renderers.TextRenderer;
 import com.github.lumin.gui.Component;
 import com.github.lumin.modules.impl.client.InterFace;
 import com.github.lumin.settings.impl.IntSetting;
@@ -14,9 +12,6 @@ import java.awt.*;
 public class IntSettingComponent extends Component {
     private final IntSetting setting;
     private boolean dragging;
-
-    private final TextRenderer textRenderer = new TextRenderer();
-    private final RectRenderer rectRenderer = new RectRenderer();
 
     public IntSettingComponent(IntSetting setting) {
         this.setting = setting;
@@ -34,7 +29,7 @@ public class IntSettingComponent extends Component {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaTicks) {
+    public void render(RendererSet set, int mouseX, int mouseY, float deltaTicks) {
         if (dragging) {
             setValueFromMouse(mouseX);
         }
@@ -43,12 +38,12 @@ public class IntSettingComponent extends Component {
         String valueText = String.valueOf(setting.getValue());
 
         float fontScale = 0.8f * scale;
-        float textHeight = textRenderer.getHeight(fontScale);
+        float textHeight = set.textRenderer().getHeight(fontScale);
         float textTopArea = 10.5f * scale;
         float textY = getY() + (textTopArea - textHeight) / 2f;
-        textRenderer.addText(name, getX(), textY, Color.WHITE, fontScale);
-        float valueWidth = textRenderer.getWidth(valueText, fontScale);
-        textRenderer.addText(valueText, getX() + getWidth() - valueWidth, textY, new Color(255, 255, 255, 200), fontScale);
+        set.textRenderer().addText(name, getX(), textY, Color.WHITE, fontScale);
+        float valueWidth = set.textRenderer().getWidth(valueText, fontScale);
+        set.textRenderer().addText(valueText, getX() + getWidth() - valueWidth, textY, new Color(255, 255, 255, 200), fontScale);
 
         float barX = getX();
         float barY = getY() + 10.5f * scale;
@@ -59,11 +54,11 @@ public class IntSettingComponent extends Component {
         pct = Math.min(1.0f, Math.max(0.0f, pct));
 
         Color base = InterFace.getMainColor();
-        rectRenderer.addRect(barX, barY, barW, barH, new Color(255, 255, 255, 70));
-        rectRenderer.addRect(barX, barY, barW * pct, barH, ColorUtils.applyOpacity(base, 0.8f));
+        set.rectRenderer().addRect(barX, barY, barW, barH, new Color(255, 255, 255, 70));
+        set.rectRenderer().addRect(barX, barY, barW * pct, barH, ColorUtils.applyOpacity(base, 0.8f));
 
-        rectRenderer.drawAndClear();
-        textRenderer.drawAndClear();
+//        set.rectRenderer().drawAndClear();
+//        set.textRenderer().drawAndClear();
     }
 
     @Override

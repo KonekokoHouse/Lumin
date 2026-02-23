@@ -1,13 +1,9 @@
 package com.github.lumin.gui.clickgui.component.impl;
 
-import com.github.lumin.graphics.renderers.RectRenderer;
-import com.github.lumin.graphics.renderers.RoundRectRenderer;
-import com.github.lumin.graphics.renderers.TextRenderer;
 import com.github.lumin.gui.Component;
 import com.github.lumin.modules.impl.client.InterFace;
 import com.github.lumin.settings.impl.ColorSetting;
 import com.github.lumin.utils.render.ColorUtils;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.MouseButtonEvent;
 
 import java.awt.*;
@@ -17,10 +13,6 @@ public class ColorSettingComponent extends Component {
     private boolean opened;
     private boolean dragging;
     private int draggingChannel = -1;
-
-    private final TextRenderer textRenderer = new TextRenderer();
-    private final RectRenderer rectRenderer = new RectRenderer();
-    private final RoundRectRenderer roundRectRenderer = new RoundRectRenderer();
 
     public ColorSettingComponent(ColorSetting setting) {
         this.setting = setting;
@@ -38,21 +30,21 @@ public class ColorSettingComponent extends Component {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaTicks) {
+    public void render(RendererSet set, int mouseX, int mouseY, float deltaTicks) {
         updateHeight();
 
         String name = InterFace.isEnglish() ? setting.getEnglishName() : setting.getChineseName();
         float fontScale = 0.8f * scale;
-        float textHeight = textRenderer.getHeight(fontScale);
+        float textHeight = set.textRenderer().getHeight(fontScale);
         float headerH = 12.0f * scale;
         float textY = getY() + (headerH - textHeight) / 2f;
-        textRenderer.addText(name, getX(), textY, Color.WHITE, fontScale);
+        set.textRenderer().addText(name, getX(), textY, Color.WHITE, fontScale);
 
         Color c = setting.getValue() == null ? Color.WHITE : setting.getValue();
         float boxSize = 7.0f * scale;
         float boxX = getX() + getWidth() - boxSize;
         float boxY = getY() + (12.0f * scale - boxSize) / 2.0f;
-        roundRectRenderer.addRoundRect(boxX, boxY, boxSize, boxSize, 2.0f * scale, c);
+        set.roundRectRenderer().addRoundRect(boxX, boxY, boxSize, boxSize, 2.0f * scale, c);
 
         if (opened) {
             int[] rgba = new int[]{c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha()};
@@ -75,10 +67,10 @@ public class ColorSettingComponent extends Component {
                 float barH = 3.0f * scale;
 
                 float labelY = ly + (lineH - textHeight) / 2f;
-                textRenderer.addText(labels[i], getX(), labelY, new Color(255, 255, 255, 220), fontScale);
-                rectRenderer.addRect(barX, barY, barW, barH, new Color(255, 255, 255, 25));
+                set.textRenderer().addText(labels[i], getX(), labelY, new Color(255, 255, 255, 220), fontScale);
+                set.rectRenderer().addRect(barX, barY, barW, barH, new Color(255, 255, 255, 25));
                 float pct = rgba[i] / 255.0f;
-                rectRenderer.addRect(barX, barY, barW * pct, barH, ColorUtils.applyOpacity(trackColors[i], 0.8f));
+                set.rectRenderer().addRect(barX, barY, barW * pct, barH, ColorUtils.applyOpacity(trackColors[i], 0.8f));
 
                 if (dragging && draggingChannel == i) {
                     int newValue = (int) Math.round(clamp01((mouseX - barX) / barW) * 255.0);
@@ -88,9 +80,9 @@ public class ColorSettingComponent extends Component {
             }
         }
 
-        roundRectRenderer.drawAndClear();
-        rectRenderer.drawAndClear();
-        textRenderer.drawAndClear();
+//        set.roundRectRenderer().drawAndClear();
+//        set.rectRenderer().drawAndClear();
+//        set.textRenderer().drawAndClear();
     }
 
     @Override

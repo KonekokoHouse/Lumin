@@ -1,12 +1,15 @@
 package com.github.lumin.gui;
 
+import com.github.lumin.graphics.renderers.RectRenderer;
+import com.github.lumin.graphics.renderers.RoundRectRenderer;
+import com.github.lumin.graphics.renderers.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 
 public interface IComponent {
-    default void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaTicks) {
+    default void render(RendererSet set, int mouseX, int mouseY, float deltaTicks) {
     }
 
     default boolean mouseClicked(MouseButtonEvent event, boolean focused) {
@@ -28,4 +31,12 @@ public interface IComponent {
     default boolean charTyped(CharacterEvent input) {
         return false;
     }
+
+    record RendererSet(
+            RectRenderer rectRenderer,
+            TextRenderer textRenderer,
+            RoundRectRenderer roundRectRenderer
+    ) {
+    }
+
 }

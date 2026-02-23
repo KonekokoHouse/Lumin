@@ -1,8 +1,5 @@
 package com.github.lumin.gui.clickgui.component;
 
-import com.github.lumin.graphics.renderers.RectRenderer;
-import com.github.lumin.graphics.renderers.RoundRectRenderer;
-import com.github.lumin.graphics.renderers.TextRenderer;
 import com.github.lumin.gui.Component;
 import com.github.lumin.gui.IComponent;
 import com.github.lumin.gui.clickgui.component.impl.*;
@@ -32,10 +29,6 @@ public class ModuleComponent implements IComponent {
     private boolean listening = false;
     private final CopyOnWriteArrayList<Component> settings = new CopyOnWriteArrayList<>();
 
-    private final TextRenderer textRenderer = new TextRenderer();
-    private final RectRenderer rectRenderer = new RectRenderer();
-    private final RoundRectRenderer roundRectRenderer = new RoundRectRenderer();
-
     public ModuleComponent(Module module) {
         this.module = module;
 
@@ -57,7 +50,7 @@ public class ModuleComponent implements IComponent {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    public void render(RendererSet set, int mouseX, int mouseY, float partialTicks) {
         float scaledHeight = MODULE_HEIGHT * scale;
         float yOffset = scaledHeight;
 
@@ -76,22 +69,22 @@ public class ModuleComponent implements IComponent {
         this.height = yOffset;
 
         if (module.isEnabled()) {
-            rectRenderer.addHorizontalGradient(x, y, width, scaledHeight, InterFace.getMainColor(), InterFace.getSecondColor());
+            set.rectRenderer().addHorizontalGradient(x, y, width, scaledHeight, InterFace.getMainColor(), InterFace.getSecondColor());
         }
 
-        rectRenderer.addRect(x, y, width, scaledHeight, InterFace.INSTANCE.backgroundColor.getValue());
+        set.rectRenderer().addRect(x, y, width, scaledHeight, InterFace.INSTANCE.backgroundColor.getValue());
 
         if (/*后面改成动画检测，不再检测opened*/opened && hasVisibleSettings) {
             float expandedHeight = yOffset - scaledHeight;
-            rectRenderer.addRect(x, y + scaledHeight, width, expandedHeight, InterFace.INSTANCE.expandedBackgroundColor.getValue());
+            set.rectRenderer().addRect(x, y + scaledHeight, width, expandedHeight, InterFace.INSTANCE.expandedBackgroundColor.getValue());
         }
-        rectRenderer.drawAndClear();
+        set.rectRenderer().drawAndClear();
 
         float nameScale = 0.85f * scale;
-        float textHeight = textRenderer.getHeight(nameScale);
+        float textHeight = set.textRenderer().getHeight(nameScale);
         float textY = y + (MODULE_HEIGHT * scale - textHeight) / 2f;
-        textRenderer.addText(module.getDisplayName(), x + 4 * scale, textY, Color.WHITE, nameScale);
-        textRenderer.drawAndClear();
+        set.textRenderer().addText(module.getDisplayName(), x + 4 * scale, textY, Color.WHITE, nameScale);
+        set.textRenderer().drawAndClear();
 
         float boxWidth = 18 * scale;
         float boxHeight = 8 * scale;
@@ -114,27 +107,27 @@ public class ModuleComponent implements IComponent {
             borderColor = ColorUtils.applyOpacity(themeColor, hasKey ? 0.9f : 0.5f);
         }
 
-        roundRectRenderer.addRoundRect(boxX, boxY, boxWidth, boxHeight, 2 * scale, bgColor);
+        set.roundRectRenderer().addRoundRect(boxX, boxY, boxWidth, boxHeight, 2 * scale, bgColor);
         //drawRoundRectOutline(boxX, boxY, boxWidth, boxHeight, 2 * scale, 0.5f * scale, borderColor);
-        roundRectRenderer.drawAndClear();
+//        set.roundRectRenderer().drawAndClear();
 
         float fontSize = 0.65f * scale;
         String displayText = listening ? "..." : (hasKey ? getKeyName(keyCode) : "");
-        float textWidth = textRenderer.getWidth(displayText, fontSize);
+        float textWidth = set.textRenderer().getWidth(displayText, fontSize);
         float textX = boxX + (boxWidth - textWidth) / 2;
-        float bindTextHeight = textRenderer.getHeight(fontSize);
+        float bindTextHeight = set.textRenderer().getHeight(fontSize);
         float bindTextY = boxY + (boxHeight - bindTextHeight) / 2f;
         if (!displayText.isEmpty()) {
-            textRenderer.addText(displayText, textX, bindTextY, Color.WHITE, fontSize);
+            set.textRenderer().addText(displayText, textX, bindTextY, Color.WHITE, fontSize);
         }
-        textRenderer.drawAndClear();
+//        set.textRenderer().drawAndClear();
 
         if (isHold && !listening) {
             float lineWidth = hasKey ? textWidth + scale : 6 * scale;
             float lineX = hasKey ? textX - 0.5f * scale : boxX + (boxWidth - lineWidth) / 2;
             float lineY = boxY + boxHeight - scale;
-            rectRenderer.addRect(lineX, lineY, lineWidth, 0.5f * scale, Color.WHITE);
-            rectRenderer.drawAndClear();
+            set.rectRenderer().addRect(lineX, lineY, lineWidth, 0.5f * scale, Color.WHITE);
+//            set.rectRenderer().drawAndClear();
         }
 
         if (opened) {
@@ -144,12 +137,16 @@ public class ModuleComponent implements IComponent {
                 component.setX(x + 4 * scale);
                 component.setY(y + 10 * scale + componentYOffset);
                 component.setWidth(width - 8 * scale);
-                component.render(guiGraphics, mouseX, mouseY, partialTicks);
+                component.render(set, mouseX, mouseY, partialTicks);
                 componentYOffset += component.getHeight();
             }
         }
 
-        IComponent.super.render(guiGraphics, mouseX, mouseY, partialTicks);
+        set.roundRectRenderer().drawAndClear();
+        set.rectRenderer().drawAndClear();
+        set.textRenderer().drawAndClear();
+
+//        IComponent.super.render(guiGraphics, mouseX, mouseY, partialTicks);
     }
 
     @Override

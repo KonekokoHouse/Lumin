@@ -60,13 +60,13 @@ public class ClickGuiScreen extends Screen {
         }
 
         if (InterFace.INSTANCE.backgroundBlur.getValue() && InterFace.INSTANCE.blurMode.is("FullScreen")) {
-            BlurShader.drawQuadBlur(0, 0, guiW, guiH, InterFace.INSTANCE.blurStrength.getValue().floatValue());
+//            BlurShader.drawQuadBlur(0, 0, guiW, guiH, InterFace.INSTANCE.blurStrength.getValue().floatValue());
         }
 
         rectRenderer.addRect(0, 0, guiW, guiH, new Color(18, 18, 18, 110));
         rectRenderer.drawAndClear();
 
-        panels.forEach(panel -> panel.render(guiGraphics, mouseX, mouseY, partialTick));
+        panels.forEach(panel -> panel.render(null, mouseX, mouseY, partialTick));
     }
 
     @Override
