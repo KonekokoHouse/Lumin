@@ -65,7 +65,6 @@ public class Sidebar implements IComponent {
 
         // Face
         if (skin != null) {
-            set.bottomRoundRect().addRoundRect(headX, headY, headSize, headSize, radius, Color.WHITE);
             set.texture().addRoundedTexture(skin.texturePath(), headX, headY, headSize, headSize, radius, 0.125f, 0.125f, 0.25f, 0.25f, Color.WHITE);
         }
 
