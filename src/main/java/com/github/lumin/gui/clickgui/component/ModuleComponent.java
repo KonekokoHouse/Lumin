@@ -20,6 +20,7 @@ public class ModuleComponent implements IComponent {
     private final Module module;
     private float x, y, width, height;
     private final List<Component> settings = new CopyOnWriteArrayList<>();
+    private String filterTextLower = "";
 
     public ModuleComponent(Module module) {
         this.module = module;
@@ -59,7 +60,7 @@ public class ModuleComponent implements IComponent {
         float itemW = Math.max(0.0f, width - padding * 2);
 
         for (Component setting : settings) {
-            if (!setting.isVisible()) continue;
+            if (!isSettingVisible(setting)) continue;
             setting.setScale(guiScale);
             setting.setX(itemX);
             setting.setY(cursorY);
@@ -75,6 +76,7 @@ public class ModuleComponent implements IComponent {
         boolean handled = false;
         if (isHovered((int) event.x(), (int) event.y())) {
             for (Component setting : settings) {
+                if (!isSettingVisible(setting)) continue;
                 if (setting.mouseClicked(event, focused)) {
                     handled = true;
                 }
@@ -88,6 +90,7 @@ public class ModuleComponent implements IComponent {
         boolean handled = false;
         if (isHovered((int) event.x(), (int) event.y())) {
             for (Component setting : settings) {
+                if (!isSettingVisible(setting)) continue;
                 if (setting.mouseReleased(event)) {
                     handled = true;
                 }
@@ -100,6 +103,7 @@ public class ModuleComponent implements IComponent {
     public boolean keyPressed(KeyEvent event) {
         boolean handled = false;
         for (Component setting : settings) {
+            if (!isSettingVisible(setting)) continue;
             if (setting.keyPressed(event)) {
                 handled = true;
             }
@@ -111,6 +115,7 @@ public class ModuleComponent implements IComponent {
     public boolean charTyped(CharacterEvent input) {
         boolean handled = false;
         for (Component setting : settings) {
+            if (!isSettingVisible(setting)) continue;
             if (setting.charTyped(input)) {
                 handled = true;
             }
@@ -142,6 +147,22 @@ public class ModuleComponent implements IComponent {
         return settings;
     }
 
+    public void setFilterText(String text) {
+        if (text == null || text.isEmpty()) {
+            filterTextLower = "";
+            return;
+        }
+        filterTextLower = text.toLowerCase();
+    }
+
+    public int getFilteredVisibleCount() {
+        int count = 0;
+        for (Component setting : settings) {
+            if (isSettingVisible(setting)) count++;
+        }
+        return count;
+    }
+
     public void setX(float x) {
         this.x = x;
     }
@@ -160,6 +181,35 @@ public class ModuleComponent implements IComponent {
 
     public boolean isHovered(int mouseX, int mouseY) {
         return MouseUtils.isHovering(x, y, width, height, mouseX, mouseY);
+    }
+
+    private boolean isSettingVisible(Component component) {
+        if (!component.isVisible()) return false;
+        if (!filterTextLower.isEmpty()) {
+            String name = getSettingDisplayName(component);
+            if (!name.toLowerCase().startsWith(filterTextLower.toLowerCase())) return false;
+        }
+        return isSettingAvailable(component);
+    }
+
+    private boolean isSettingAvailable(Component component) {
+        if (component instanceof BoolSettingComponent c) return c.getSetting().isAvailable();
+        if (component instanceof IntSettingComponent c) return c.getSetting().isAvailable();
+        if (component instanceof DoubleSettingComponent c) return c.getSetting().isAvailable();
+        if (component instanceof ModeSettingComponent c) return c.getSetting().isAvailable();
+        if (component instanceof ColorSettingComponent c) return c.getSetting().isAvailable();
+        if (component instanceof StringSettingComponent c) return c.getSetting().isAvailable();
+        return true;
+    }
+
+    private String getSettingDisplayName(Component component) {
+        if (component instanceof BoolSettingComponent c) return c.getSetting().getDisplayName();
+        if (component instanceof IntSettingComponent c) return c.getSetting().getDisplayName();
+        if (component instanceof DoubleSettingComponent c) return c.getSetting().getDisplayName();
+        if (component instanceof ModeSettingComponent c) return c.getSetting().getDisplayName();
+        if (component instanceof ColorSettingComponent c) return c.getSetting().getDisplayName();
+        if (component instanceof StringSettingComponent c) return c.getSetting().getDisplayName();
+        return null;
     }
 
 }

@@ -24,12 +24,14 @@ public class RotationUtil {
         final float pitch = (float) (-(Mth.atan2(diff.y, distance) * MathUtil.TO_DEGREES));
         return new Vector2f(yaw, pitch);
     }
-    public static boolean isInFov(LivingEntity entity,float fov) {
+
+    public static boolean isInFov(LivingEntity entity, float fov) {
         if (fov >= 360.0) return true;
         float[] rotations = RotationUtil.getRotationsToEntity(entity);
         float yawDiff = Math.abs(Mth.wrapDegrees(rotations[0] - mc.player.getYRot()));
         return yawDiff <= fov / 2.0;
     }
+
     public static float[] getRotationsToEntity(LivingEntity entity) {
         Vec3 eyePos = mc.player.getEyePosition();
         Vec3 targetPos = entity.position().add(0, entity.getBbHeight() / 2.0, 0);
@@ -43,6 +45,7 @@ public class RotationUtil {
 
         return new float[]{yaw, Mth.clamp(pitch, -90, 90)};
     }
+
     public static double getEyeDistanceToEntity(LivingEntity entity) {
         Vec3 eyePos = mc.player.getEyePosition();
         AABB box = entity.getBoundingBox();
@@ -51,6 +54,7 @@ public class RotationUtil {
         double dz = Math.max(box.minZ - eyePos.z, Math.max(0, eyePos.z - box.maxZ));
         return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
+
     public static Vector2f calculate(final Entity entity) {
         return calculate(new Vector3d(entity.getX(), entity.getY(), entity.getZ()).add(0, Math.max(0, Math.min(mc.player.getY() - entity.getY() + mc.player.getEyeHeight(mc.player.getPose()), (entity.getBoundingBox().maxY - entity.getBoundingBox().minY) * 0.9)), 0));
     }
