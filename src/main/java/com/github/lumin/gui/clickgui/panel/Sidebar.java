@@ -86,7 +86,43 @@ public class Sidebar implements IComponent {
         float accountY = nameY + 20 * guiScale;
 
         if (playerName != null) {
-            set.font().addText(player.getName().getString(), textX, nameY, guiScale * 1.5f, Color.WHITE);
+            float maxNameWidth = width - (textX - x) - padding;
+            float defaultScale = guiScale * 1.5f;
+            float minScale = guiScale * 1.0f;
+            float currentScale = defaultScale;
+
+            float nameWidth = set.font().getWidth(playerName, currentScale);
+
+            if (nameWidth > maxNameWidth) {
+                float scaled = defaultScale * (maxNameWidth / nameWidth);
+                if (scaled >= minScale) {
+                    currentScale = scaled;
+                    set.font().addText(playerName, textX, nameY, currentScale, Color.WHITE);
+                } else {
+                    currentScale = minScale;
+                    nameY -= 6 * guiScale;
+                    StringBuilder line1 = new StringBuilder();
+                    StringBuilder line2 = new StringBuilder();
+                    float currentW = 0;
+                    boolean wrapped = false;
+                    for (char c : playerName.toCharArray()) {
+                        float cw = set.font().getWidth(String.valueOf(c), currentScale);
+                        if (!wrapped && currentW + cw <= maxNameWidth) {
+                            line1.append(c);
+                            currentW += cw;
+                        } else {
+                            wrapped = true;
+                            line2.append(c);
+                        }
+                    }
+                    float lineHeight = set.font().getHeight(currentScale);
+                    set.font().addText(line1.toString(), textX, nameY, currentScale, Color.WHITE);
+                    set.font().addText(line2.toString(), textX, nameY + lineHeight, currentScale, Color.WHITE);
+                }
+            } else {
+                set.font().addText(playerName, textX, nameY, currentScale, Color.WHITE);
+            }
+
             set.font().addText("Account", textX, accountY, guiScale * 0.7f, Color.GRAY);
         }
 

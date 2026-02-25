@@ -1,9 +1,10 @@
 package com.github.lumin.gui.clickgui.panel;
 
-import com.github.lumin.graphics.shaders.BlurShader;
 import com.github.lumin.graphics.renderers.RoundRectRenderer;
 import com.github.lumin.graphics.renderers.TextRenderer;
+import com.github.lumin.graphics.shaders.BlurShader;
 import com.github.lumin.gui.IComponent;
+import com.github.lumin.gui.clickgui.component.ModuleComponent;
 import com.github.lumin.managers.Managers;
 import com.github.lumin.modules.Category;
 import com.github.lumin.modules.Module;
@@ -36,6 +37,9 @@ public class ContentPanel implements IComponent {
     private String searchText = "";
     private boolean searchFocused = false;
 
+    private boolean inSettingsView = false;
+    private ModuleComponent settingsComponent = null;
+
     private float scrollOffset = 0.0f;
     private float scrollTarget = 0.0f;
     private float maxScroll = 0.0f;
@@ -44,6 +48,7 @@ public class ContentPanel implements IComponent {
     private float scrollbarDragStartMouseY = 0.0f;
     private float scrollbarDragStartScroll = 0.0f;
 
+    private float lastIconBoxX, lastIconBoxY, lastIconBoxW, lastIconBoxH;
     private float lastSearchBoxX, lastSearchBoxY, lastSearchBoxW, lastSearchBoxH;
     private float lastListX, lastListY, lastListW, lastListH;
     private float lastScrollbarX, lastScrollbarY, lastScrollbarW, lastScrollbarH;
@@ -62,6 +67,8 @@ public class ContentPanel implements IComponent {
         this.moduleCards.clear();
         this.searchText = "";
         this.searchFocused = false;
+        this.inSettingsView = false;
+        this.settingsComponent = null;
         this.scrollOffset = 0.0f;
         this.scrollTarget = 0.0f;
         this.maxScroll = 0.0f;
@@ -112,18 +119,28 @@ public class ContentPanel implements IComponent {
         float iconY = boxY + (searchHeight - iconH) / 2f - guiScale;
         set.icons().addText(returnIcon, iconX, iconY, iconScale, new Color(200, 200, 200));
 
+        lastIconBoxX = iconBoxX;
+        lastIconBoxY = boxY;
+        lastIconBoxW = iconBoxWidth;
+        lastIconBoxH = searchHeight;
+
         // Render Search Box
         boolean searchHovered = MouseUtils.isHovering(searchBoxX, boxY, searchBoxWidth, searchHeight, mouseX, mouseY);
         Color searchColor = searchFocused ? new Color(50, 50, 50, 200) : (searchHovered ? new Color(40, 40, 40, 200) : new Color(30, 30, 30, 200));
         set.bottomRoundRect().addRoundRect(searchBoxX, boxY, searchBoxWidth, searchHeight, 8f * guiScale, searchColor);
 
         // Render Text
-        String displayText = searchText.isEmpty() && !searchFocused ? "Search..." : searchText;
-        if (searchFocused && (System.currentTimeMillis() % 1000 > 500)) {
-            displayText += "_";
+        String displayText;
+        if (inSettingsView && settingsComponent != null) {
+            displayText = settingsComponent.getModule().getName();
+        } else {
+            displayText = searchText.isEmpty() && !searchFocused ? "Search..." : searchText;
+            if (searchFocused && (System.currentTimeMillis() % 1000 > 500)) {
+                displayText += "_";
+            }
         }
 
-        Color textColor = searchText.isEmpty() && !searchFocused ? Color.GRAY : Color.WHITE;
+        Color textColor = (inSettingsView && settingsComponent != null) ? Color.WHITE : (searchText.isEmpty() && !searchFocused ? Color.GRAY : Color.WHITE);
         set.font().addText(displayText, searchBoxX + 6 * guiScale, boxY + searchHeight / 2 - 7 * guiScale, guiScale * 0.9f, textColor);
 
         lastSearchBoxX = searchBoxX;
@@ -134,6 +151,20 @@ public class ContentPanel implements IComponent {
         float listStartY = boxY + searchHeight + padding;
         float listBottom = y + panelHeight - padding;
         float listH = Math.max(0.0f, listBottom - listStartY);
+
+        if (inSettingsView && settingsComponent != null) {
+            float areaX = x + padding;
+            float areaY = listStartY;
+            float areaW = Math.max(0.0f, panelWidth - padding * 2);
+            float areaH = Math.max(0.0f, listBottom - listStartY);
+
+            settingsComponent.setX(areaX);
+            settingsComponent.setY(areaY);
+            settingsComponent.setWidth(areaW);
+            settingsComponent.setHeight(areaH);
+            settingsComponent.render(set, mouseX, mouseY, deltaTicks);
+            return;
+        }
 
         float scrollbarW = 4.0f * guiScale;
         float scrollbarGap = 4.0f * guiScale;
@@ -334,6 +365,19 @@ public class ContentPanel implements IComponent {
             return false;
         }
 
+        if (event.button() == 0 && MouseUtils.isHovering(lastIconBoxX, lastIconBoxY, lastIconBoxW, lastIconBoxH, event.x(), event.y())) {
+            if (inSettingsView) {
+                inSettingsView = false;
+                settingsComponent = null;
+                searchFocused = false;
+                return true;
+            }
+        }
+
+        if (inSettingsView) {
+            return settingsComponent != null && settingsComponent.mouseClicked(event, focused);
+        }
+
         if (MouseUtils.isHovering(lastSearchBoxX, lastSearchBoxY, lastSearchBoxW, lastSearchBoxH, event.x(), event.y())) {
             if (event.button() == 1) {
                 searchText = "";
@@ -374,12 +418,28 @@ public class ContentPanel implements IComponent {
             }
         }
 
+        if (event.button() == 1 && currentCategory != null && !moduleCards.isEmpty()) {
+            for (ModuleCard card : moduleCards) {
+                if (card.width <= 0 || card.height <= 0) continue;
+                if (MouseUtils.isHovering(card.x, card.y, card.width, card.height, event.x(), event.y())) {
+                    inSettingsView = true;
+                    settingsComponent = new ModuleComponent(card.module);
+                    searchFocused = false;
+                    draggingScrollbar = false;
+                    return true;
+                }
+            }
+        }
+
         return true;
     }
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
         draggingScrollbar = false;
+        if (inSettingsView) {
+            return settingsComponent != null && settingsComponent.mouseReleased(event);
+        }
         float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
         float panelWidth = this.width * guiScale;
         float panelHeight = this.height * guiScale;
@@ -388,8 +448,10 @@ public class ContentPanel implements IComponent {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (inSettingsView) return false;
         if (maxScroll <= 0.0f) return false;
-        if (!MouseUtils.isHovering(lastListX, lastListY, lastListW + lastScrollbarW, lastListH, mouseX, mouseY)) return false;
+        if (!MouseUtils.isHovering(lastListX, lastListY, lastListW + lastScrollbarW, lastListH, mouseX, mouseY))
+            return false;
         float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
         float step = 24.0f * guiScale;
         scrollTarget = Math.max(0.0f, Math.min(scrollTarget - (float) scrollY * step, maxScroll));
@@ -398,6 +460,9 @@ public class ContentPanel implements IComponent {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
+        if (inSettingsView) {
+            return settingsComponent != null && settingsComponent.keyPressed(event);
+        }
         if (searchFocused) {
             if (event.key() == GLFW.GLFW_KEY_BACKSPACE) {
                 if (!searchText.isEmpty()) {
@@ -415,6 +480,9 @@ public class ContentPanel implements IComponent {
 
     @Override
     public boolean charTyped(CharacterEvent event) {
+        if (inSettingsView) {
+            return settingsComponent != null && settingsComponent.charTyped(event);
+        }
         if (searchFocused) {
             String str = Character.toString(event.codepoint());
             searchText += str;

@@ -4,6 +4,7 @@ import com.github.lumin.gui.Component;
 import com.github.lumin.gui.IComponent;
 import com.github.lumin.gui.clickgui.component.impl.*;
 import com.github.lumin.modules.Module;
+import com.github.lumin.modules.impl.client.InterFace;
 import com.github.lumin.settings.AbstractSetting;
 import com.github.lumin.settings.impl.*;
 import com.github.lumin.utils.render.MouseUtils;
@@ -42,13 +43,37 @@ public class ModuleComponent implements IComponent {
 
     @Override
     public void render(RendererSet set, int mouseX, int mouseY, float partialTicks) {
+        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float padding = 8.0f * guiScale;
+        float rowH = 18.0f * guiScale;
+        float rowGap = 4.0f * guiScale;
+        float radius = 8.0f * guiScale;
 
+        set.bottomRoundRect().addRoundRect(x, y, width, height, radius, new java.awt.Color(25, 25, 25, 140));
+
+        float titleScale = 1.15f * guiScale;
+        set.font().addText(module.getName(), x + padding, y + padding - 1.5f * guiScale, titleScale, java.awt.Color.WHITE);
+
+        float cursorY = y + padding + set.font().getHeight(titleScale) + 6.0f * guiScale;
+        float itemX = x + padding;
+        float itemW = Math.max(0.0f, width - padding * 2);
+
+        for (Component setting : settings) {
+            if (!setting.isVisible()) continue;
+            setting.setScale(guiScale);
+            setting.setX(itemX);
+            setting.setY(cursorY);
+            setting.setWidth(itemW);
+            setting.setHeight(rowH);
+            setting.render(set, mouseX, mouseY, partialTicks);
+            cursorY += rowH + rowGap;
+        }
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean focused) {
         boolean handled = false;
-        if (!isHovered((int) event.x(), (int) event.y())) {
+        if (isHovered((int) event.x(), (int) event.y())) {
             for (Component setting : settings) {
                 if (setting.mouseClicked(event, focused)) {
                     handled = true;
@@ -61,7 +86,7 @@ public class ModuleComponent implements IComponent {
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
         boolean handled = false;
-        if (!isHovered((int) event.x(), (int) event.y())) {
+        if (isHovered((int) event.x(), (int) event.y())) {
             for (Component setting : settings) {
                 if (setting.mouseReleased(event)) {
                     handled = true;

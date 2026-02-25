@@ -2,7 +2,6 @@ package com.github.lumin;
 
 import com.github.lumin.graphics.LuminRenderPipelines;
 import com.github.lumin.managers.Managers;
-import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
