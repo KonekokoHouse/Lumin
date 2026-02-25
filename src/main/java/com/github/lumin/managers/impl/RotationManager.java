@@ -15,6 +15,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.joml.Vector2f;
 
 import java.util.function.Function;
@@ -192,7 +193,7 @@ public class RotationManager {
     }
 
     @SubscribeEvent
-    private void onPlayerTick(ClientTickEvent.Pre event) {
+    private void onPlayerTick(PlayerTickEvent.Pre event) {
         if (mc.player == null || mc.level == null) return;
 
         if (!active || rotations == null || lastRotations == null || targetRotations == null) {
@@ -214,7 +215,7 @@ public class RotationManager {
     @SubscribeEvent
     private void onMoveInput(MovementInputUpdateEvent event) {
         if (active && correctMovement == MovementFix.NORMAL && rotations != null) {
-            //MoveUtil.fixMovement(event, rotations.x);
+            MoveUtil.fixMovement(event, rotations.x);
         }
     }
 
