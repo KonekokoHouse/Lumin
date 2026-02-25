@@ -7,12 +7,9 @@ import com.github.lumin.modules.Category;
 import com.github.lumin.modules.Module;
 import com.github.lumin.modules.impl.client.InterFace;
 import com.github.lumin.utils.render.MouseUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.sounds.SoundEvents;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
@@ -42,7 +39,7 @@ public class ContentPanel implements IComponent {
         this.searchText = "";
         this.searchFocused = false;
 
-        List<Module> modules = Managers.MODULE.getModules(category);
+        List<Module> modules = Managers.MODULE.getModulesByCategory(category);
         for (Module module : modules) {
             moduleCards.add(new ModuleCard(module));
         }
@@ -90,22 +87,12 @@ public class ContentPanel implements IComponent {
         set.font().addText(displayText, searchX + 6 * guiScale, searchY + searchHeight / 2 - 7 * guiScale, guiScale * 0.9f, textColor);
 
         if (currentCategory != null && !moduleCards.isEmpty()) {
-            float startY = searchY + searchHeight + padding;
-            float itemHeight = 30 * guiScale;
-            float itemWidth = width - padding * 2;
-            float itemX = x + padding;
-
             for (ModuleCard bar : moduleCards) {
-                if (!searchText.isEmpty() && !bar.module.getDisplayName().toLowerCase().contains(searchText.toLowerCase())) {
+                if (!searchText.isEmpty() && !bar.module.getDisplayName().toLowerCase().startsWith(searchText.toLowerCase())) {
                     continue;
                 }
 
-                bar.x = itemX;
-                bar.y = startY;
-                bar.width = itemWidth;
-                bar.height = itemHeight;
-                bar.render(set, mouseX, mouseY, guiScale);
-                startY += itemHeight + padding / 2;
+
             }
         }
 
@@ -114,24 +101,13 @@ public class ContentPanel implements IComponent {
     private class ModuleCard {
 
         private final Module module;
-        private float x, y, width, height;
 
         private ModuleCard(Module module) {
             this.module = module;
         }
 
-        private void render(RendererSet set, int mouseX, int mouseY, float guiScale) {
-            boolean hovered = MouseUtils.isHovering(x, y, width, height, mouseX, mouseY);
+        private void render() {
 
-            Color bgColor = module.isEnabled() ? new Color(50, 200, 50, 100) : new Color(40, 40, 40, 100);
-            if (hovered) {
-                bgColor = new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), Math.min(255, bgColor.getAlpha() + 30));
-            }
-
-
-            set.bottomRoundRect().addRoundRect(x, y, width, height, 8f * guiScale, bgColor);
-
-            set.font().addText(module.getDisplayName(), x + 10 * guiScale, y + height / 2 - 4 * guiScale, guiScale, Color.WHITE);
         }
 
     }
@@ -160,16 +136,7 @@ public class ContentPanel implements IComponent {
             searchFocused = false;
         }
 
-        for (ModuleCard bar : moduleCards) {
-            if (!searchText.isEmpty() && !bar.module.getDisplayName().toLowerCase().contains(searchText.toLowerCase())) {
-                continue;
-            }
-            if (MouseUtils.isHovering(bar.x, bar.y, bar.width, bar.height, event.x(), event.y())) {
-                bar.module.toggle();
-                Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
-                return true;
-            }
-        }
+
         return true;
     }
 

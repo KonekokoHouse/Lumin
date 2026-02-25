@@ -39,6 +39,13 @@ public class ModuleManager {
         return modules;
     }
 
+    public List<Module> getModulesByCategory(Category m) {
+        return modules.stream()
+                .filter(module -> module.category == m)
+                .sorted(Comparator.comparing(Module::getEnglishName))
+                .collect(Collectors.toList());
+    }
+
     public void onKeyEvent(int keyCode, int action) {
         for (final var module : modules) {
             if (module.keyBind == keyCode) {
@@ -55,13 +62,6 @@ public class ModuleManager {
                 }
             }
         }
-    }
-
-    public List<Module> getModules(Category m) {
-        return modules.stream()
-                .filter(module -> module.category == m)
-                .sorted(Comparator.comparing(Module::getEnglishName))
-                .collect(Collectors.toList());
     }
 
 }
