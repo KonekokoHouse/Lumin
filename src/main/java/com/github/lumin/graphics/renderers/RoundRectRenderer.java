@@ -19,6 +19,12 @@ public class RoundRectRenderer implements IRenderer {
     private final LuminBuffer buffer = new LuminBuffer(BUFFER_SIZE, GpuBuffer.USAGE_VERTEX);
     private boolean flushBufferFlag = false;
 
+    private boolean scissorEnabled = false;
+    private int scissorX;
+    private int scissorY;
+    private int scissorW;
+    private int scissorH;
+
     public void addRoundRect(float x, float y, float width, float height, float radius, Color color) {
         addRoundRect(x, y, width, height, radius, radius, radius, radius, color);
     }
@@ -74,6 +80,18 @@ public class RoundRectRenderer implements IRenderer {
         addRoundRectBloom(x, y, width, height, radius, 7.0f, color);
     }
 
+    public void setScissor(int x, int y, int width, int height) {
+        scissorEnabled = true;
+        scissorX = x;
+        scissorY = y;
+        scissorW = width;
+        scissorH = height;
+    }
+
+    public void clearScissor() {
+        scissorEnabled = false;
+    }
+
     private long currentOffset = 0;
     private int vertexCount = 0;
 
@@ -119,6 +137,9 @@ public class RoundRectRenderer implements IRenderer {
                 info.target().getDepthTextureView(), OptionalDouble.empty())
         ) {
             pass.setPipeline(LuminRenderPipelines.ROUND_RECT);
+            if (scissorEnabled) {
+                pass.enableScissor(scissorX, scissorY, scissorW, scissorH);
+            }
 
             RenderSystem.bindDefaultUniforms(pass);
             pass.setUniform("DynamicTransforms", info.dynamicUniforms());

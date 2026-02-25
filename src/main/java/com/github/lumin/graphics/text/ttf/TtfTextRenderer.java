@@ -41,6 +41,12 @@ public class TtfTextRenderer implements ITextRenderer {
 
     private GpuBuffer ttfInfoUniformBuf = null;
 
+    private boolean scissorEnabled = false;
+    private int scissorX;
+    private int scissorY;
+    private int scissorW;
+    private int scissorH;
+
     public TtfTextRenderer(String fontPath, long bufferSize) {
         this.bufferSize = bufferSize;
         this.fontLoader = new TtfFontLoader(ResourceLocationUtils.getIdentifier(fontPath));
@@ -198,6 +204,9 @@ public class TtfTextRenderer implements ITextRenderer {
                     target.getDepthTextureView(), OptionalDouble.empty())
             ) {
                 pass.setPipeline(LuminRenderPipelines.TTF_FONT);
+                if (scissorEnabled) {
+                    pass.enableScissor(scissorX, scissorY, scissorW, scissorH);
+                }
 
                 RenderSystem.bindDefaultUniforms(pass);
                 pass.setUniform("DynamicTransforms", dynamicUniforms);
@@ -229,6 +238,20 @@ public class TtfTextRenderer implements ITextRenderer {
         }
         batches.clear();
         if (ttfInfoUniformBuf != null) ttfInfoUniformBuf.close();
+    }
+
+    @Override
+    public void setScissor(int x, int y, int width, int height) {
+        scissorEnabled = true;
+        scissorX = x;
+        scissorY = y;
+        scissorW = width;
+        scissorH = height;
+    }
+
+    @Override
+    public void clearScissor() {
+        scissorEnabled = false;
     }
 
     private static final class Batch {

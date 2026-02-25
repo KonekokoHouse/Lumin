@@ -16,4 +16,10 @@ public interface ITextRenderer {
 
     float getWidth(String text, float scale);
 
+    default void setScissor(int x, int y, int width, int height) {
+    }
+
+    default void clearScissor() {
+    }
+
 }

@@ -92,4 +92,9 @@ public class Panel implements IComponent {
         return sidebar.charTyped(event) || contentPanel.charTyped(event);
     }
 
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        return sidebar.mouseScrolled(mouseX, mouseY, scrollX, scrollY) || contentPanel.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
 }

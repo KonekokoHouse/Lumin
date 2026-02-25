@@ -42,6 +42,14 @@ public class TextRenderer implements IRenderer {
         return textRenderer.getWidth(text, scale);
     }
 
+    public void setScissor(int x, int y, int width, int height) {
+        textRenderer.setScissor(x, y, width, height);
+    }
+
+    public void clearScissor() {
+        textRenderer.clearScissor();
+    }
+
     @Override
     public void draw() {
         LuminRenderSystem.applyOrthoProjection();

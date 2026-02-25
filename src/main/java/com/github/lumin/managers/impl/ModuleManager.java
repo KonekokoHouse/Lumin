@@ -30,7 +30,13 @@ public class ModuleManager {
                 InterFace.INSTANCE,
                 Test1.INSTANCE,
                 Test2.INSTANCE,
-                Test3.INSTANCE
+                Test3.INSTANCE,
+                Test7.INSTANCE,
+                Test8.INSTANCE,
+                Test666.INSTANCE,
+                TestA.INSTANCE,
+                TestB.INSTANCE,
+                TestC.INSTANCE
         );
     }
 
