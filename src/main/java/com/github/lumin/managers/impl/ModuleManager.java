@@ -2,6 +2,8 @@ package com.github.lumin.managers.impl;
 
 import com.github.lumin.modules.Module;
 import com.github.lumin.modules.impl.client.*;
+import com.github.lumin.modules.impl.combat.AimAssist;
+import com.github.lumin.modules.impl.combat.AutoClicker;
 import com.github.lumin.modules.impl.combat.KillAura;
 import com.github.lumin.modules.impl.player.Sprint;
 import com.github.lumin.modules.impl.visual.RenderTest;
@@ -19,6 +21,9 @@ public class ModuleManager {
     private void initModules() {
         modules = List.of(
                 // Combat
+                AimAssist.INSTANCE,
+                AutoClicker.INSTANCE,
+                KillAura.INSTANCE,
 
                 // Movement
                 Sprint.INSTANCE,
@@ -37,8 +42,7 @@ public class ModuleManager {
                 Test666.INSTANCE,
                 TestA.INSTANCE,
                 TestB.INSTANCE,
-                TestC.INSTANCE,
-                KillAura.INSTANCE
+                TestC.INSTANCE
         );
     }
 
