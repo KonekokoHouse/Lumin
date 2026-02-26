@@ -29,25 +29,6 @@ public class RoundRectRenderer implements IRenderer {
         addRoundRect(x, y, width, height, radius, radius, radius, radius, color);
     }
 
-    public void addRoundRect(float x, float y, float width, float height, float radius, Color c1, Color c2, Color c3, Color c4) {
-        buffer.tryMap();
-        flushBufferFlag = true;
-
-        float x2 = x + width;
-        float y2 = y + height;
-
-        float innerX1 = x + radius;
-        float innerY1 = y + radius;
-        float innerX2 = x2 - radius;
-        float innerY2 = y2 - radius;
-
-        // TL -> TR -> BR -> BL
-        addVertex(x, y, innerX1, innerY1, innerX2, innerY2, radius, c1.getRGB());
-        addVertex(x2, y, innerX1, innerY1, innerX2, innerY2, radius, c2.getRGB());
-        addVertex(x2, y2, innerX1, innerY1, innerX2, innerY2, radius, c3.getRGB());
-        addVertex(x, y2, innerX1, innerY1, innerX2, innerY2, radius, c4.getRGB());
-    }
-
     public void addRoundRect(float x, float y, float width, float height, float rTL, float rTR, float rBR, float rBL, Color color) {
         buffer.tryMap();
         flushBufferFlag = true;
@@ -68,35 +49,6 @@ public class RoundRectRenderer implements IRenderer {
         addVertex(x, y2, innerX1, innerY1, innerX2, innerY2, radius, argb);
         addVertex(x2, y2, innerX1, innerY1, innerX2, innerY2, radius, argb);
         addVertex(x2, y, innerX1, innerY1, innerX2, innerY2, radius, argb);
-    }
-
-    public void addRoundRectBloom(float x, float y, float width, float height, float radius, float glowRadius, Color color) {
-        float baseAlpha = color.getAlpha() / 255.0f;
-        int glowSteps = (int) Math.max(10, glowRadius * 2);
-
-        int r = color.getRed();
-        int g = color.getGreen();
-        int b = color.getBlue();
-
-        for (int i = 0; i < glowSteps; i++) {
-            float progress = (float) i / glowSteps;
-            float offset = glowRadius * progress;
-
-            float alphaFactor = (float) Math.cos(progress * (Math.PI / 2));
-            float currentAlpha = baseAlpha * alphaFactor * 0.3f;
-
-            if (currentAlpha <= 0.005f) continue;
-
-            int a = (int) (currentAlpha * 255.0f);
-            Color glowColor = new Color(r, g, b, a);
-
-            float currentRadius = radius + offset;
-            addRoundRect(x - offset, y - offset, width + offset * 2, height + offset * 2, currentRadius, glowColor);
-        }
-    }
-
-    public void addRoundRectBloom(float x, float y, float width, float height, float radius, Color color) {
-        addRoundRectBloom(x, y, width, height, radius, 7.0f, color);
     }
 
     public void setScissor(int x, int y, int width, int height) {

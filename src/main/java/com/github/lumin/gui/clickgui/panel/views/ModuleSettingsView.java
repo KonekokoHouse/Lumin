@@ -227,6 +227,9 @@ public class ModuleSettingsView {
         settingsRect.clearScissor();
         settingsFont.clearScissor();
 
+        settingsComponent.renderOverlayBlurs(mouseX, mouseY, deltaTicks);
+        settingsComponent.renderOverlays(settingsSet, mouseX, mouseY, deltaTicks);
+
         pickingRound.drawAndClear();
         pickingRect.drawAndClear();
         pickerRound.drawAndClear();

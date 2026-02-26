@@ -40,20 +40,17 @@ public class Panel implements IComponent {
         float width = screenWidth * 0.5f; // 占比为屏幕的 1/2
         float height = width * 9.0f / 16.0f; // 16:9
 
-        float x = screenWidth / 2.0f - width / 2.0f;
-        float y = screenHeight / 2.0f - height / 2.0f;
+        float scaledWidth = width * guiScale;
+        float scaledHeight = height * guiScale;
 
-        width *= guiScale;
-        height *= guiScale;
+        float x = screenWidth / 2.0f - scaledWidth / 2.0f;
+        float y = screenHeight / 2.0f - scaledHeight / 2.0f;
 
-        x *= guiScale;
-        y *= guiScale;
-
-        float sidebarWidth = width / 4; // 比例为1:4
+        float sidebarWidth = width / 4;  // 比例为1:4
         float contentWidth = width - sidebarWidth;
 
         sidebar.setBounds(x, y, sidebarWidth, height);
-        contentPanel.setBounds(x + sidebarWidth, y, contentWidth, height);
+        contentPanel.setBounds(x + sidebarWidth * guiScale, y, contentWidth, height);
 
         sidebar.render(this.set, mouseX, mouseY, deltaTicks);
         contentPanel.render(this.set, mouseX, mouseY, deltaTicks);

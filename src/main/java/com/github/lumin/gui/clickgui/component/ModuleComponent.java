@@ -69,11 +69,22 @@ public class ModuleComponent implements IComponent {
             setting.render(set, mouseX, mouseY, partialTicks);
             cursorY += rowH + rowGap;
         }
+    }
 
+    public void renderOverlays(RendererSet set, int mouseX, int mouseY, float partialTicks) {
         for (Component setting : settings) {
             if (!isSettingVisible(setting)) continue;
             if (setting instanceof ColorSettingComponent c && c.isOpened()) {
                 c.renderOverlay(set, mouseX, mouseY, partialTicks);
+            }
+        }
+    }
+
+    public void renderOverlayBlurs(int mouseX, int mouseY, float partialTicks) {
+        for (Component setting : settings) {
+            if (!isSettingVisible(setting)) continue;
+            if (setting instanceof ColorSettingComponent c && c.isOpened()) {
+                c.renderOverlayBlur(mouseX, mouseY, partialTicks);
             }
         }
     }

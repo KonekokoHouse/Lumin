@@ -1,5 +1,7 @@
 package com.github.lumin.settings;
 
+import com.github.lumin.modules.impl.client.InterFace;
+
 public abstract class AbstractSetting<V> {
 
     protected final String englishName;
@@ -29,7 +31,7 @@ public abstract class AbstractSetting<V> {
     }
 
     public String getDisplayName() {
-        return englishName;
+        return InterFace.isEnglish() ? englishName : chineseName;
     }
 
     public V getValue() {

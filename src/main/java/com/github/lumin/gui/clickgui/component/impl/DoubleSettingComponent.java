@@ -10,6 +10,8 @@ import net.minecraft.util.Mth;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class DoubleSettingComponent extends Component {
     private final DoubleSetting setting;
@@ -72,13 +74,13 @@ public class DoubleSettingComponent extends Component {
             valueStr = percent + "%";
             valueMeasureStr = valueStr;
         } else {
-            valueStr = String.format("%.1f", setting.getValue());
+            valueStr = formatValue(setting.getValue());
             valueMeasureStr = valueStr;
         }
 
         float valueInnerPad = 4.0f * scale;
-        String minStr = String.format("%.1f", setting.getMin());
-        String maxStr = String.format("%.1f", setting.getMax());
+        String minStr = formatValue(setting.getMin());
+        String maxStr = formatValue(setting.getMax());
         float valueMinW = set.font().getWidth(minStr, textScale);
         float valueMaxW = set.font().getWidth(maxStr, textScale);
         float valuePercentW = set.font().getWidth("100%", textScale);
@@ -186,7 +188,7 @@ public class DoubleSettingComponent extends Component {
                     }
                     editText = String.valueOf(percent);
                 } else {
-                    editText = String.format("%.1f", setting.getValue());
+                    editText = formatValue(setting.getValue());
                 }
                 return true;
             }
@@ -246,6 +248,20 @@ public class DoubleSettingComponent extends Component {
             return true;
         }
         return super.charTyped(input);
+    }
+
+    private int getDecimalPlaces() {
+        double step = setting.getStep();
+        if (step <= 0.0) return 2;
+        BigDecimal bd = BigDecimal.valueOf(step).stripTrailingZeros();
+        return Math.min(8, Math.max(0, bd.scale()));
+    }
+
+    private String formatValue(double value) {
+        int decimals = getDecimalPlaces();
+        BigDecimal bd = BigDecimal.valueOf(value).setScale(decimals, RoundingMode.HALF_UP).stripTrailingZeros();
+        String s = bd.toPlainString();
+        return s.equals("-0") ? "0" : s;
     }
 
     private void applyEditText() {

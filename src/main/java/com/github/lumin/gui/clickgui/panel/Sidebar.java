@@ -87,7 +87,7 @@ public class Sidebar implements IComponent {
         }
 
         float textX = headX + headSize + 6 * guiScale;
-        float nameY = headY * guiScale;
+        float nameY = headY + 2 * guiScale;
         float accountY = nameY + 20 * guiScale;
 
         if (playerName != null) {
@@ -195,7 +195,10 @@ public class Sidebar implements IComponent {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean focused) {
-        if (!MouseUtils.isHovering(x, y, width, height, event.x(), event.y())) return false;
+        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float scaledWidth = width * guiScale;
+        float scaledHeight = height * guiScale;
+        if (!MouseUtils.isHovering(x, y, scaledWidth, scaledHeight, event.x(), event.y())) return false;
 
         for (CategoryBar bar : categoryBars) {
             if (MouseUtils.isHovering(bar.x, bar.y, bar.width, bar.height, event.x(), event.y())) {
@@ -214,7 +217,10 @@ public class Sidebar implements IComponent {
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        return MouseUtils.isHovering(x, y, width, height, event.x(), event.y());
+        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float scaledWidth = width * guiScale;
+        float scaledHeight = height * guiScale;
+        return MouseUtils.isHovering(x, y, scaledWidth, scaledHeight, event.x(), event.y());
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.github.lumin.gui.clickgui.component.impl;
 
+import com.github.lumin.graphics.shaders.BlurShader;
 import com.github.lumin.gui.Component;
+import com.github.lumin.modules.impl.client.InterFace;
 import com.github.lumin.settings.impl.ColorSetting;
 import com.github.lumin.utils.render.MouseUtils;
 import net.minecraft.client.input.CharacterEvent;
@@ -97,6 +99,17 @@ public class ColorSettingComponent extends Component {
         float panelX = lastSwatchX + lastSwatchW - panelW;
         float panelY = (lastSwatchY + lastSwatchH / 2.0f) - panelH / 2.0f;
         colorPicker.render(set, panelX, panelY, panelW, mouseX, mouseY, scale, setting);
+    }
+
+    public void renderOverlayBlur(int mouseX, int mouseY, float partialTicks) {
+        if (!opened) return;
+        if (!InterFace.INSTANCE.backgroundBlur.getValue()) return;
+        float panelW = ColorPicker.preferredWidth(scale);
+        float panelH = ColorPicker.preferredHeight(scale, setting.isAllowAlpha());
+        float panelX = lastSwatchX + lastSwatchW - panelW;
+        float panelY = (lastSwatchY + lastSwatchH / 2.0f) - panelH / 2.0f;
+        float radius = 7.0f * scale;
+        BlurShader.drawRoundedBlur(panelX, panelY, panelW, panelH, radius, InterFace.INSTANCE.blurStrength.getValue().floatValue());
     }
 
     @Override
@@ -270,7 +283,6 @@ public class ColorSettingComponent extends Component {
 
             this.height = (rowsTop - y) + channelCount * rowH + Math.max(0, channelCount - 1) * rowGap + pad;
 
-            //BlurShader.drawRoundedBlur(x, y, w, height, radius, 15.0f);
             set.pickingRound().addRoundRect(x, y, w, height, radius, new Color(0, 0, 0, 120));
 
             int[] rgba = getRgba(setting);
