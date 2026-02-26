@@ -3,6 +3,7 @@ package com.github.lumin.gui.clickgui.panel.views;
 import com.github.lumin.graphics.renderers.RectRenderer;
 import com.github.lumin.graphics.renderers.RoundRectRenderer;
 import com.github.lumin.graphics.renderers.TextRenderer;
+import com.github.lumin.graphics.text.StaticFontLoader;
 import com.github.lumin.gui.IComponent.RendererSet;
 import com.github.lumin.gui.clickgui.component.ModuleComponent;
 import com.github.lumin.gui.clickgui.component.impl.ColorSettingComponent;
@@ -112,11 +113,11 @@ public class ModuleSettingsView {
 
         String returnIcon = "\uF00D";
         float iconScale = guiScale * 1.2f;
-        float iconW = set.icons().getWidth(returnIcon, iconScale);
-        float iconH = set.icons().getHeight(iconScale);
+        float iconW = set.font().getWidth(returnIcon, iconScale, StaticFontLoader.ICONS);
+        float iconH = set.font().getHeight(iconScale, StaticFontLoader.ICONS);
         float iconX = iconBoxX + (iconBoxWidth - iconW) / 2f;
         float iconY = boxY + (searchHeight - iconH) / 2f - guiScale;
-        set.icons().addText(returnIcon, iconX, iconY, iconScale, new Color(200, 200, 200));
+        set.font().addText(returnIcon, iconX, iconY, iconScale, new Color(200, 200, 200), StaticFontLoader.ICONS);
 
         lastIconBoxX = iconBoxX;
         lastIconBoxY = boxY;
@@ -208,7 +209,7 @@ public class ModuleSettingsView {
         scW = Mth.clamp(scW, 0, fbW - scX);
         scH = Mth.clamp(scH, 0, fbH - scY);
 
-        RendererSet settingsSet = new RendererSet(settingsRoundRect, set.topRoundRect(), set.texture(), settingsFont, set.icons(), pickingRound, pickingRect, pickerRound, pickingText);
+        RendererSet settingsSet = new RendererSet(settingsRoundRect, set.topRoundRect(), set.texture(), settingsFont, pickingRound, pickingRect, pickerRound, pickingText);
 
         settingsRoundRect.setScissor(scX, scY, scW, scH);
         settingsRect.setScissor(scX, scY, scW, scH);

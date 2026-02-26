@@ -6,7 +6,6 @@ import com.github.lumin.graphics.buffer.BufferUtils;
 import com.github.lumin.graphics.buffer.LuminBuffer;
 import com.github.lumin.graphics.text.GlyphDescriptor;
 import com.github.lumin.graphics.text.ITextRenderer;
-import com.github.lumin.utils.resources.ResourceLocationUtils;
 import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.buffers.Std140Builder;
@@ -35,8 +34,6 @@ public class TtfTextRenderer implements ITextRenderer {
     private static final int STRIDE = 24;
     private final long bufferSize;
 
-    private final TtfFontLoader fontLoader;
-
     private final Map<TtfGlyphAtlas, Batch> batches = new LinkedHashMap<>();
 
     private GpuBuffer ttfInfoUniformBuf = null;
@@ -47,13 +44,8 @@ public class TtfTextRenderer implements ITextRenderer {
     private int scissorW;
     private int scissorH;
 
-    public TtfTextRenderer(String fontPath, long bufferSize) {
-        this.bufferSize = bufferSize;
-        this.fontLoader = new TtfFontLoader(ResourceLocationUtils.getIdentifier(fontPath));
-    }
-
     public TtfTextRenderer(long bufferSize) {
-        this("fonts/pingfang.ttf", bufferSize);
+        this.bufferSize = bufferSize;
     }
 
     public TtfTextRenderer() {
@@ -61,7 +53,7 @@ public class TtfTextRenderer implements ITextRenderer {
     }
 
     @Override
-    public void addText(String text, float x, float y, Color color, float scale) {
+    public void addText(String text, float x, float y, float scale, Color color, TtfFontLoader fontLoader) {
         final var finalScale = scale * DEFAULT_SCALE;
         fontLoader.checkAndLoadChars(text);
         int argb = ARGB.toABGR(color.getRGB());
@@ -117,12 +109,12 @@ public class TtfTextRenderer implements ITextRenderer {
     }
 
     @Override
-    public float getHeight(float scale) {
+    public float getHeight(float scale, TtfFontLoader fontLoader) {
         return fontLoader.fontFile.pixelAscent * DEFAULT_SCALE * scale;
     }
 
     @Override
-    public float getWidth(String text, float scale) {
+    public float getWidth(String text, float scale, TtfFontLoader fontLoader) {
         fontLoader.checkAndLoadChars(text);
 
         final var finalScale = scale * DEFAULT_SCALE;

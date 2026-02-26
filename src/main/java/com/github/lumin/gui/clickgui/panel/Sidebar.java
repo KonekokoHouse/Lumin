@@ -1,6 +1,7 @@
 package com.github.lumin.gui.clickgui.panel;
 
 import com.github.lumin.graphics.shaders.BlurShader;
+import com.github.lumin.graphics.text.StaticFontLoader;
 import com.github.lumin.gui.IComponent;
 import com.github.lumin.modules.Category;
 import com.github.lumin.modules.impl.client.InterFace;
@@ -175,13 +176,13 @@ public class Sidebar implements IComponent {
             }
 
             float iconScale = guiScale * 1.0f;
-            float iconWidth = set.icons().getWidth(category.icon, iconScale);
-            float iconHeight = set.icons().getHeight(iconScale);
+            float iconWidth = set.font().getWidth(category.icon, iconScale, StaticFontLoader.ICONS);
+            float iconHeight = set.font().getHeight(iconScale, StaticFontLoader.ICONS);
 
             float iconX = x + 8 * guiScale;
             float iconY = y + (height - iconHeight) / 2f - guiScale;
 
-            set.icons().addText(category.icon, iconX, iconY, iconScale, isSelected || hovered ? Color.WHITE : Color.GRAY);
+            set.font().addText(category.icon, iconX, iconY, iconScale, isSelected || hovered ? Color.WHITE : Color.GRAY, StaticFontLoader.ICONS);
 
             float textX = iconX + iconWidth + 6 * guiScale;
             float nameY = y + guiScale;

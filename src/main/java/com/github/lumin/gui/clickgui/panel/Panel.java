@@ -18,9 +18,8 @@ public class Panel implements IComponent {
     private final RoundRectRenderer topRoundRect = new RoundRectRenderer();
     private final TextureRenderer textureRenderer = new TextureRenderer();
     private final TextRenderer fontRenderer = new TextRenderer();
-    private final TextRenderer iconsRenderer = new TextRenderer("fonts/icons.ttf");
 
-    private final RendererSet set = new RendererSet(bottomRoundRect, topRoundRect, textureRenderer, fontRenderer, iconsRenderer, null, null, null, null);
+    private final RendererSet set = new RendererSet(bottomRoundRect, topRoundRect, textureRenderer, fontRenderer, null, null, null, null);
 
     private final Sidebar sidebar = new Sidebar();
     private final ContentPanel contentPanel = new ContentPanel();
@@ -59,7 +58,6 @@ public class Panel implements IComponent {
         topRoundRect.drawAndClear();
         textureRenderer.drawAndClear();
         fontRenderer.drawAndClear();
-        iconsRenderer.drawAndClear();
 
     }
 

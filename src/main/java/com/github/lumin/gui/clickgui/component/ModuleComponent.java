@@ -106,25 +106,13 @@ public class ModuleComponent implements IComponent {
         if (bindingKey) {
             Color listenBg = new Color(255, 255, 255, 22);
             set.bottomRoundRect().addRoundRect(lastBindListenX, lastBindListenY, lastBindListenW, lastBindListenH, bindRadius, listenBg);
-            String listenText = InterFace.isEnglish() ? "Listening..." : "按下按键...";
-
-            float maxListenW = lastBindListenW - 4.0f * guiScale;
-            float listenScale = 0.80f * guiScale;
-            float listenW = set.font().getWidth(listenText, listenScale);
-
-            if (listenW > maxListenW) {
-                listenScale = listenScale * (maxListenW / listenW);
-                listenW = maxListenW;
-            }
-
-            float listenX = lastBindListenX + (lastBindListenW - listenW) / 2.0f;
-            float listenY = lastBindListenY + (lastBindListenH - set.font().getHeight(listenScale)) / 2.0f - guiScale;
-            set.font().addText(listenText, listenX, listenY, listenScale, new Color(200, 200, 200));
 
             if (System.currentTimeMillis() % 1000 > 500) {
-                float barH = 1.0f * guiScale;
-                float barY = listenY + set.font().getHeight(listenScale) + 1.5f * guiScale;
-                set.bottomRoundRect().addRoundRect(listenX, barY, listenW, barH, 0.0f, new Color(200, 200, 200));
+                float lineW = 10.0f * guiScale;
+                float lineH = 1.5f * guiScale;
+                float lineX = lastBindListenX + (lastBindListenW - lineW) / 2.0f;
+                float lineY = lastBindListenY + (lastBindListenH / 2.0f) + 3.0f * guiScale;
+                set.bottomRoundRect().addRoundRect(lineX, lineY, lineW, lineH, 0.0f, new Color(200, 200, 200));
             }
         }
 

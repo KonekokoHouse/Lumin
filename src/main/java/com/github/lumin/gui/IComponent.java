@@ -37,7 +37,6 @@ public interface IComponent {
             RoundRectRenderer topRoundRect,
             TextureRenderer texture,
             TextRenderer font,
-            TextRenderer icons,
             RoundRectRenderer pickingRound,
             RectRenderer pickingRect,
             RoundRectRenderer pickerRound,

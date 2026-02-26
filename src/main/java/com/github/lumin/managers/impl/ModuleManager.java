@@ -3,6 +3,7 @@ package com.github.lumin.managers.impl;
 import com.github.lumin.modules.Module;
 import com.github.lumin.modules.impl.client.*;
 import com.github.lumin.modules.impl.combat.KillAura;
+import com.github.lumin.modules.impl.player.Scaffold;
 import com.github.lumin.modules.impl.player.Sprint;
 import com.github.lumin.modules.impl.visual.RenderTest;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -18,13 +19,6 @@ public class ModuleManager {
 
     private void initModules() {
         modules = List.of(
-                // Combat
-
-                // Movement
-                Sprint.INSTANCE,
-
-                // Visual
-                RenderTest.INSTANCE,
 
                 // Client
                 ClickGui.INSTANCE,
@@ -38,7 +32,14 @@ public class ModuleManager {
                 TestA.INSTANCE,
                 TestB.INSTANCE,
                 TestC.INSTANCE,
-                KillAura.INSTANCE
+                KillAura.INSTANCE,
+
+                // Player
+                Scaffold.INSTANCE,
+                Sprint.INSTANCE,
+
+                // Visual
+                RenderTest.INSTANCE
         );
     }
 
