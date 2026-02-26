@@ -12,9 +12,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.MovementInputUpdateEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.joml.Vector2f;
 
 import java.util.function.Function;
@@ -192,7 +192,7 @@ public class RotationManager {
     }
 
     @SubscribeEvent
-    private void onPlayerTick(PlayerTickEvent.Pre event) {
+    private void onClientTick(ClientTickEvent.Pre event) {
         if (mc.player == null || mc.level == null) return;
 
         if (!active || rotations == null || lastRotations == null || targetRotations == null) {
@@ -202,18 +202,11 @@ public class RotationManager {
         if (active) {
             smooth();
         }
-
-        if (correctMovement == MovementFix.BACKWARDS_SPRINT && active) {
-            if (Math.abs(rotations.x % 360 - Math.toDegrees(MoveUtils.getDirection()) % 360) > 45) {
-                mc.options.keySprint.setDown(false);
-                mc.player.setSprinting(false);
-            }
-        }
     }
 
     @SubscribeEvent
     private void onMoveInput(MovementInputUpdateEvent event) {
-        if (active && correctMovement == MovementFix.NORMAL && rotations != null) {
+        if (active && correctMovement == MovementFix.ON && rotations != null) {
             MoveUtils.fixMovement(event, rotations.x);
         }
     }
@@ -228,14 +221,14 @@ public class RotationManager {
 
     @SubscribeEvent
     private void onStrafe(StrafeEvent event) {
-        if (active && (correctMovement == MovementFix.NORMAL || correctMovement == MovementFix.TRADITIONAL) && rotations != null) {
+        if (active && correctMovement == MovementFix.ON && rotations != null) {
             event.setYaw(rotations.x);
         }
     }
 
     @SubscribeEvent
     private void onJump(JumpRotationEvent event) {
-        if (active && (correctMovement == MovementFix.NORMAL || correctMovement == MovementFix.TRADITIONAL || correctMovement == MovementFix.BACKWARDS_SPRINT) && rotations != null) {
+        if (active && correctMovement == MovementFix.ON && rotations != null) {
             event.setYaw(rotations.x);
         }
     }
@@ -298,7 +291,7 @@ public class RotationManager {
 
         if (!Float.isNaN(fixedRotations.x) && !Float.isNaN(fixedRotations.y)) {
             mc.player.setYRot(fixedRotations.x);
-            mc.player.setXRot(Mth.clamp(fixedRotations.y, -90.0f, 90.0f));
+            mc.player.setXRot(fixedRotations.y);
         }
     }
 

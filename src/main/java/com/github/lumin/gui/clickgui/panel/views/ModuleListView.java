@@ -2,6 +2,7 @@ package com.github.lumin.gui.clickgui.panel.views;
 
 import com.github.lumin.graphics.renderers.RoundRectRenderer;
 import com.github.lumin.graphics.renderers.TextRenderer;
+import com.github.lumin.graphics.text.StaticFontLoader;
 import com.github.lumin.gui.IComponent.RendererSet;
 import com.github.lumin.modules.Module;
 import com.github.lumin.modules.impl.client.InterFace;
@@ -94,11 +95,11 @@ public class ModuleListView {
 
         String returnIcon = "\uF00D";
         float iconScale = guiScale * 1.2f;
-        float iconW = set.icons().getWidth(returnIcon, iconScale);
-        float iconH = set.icons().getHeight(iconScale);
+        float iconW = set.font().getWidth(returnIcon, iconScale, StaticFontLoader.ICONS);
+        float iconH = set.font().getHeight(iconScale, StaticFontLoader.ICONS);
         float iconX = iconBoxX + (iconBoxWidth - iconW) / 2f;
         float iconY = boxY + (searchHeight - iconH) / 2f - guiScale;
-        set.icons().addText(returnIcon, iconX, iconY, iconScale, new Color(200, 200, 200));
+        set.font().addText(returnIcon, iconX, iconY, iconScale, new Color(200, 200, 200), StaticFontLoader.ICONS);
 
         boolean searchHovered = MouseUtils.isHovering(searchBoxX, boxY, searchBoxWidth, searchHeight, mouseX, mouseY);
         Color searchColor = searchFocused ? new Color(50, 50, 50, 200) : (searchHovered ? new Color(40, 40, 40, 200) : new Color(30, 30, 30, 200));
@@ -201,7 +202,7 @@ public class ModuleListView {
         scW = Math.max(0, Math.min(scW, fbW - scX));
         scH = Math.max(0, Math.min(scH, fbH - scY));
 
-        RendererSet listSet = new RendererSet(listRoundRect, set.topRoundRect(), set.texture(), listFont, set.icons(), null, null, null, null);
+        RendererSet listSet = new RendererSet(listRoundRect, set.topRoundRect(), set.texture(), listFont, null, null, null, null);
         listRoundRect.setScissor(scX, scY, scW, scH);
         listFont.setScissor(scX, scY, scW, scH);
 

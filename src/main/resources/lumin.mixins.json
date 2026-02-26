@@ -4,13 +4,14 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "IClientInput",
+    "IMultiPlayerGameMode",
     "MixinEntity",
+    "MixinGlDebug",
     "MixinLivingEntity",
     "MixinLivingEntityRenderer",
     "MixinLocalPlayer",
     "MixinMinecraft",
-    "MixinWindow",
-    "MixinGlDebug"
+    "MixinWindow"
   ],
   "injectors": {
     "defaultRequire": 1

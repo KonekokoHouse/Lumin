@@ -9,7 +9,7 @@ public enum Category {
     COMBAT("\uF01D", "战斗", "Attacks"),
     PLAYER("\uF002", "玩家", "Actions"),
     VISUAL("\uF019", "渲染", "Visuals"),
-    MISC("\uF008", "移动", "Motion"),
+    MISC("\uF008", "其他", "Others"),
     CLIENT("\uF003", "客户端", "Config");
 
     public final String icon;

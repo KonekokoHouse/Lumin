@@ -2,9 +2,7 @@ package com.github.lumin.utils.rotation;
 
 public enum MovementFix {
     OFF("Off"),
-    NORMAL("Normal"),
-    TRADITIONAL("Traditional"),
-    BACKWARDS_SPRINT("Backwards Sprint");
+    ON("ON");
 
     final String name;
 

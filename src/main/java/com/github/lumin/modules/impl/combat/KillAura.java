@@ -9,6 +9,7 @@ import com.github.lumin.settings.impl.IntSetting;
 import com.github.lumin.settings.impl.ModeSetting;
 import com.github.lumin.utils.math.MathUtils;
 import com.github.lumin.utils.rotation.MovementFix;
+import com.github.lumin.utils.rotation.Priority;
 import com.github.lumin.utils.rotation.RotationUtils;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -85,7 +86,7 @@ public class KillAura extends Module {
         if (target != null) {
             float[] rotations = RotationUtils.getRotationsToEntity(target);
             boolean silent = movefix.is("Silent");
-            Managers.ROTATION.setRotations(new Vector2f(rotations[0], rotations[1]), speed.getValue().floatValue(), MovementFix.TRADITIONAL);
+            Managers.ROTATION.setRotations(new Vector2f(rotations[0], rotations[1]), speed.getValue().floatValue(), MovementFix.ON, Priority.Medium);
         }
     }
 
