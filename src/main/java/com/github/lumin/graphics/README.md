@@ -64,7 +64,11 @@ Guava/Minecraft) to ensure safe, lazy initialization.
 private final Supplier<RectRenderer> rectRenderer = Suppliers.memoize(RectRenderer::new);
 
 // Use .get() to access the renderer instance
-rectRenderer.get().addRect(10f, 10f, 100f, 100f, Color.WHITE);
+rectRenderer.
+
+get().
+
+addRect(10f,10f,100f,100f,Color.WHITE);
 
 ```
 
@@ -104,10 +108,16 @@ once and draw them multiple times across frames to save CPU cycles.
 
 ```java
 // In your init or first frame:
-rectRenderer.get().addRect(10f, 10f, 200f, 200f, Color.CYAN);
+rectRenderer.get().
+
+addRect(10f,10f,200f,200f,Color.CYAN);
 
 // In your rendering loop:
-rectRenderer.get().draw(); // The content remains in the GPU buffer until .clear() is called.
+rectRenderer.
+
+get().
+
+draw(); // The content remains in the GPU buffer until .clear() is called.
 
 ```
 

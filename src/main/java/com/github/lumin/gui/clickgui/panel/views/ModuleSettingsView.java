@@ -1,5 +1,6 @@
 package com.github.lumin.gui.clickgui.panel.views;
 
+import com.github.lumin.graphics.renderers.RectRenderer;
 import com.github.lumin.graphics.renderers.RoundRectRenderer;
 import com.github.lumin.graphics.renderers.TextRenderer;
 import com.github.lumin.gui.IComponent.RendererSet;
@@ -19,7 +20,13 @@ import java.awt.*;
 public class ModuleSettingsView {
     private final Minecraft mc;
     private final RoundRectRenderer settingsRoundRect = new RoundRectRenderer();
+    private final RectRenderer settingsRect = new RectRenderer();
     private final TextRenderer settingsFont = new TextRenderer();
+
+    private final RoundRectRenderer pickingRound = new RoundRectRenderer();
+    private final RectRenderer pickingRect = new RectRenderer();
+    private final RoundRectRenderer pickerRound = new RoundRectRenderer();
+    private final TextRenderer pickingText = new TextRenderer();
 
     private ModuleComponent settingsComponent = null;
     private String searchText = "";
@@ -198,8 +205,10 @@ public class ModuleSettingsView {
         scW = Mth.clamp(scW, 0, fbW - scX);
         scH = Mth.clamp(scH, 0, fbH - scY);
 
-        RendererSet settingsSet = new RendererSet(settingsRoundRect, set.middleRect(), set.topRoundRect(), set.texture(), settingsFont, set.icons());
+        RendererSet settingsSet = new RendererSet(settingsRoundRect, set.topRoundRect(), set.texture(), settingsFont, set.icons(), pickingRound, pickingRect, pickerRound, pickingText);
+
         settingsRoundRect.setScissor(scX, scY, scW, scH);
+        settingsRect.setScissor(scX, scY, scW, scH);
         settingsFont.setScissor(scX, scY, scW, scH);
 
         settingsComponent.setX(areaX);
@@ -209,9 +218,16 @@ public class ModuleSettingsView {
         settingsComponent.render(settingsSet, mouseX, mouseY, deltaTicks);
 
         settingsRoundRect.drawAndClear();
+        settingsRect.drawAndClear();
         settingsFont.drawAndClear();
         settingsRoundRect.clearScissor();
+        settingsRect.clearScissor();
         settingsFont.clearScissor();
+
+        pickingRound.drawAndClear();
+        pickingRect.drawAndClear();
+        pickerRound.drawAndClear();
+        pickingText.drawAndClear();
 
         if (settingsMaxScroll > 0.0f) {
             boolean scrollbarHovered = MouseUtils.isHovering(scrollbarX, areaY, scrollbarW, areaH, mouseX, mouseY);
@@ -220,7 +236,7 @@ public class ModuleSettingsView {
             Color trackColor = scrollbarHovered ? new Color(255, 255, 255, 28) : new Color(255, 255, 255, 18);
             Color thumbColor = draggingSettingsScrollbar ? new Color(255, 255, 255, 90) : (thumbHovered ? new Color(255, 255, 255, 75) : new Color(255, 255, 255, 55));
 
-            set.middleRect().addRect(scrollbarX, areaY, scrollbarW, areaH, trackColor);
+            set.bottomRoundRect().addRoundRect(scrollbarX, areaY, scrollbarW, areaH, scrollbarW / 2.0f, trackColor);
             set.bottomRoundRect().addRoundRect(scrollbarX, thumbY, scrollbarW, thumbH, scrollbarW / 2.0f, thumbColor);
         }
     }
@@ -332,4 +348,5 @@ public class ModuleSettingsView {
         draggingSettingsScrollbar = false;
         searchFocused = false;
     }
+
 }

@@ -27,7 +27,7 @@ public class ModeSettingComponent extends Component {
     public void render(RendererSet set, int mouseX, int mouseY, float partialTicks) {
         if (!setting.isAvailable()) return;
 
-        boolean hovered = MouseUtils.isHovering(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY);
+        boolean hovered = !ColorSettingComponent.isMouseOverPicker(mouseX, mouseY) && MouseUtils.isHovering(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY);
         Color bg = hovered ? new Color(255, 255, 255, 18) : new Color(255, 255, 255, 10);
         set.bottomRoundRect().addRoundRect(getX(), getY(), getWidth(), getHeight(), 6.0f * scale, bg);
 
@@ -77,24 +77,22 @@ public class ModeSettingComponent extends Component {
 
         for (int i = 0; i < modes.length; i++) {
             float segX = controlX + segW * i;
-            float segY = controlY;
 
             if (i == selectedIndex) {
                 Color selectedBg = new Color(255, 255, 255, 26);
                 if (modes.length == 1) {
-                    set.bottomRoundRect().addRoundRect(segX, segY, segW, controlH, radius, selectedBg);
+                    set.bottomRoundRect().addRoundRect(segX, controlY, segW, controlH, radius, selectedBg);
                 } else if (i == 0) {
-                    set.bottomRoundRect().addRoundRect(segX, segY, segW, controlH, radius, 0.0f, 0.0f, radius, selectedBg);
+                    set.bottomRoundRect().addRoundRect(segX, controlY, segW, controlH, radius, 0.0f, 0.0f, radius, selectedBg);
                 } else if (i == modes.length - 1) {
-                    set.bottomRoundRect().addRoundRect(segX, segY, segW, controlH, 0.0f, radius, radius, 0.0f, selectedBg);
+                    set.bottomRoundRect().addRoundRect(segX, controlY, segW, controlH, 0.0f, radius, radius, 0.0f, selectedBg);
                 } else {
-                    set.middleRect().addRect(segX, segY, segW, controlH, selectedBg);
+                    set.bottomRoundRect().addRoundRect(segX, controlY, segW, controlH, 0.0f, selectedBg);
                 }
             }
 
             if (i > 0) {
-                float sepX = segX;
-                set.middleRect().addRect(sepX, segY + 2.0f * scale, 1.0f * scale, controlH - 4.0f * scale, new Color(255, 255, 255, 14));
+                set.bottomRoundRect().addRoundRect(segX, controlY + 2.0f * scale, 1.0f * scale, controlH - 4.0f * scale, 0.0f, new Color(255, 255, 255, 14));
             }
 
             String mode = modes[i] == null ? "" : modes[i];

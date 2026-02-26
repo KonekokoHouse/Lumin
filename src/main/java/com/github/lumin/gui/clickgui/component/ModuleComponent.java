@@ -69,11 +69,26 @@ public class ModuleComponent implements IComponent {
             setting.render(set, mouseX, mouseY, partialTicks);
             cursorY += rowH + rowGap;
         }
+
+        for (Component setting : settings) {
+            if (!isSettingVisible(setting)) continue;
+            if (setting instanceof ColorSettingComponent c && c.isOpened()) {
+                c.renderOverlay(set, mouseX, mouseY, partialTicks);
+            }
+        }
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean focused) {
         boolean handled = false;
+        for (Component setting : settings) {
+            if (!isSettingVisible(setting)) continue;
+            if (setting instanceof ColorSettingComponent c && c.isOpened()) {
+                if (c.mouseClicked(event, focused)) {
+                    return true;
+                }
+            }
+        }
         if (isHovered((int) event.x(), (int) event.y())) {
             for (Component setting : settings) {
                 if (!isSettingVisible(setting)) continue;
@@ -88,6 +103,14 @@ public class ModuleComponent implements IComponent {
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
         boolean handled = false;
+        for (Component setting : settings) {
+            if (!isSettingVisible(setting)) continue;
+            if (setting instanceof ColorSettingComponent c && c.isOpened()) {
+                if (c.mouseReleased(event)) {
+                    return true;
+                }
+            }
+        }
         if (isHovered((int) event.x(), (int) event.y())) {
             for (Component setting : settings) {
                 if (!isSettingVisible(setting)) continue;
@@ -104,6 +127,14 @@ public class ModuleComponent implements IComponent {
         boolean handled = false;
         for (Component setting : settings) {
             if (!isSettingVisible(setting)) continue;
+            if (setting instanceof ColorSettingComponent c && c.isOpened()) {
+                if (c.keyPressed(event)) {
+                    return true;
+                }
+            }
+        }
+        for (Component setting : settings) {
+            if (!isSettingVisible(setting)) continue;
             if (setting.keyPressed(event)) {
                 handled = true;
             }
@@ -114,6 +145,14 @@ public class ModuleComponent implements IComponent {
     @Override
     public boolean charTyped(CharacterEvent input) {
         boolean handled = false;
+        for (Component setting : settings) {
+            if (!isSettingVisible(setting)) continue;
+            if (setting instanceof ColorSettingComponent c && c.isOpened()) {
+                if (c.charTyped(input)) {
+                    return true;
+                }
+            }
+        }
         for (Component setting : settings) {
             if (!isSettingVisible(setting)) continue;
             if (setting.charTyped(input)) {

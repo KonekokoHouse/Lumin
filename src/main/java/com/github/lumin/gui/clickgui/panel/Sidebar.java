@@ -123,7 +123,7 @@ public class Sidebar implements IComponent {
                 set.font().addText(playerName, textX, nameY, currentScale, Color.WHITE);
             }
 
-            set.font().addText("Account", textX, accountY, guiScale * 0.7f, Color.GRAY);
+            set.font().addText(InterFace.isEnglish() ? "Account" : "游戏账号", textX, accountY, guiScale * 0.7f, Color.GRAY);
         }
 
         // Category Placeholder

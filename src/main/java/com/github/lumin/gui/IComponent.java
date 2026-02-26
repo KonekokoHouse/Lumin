@@ -34,11 +34,14 @@ public interface IComponent {
 
     record RendererSet(
             RoundRectRenderer bottomRoundRect,
-            RectRenderer middleRect,
             RoundRectRenderer topRoundRect,
             TextureRenderer texture,
             TextRenderer font,
-            TextRenderer icons
+            TextRenderer icons,
+            RoundRectRenderer pickingRound,
+            RectRenderer pickingRect,
+            RoundRectRenderer pickerRound,
+            TextRenderer pickingText
     ) {
     }
 

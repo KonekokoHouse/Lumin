@@ -22,6 +22,12 @@ public class RectRenderer implements IRenderer {
     private int vertexCount = 0;
     private boolean flushBufferFlag = false;
 
+    private boolean scissorEnabled = false;
+    private int scissorX;
+    private int scissorY;
+    private int scissorW;
+    private int scissorH;
+
     /**
      * 基础矩形
      */
@@ -62,6 +68,18 @@ public class RectRenderer implements IRenderer {
         addVertex(x + w, y, argb4);
     }
 
+    public void setScissor(int x, int y, int width, int height) {
+        scissorEnabled = true;
+        scissorX = x;
+        scissorY = y;
+        scissorW = width;
+        scissorH = height;
+    }
+
+    public void clearScissor() {
+        scissorEnabled = false;
+    }
+
     private void addVertex(float vx, float vy, int color) {
         long baseAddr = MemoryUtil.memAddress(buffer.getMappedBuffer());
         long p = baseAddr + currentOffset;
@@ -94,6 +112,9 @@ public class RectRenderer implements IRenderer {
                 info.target().getDepthTextureView(), OptionalDouble.empty())
         ) {
             pass.setPipeline(LuminRenderPipelines.RECTANGLE);
+            if (scissorEnabled) {
+                pass.enableScissor(scissorX, scissorY, scissorW, scissorH);
+            }
 
             RenderSystem.bindDefaultUniforms(pass);
             pass.setUniform("DynamicTransforms", info.dynamicUniforms());

@@ -1,6 +1,5 @@
 package com.github.lumin.gui.clickgui.panel;
 
-import com.github.lumin.graphics.renderers.RectRenderer;
 import com.github.lumin.graphics.renderers.RoundRectRenderer;
 import com.github.lumin.graphics.renderers.TextRenderer;
 import com.github.lumin.graphics.renderers.TextureRenderer;
@@ -17,13 +16,12 @@ public class Panel implements IComponent {
     private final Minecraft mc = Minecraft.getInstance();
 
     private final RoundRectRenderer bottomRoundRect = new RoundRectRenderer();
-    private final RectRenderer middleRect = new RectRenderer();
     private final RoundRectRenderer topRoundRect = new RoundRectRenderer();
     private final TextureRenderer textureRenderer = new TextureRenderer();
     private final TextRenderer fontRenderer = new TextRenderer();
     private final TextRenderer iconsRenderer = new TextRenderer("fonts/icons.ttf");
 
-    private final RendererSet set = new RendererSet(bottomRoundRect, middleRect, topRoundRect, textureRenderer, fontRenderer, iconsRenderer);
+    private final RendererSet set = new RendererSet(bottomRoundRect, topRoundRect, textureRenderer, fontRenderer, iconsRenderer, null, null, null, null);
 
     private final Sidebar sidebar = new Sidebar();
     private final ContentPanel contentPanel = new ContentPanel();
@@ -67,7 +65,6 @@ public class Panel implements IComponent {
         contentPanel.render(this.set, mouseX, mouseY, deltaTicks);
 
         bottomRoundRect.drawAndClear();
-        middleRect.drawAndClear();
         topRoundRect.drawAndClear();
         textureRenderer.drawAndClear();
         fontRenderer.drawAndClear();

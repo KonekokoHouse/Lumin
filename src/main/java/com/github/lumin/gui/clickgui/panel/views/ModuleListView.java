@@ -104,7 +104,7 @@ public class ModuleListView {
         Color searchColor = searchFocused ? new Color(50, 50, 50, 200) : (searchHovered ? new Color(40, 40, 40, 200) : new Color(30, 30, 30, 200));
         set.bottomRoundRect().addRoundRect(searchBoxX, boxY, searchBoxWidth, searchHeight, 8f * guiScale, searchColor);
 
-        String displayText = searchText.isEmpty() && !searchFocused ? "Search..." : searchText;
+        String displayText = searchText.isEmpty() && !searchFocused ? InterFace.isEnglish() ? "Search..." : "搜索..." : searchText;
         if (searchFocused && (System.currentTimeMillis() % 1000 > 500)) {
             displayText += "_";
         }
@@ -201,7 +201,7 @@ public class ModuleListView {
         scW = Math.max(0, Math.min(scW, fbW - scX));
         scH = Math.max(0, Math.min(scH, fbH - scY));
 
-        RendererSet listSet = new RendererSet(listRoundRect, set.middleRect(), set.topRoundRect(), set.texture(), listFont, set.icons());
+        RendererSet listSet = new RendererSet(listRoundRect, set.topRoundRect(), set.texture(), listFont, set.icons(), null, null, null, null);
         listRoundRect.setScissor(scX, scY, scW, scH);
         listFont.setScissor(scX, scY, scW, scH);
 
@@ -239,7 +239,7 @@ public class ModuleListView {
             Color trackColor = scrollbarHovered ? new Color(255, 255, 255, 28) : new Color(255, 255, 255, 18);
             Color thumbColor = draggingScrollbar ? new Color(255, 255, 255, 90) : (thumbHovered ? new Color(255, 255, 255, 75) : new Color(255, 255, 255, 55));
 
-            set.middleRect().addRect(scrollbarX, listStartY, scrollbarW, listH, trackColor);
+            set.bottomRoundRect().addRoundRect(scrollbarX, listStartY, scrollbarW, listH, scrollbarW / 2.0f, trackColor);
             set.bottomRoundRect().addRoundRect(scrollbarX, thumbY, scrollbarW, thumbH, scrollbarW / 2.0f, thumbColor);
         }
     }
