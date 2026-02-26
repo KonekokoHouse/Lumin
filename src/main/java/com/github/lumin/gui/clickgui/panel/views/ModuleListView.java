@@ -375,7 +375,7 @@ public class ModuleListView {
 
             boolean hovered = MouseUtils.isHovering(x, y, width, height, mouseX, mouseY);
 
-            Color bgColor = module.isEnabled() ? new Color(55, 180, 90, 130) : new Color(40, 40, 40, 130);
+            Color bgColor = module.isEnabled() ? new Color(148, 148, 148, 130) : new Color(40, 40, 40, 130);
             if (hovered) {
                 bgColor = new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), Math.min(255, bgColor.getAlpha() + 30));
             }

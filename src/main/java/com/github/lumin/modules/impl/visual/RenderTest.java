@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 
 public class RenderTest extends Module {
 
-    public static RenderTest INSTANCE = new RenderTest();
+    public static final RenderTest INSTANCE = new RenderTest();
 
     private RenderTest() {
         super("RenderTest", "渲染测试", "idk", "idk", Category.VISUAL);

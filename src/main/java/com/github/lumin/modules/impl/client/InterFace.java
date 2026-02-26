@@ -10,7 +10,7 @@ import com.github.lumin.settings.impl.ModeSetting;
 import java.awt.*;
 
 public class InterFace extends Module {
-    public static InterFace INSTANCE = new InterFace();
+    public static final InterFace INSTANCE = new InterFace();
 
     public InterFace() {
         super("Interface", "界面", "idk", "idk", Category.CLIENT);

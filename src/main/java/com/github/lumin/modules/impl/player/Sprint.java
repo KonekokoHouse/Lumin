@@ -1,4 +1,4 @@
-package com.github.lumin.modules.impl.movement;
+package com.github.lumin.modules.impl.player;
 
 import com.github.lumin.modules.Category;
 import com.github.lumin.modules.Module;
@@ -7,7 +7,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import org.lwjgl.glfw.GLFW;
 
 public class Sprint extends Module {
-    public static Sprint INSTANCE = new Sprint();
+    public static final Sprint INSTANCE = new Sprint();
 
     public Sprint() {
         super("Sprint", "疾跑", "idk", "idk", Category.PLAYER);

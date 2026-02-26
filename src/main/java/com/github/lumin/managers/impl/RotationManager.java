@@ -193,8 +193,6 @@ public class RotationManager {
 
     @SubscribeEvent
     private void onPlayerTick(PlayerTickEvent.Pre event) {
-        if (mc.player == null || mc.level == null) return;
-
         if (!active || rotations == null || lastRotations == null || targetRotations == null) {
             rotations = lastRotations = targetRotations = new Vector2f(mc.player.getYRot(), mc.player.getXRot());
         }

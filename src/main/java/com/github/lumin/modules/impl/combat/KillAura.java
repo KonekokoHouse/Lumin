@@ -5,6 +5,7 @@ import com.github.lumin.modules.Category;
 import com.github.lumin.modules.Module;
 import com.github.lumin.settings.impl.BoolSetting;
 import com.github.lumin.settings.impl.DoubleSetting;
+import com.github.lumin.settings.impl.IntSetting;
 import com.github.lumin.settings.impl.ModeSetting;
 import com.github.lumin.utils.math.MathUtils;
 import com.github.lumin.utils.rotation.MovementFix;
@@ -26,12 +27,12 @@ import java.util.Comparator;
 import java.util.List;
 
 public class KillAura extends Module {
-    public static KillAura INSTANCE = new KillAura();
+    public static final KillAura INSTANCE = new KillAura();
     public ModeSetting movefix = modeSetting("Move Fix", "", "Silent", new String[]{"Silent", "Strict"});
     public ModeSetting targetMode = modeSetting("Target Mode", "", "Single", new String[]{"Single", "Switch", "Multi"});
     public DoubleSetting range = doubleSetting("Attack Range", "", 3.0, 1.0, 6.0, 0.01);
     public DoubleSetting aimRange = doubleSetting("Aim Range", " ", 4.0, 1.0, 6.0, 0.1);
-    public DoubleSetting speed = doubleSetting("Rotation Speed", "", 180.0, 10.0, 360.0, 10.0);
+    public IntSetting speed = intSetting("Rotation Speed", "", 10, 1, 10, 1);
     public DoubleSetting fov = doubleSetting("Fov", " ", 360.0, 10.0, 360.0, 1.0);
     public BoolSetting cooldownATK = boolSetting("1.9 CoolDown Attack", " ", false);
     public BoolSetting esp = boolSetting("Target ESP", "", false);

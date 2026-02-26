@@ -8,7 +8,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_SHIFT;
 
 public class ClickGui extends Module {
 
-    public static ClickGui INSTANCE = new ClickGui();
+    public static final ClickGui INSTANCE = new ClickGui();
 
     public ClickGui() {
         super("ClickGui", "控制面板", "idk", "idk", Category.CLIENT);

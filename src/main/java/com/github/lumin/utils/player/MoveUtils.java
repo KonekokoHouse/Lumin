@@ -11,6 +11,10 @@ public class MoveUtils {
 
     static Minecraft mc = Minecraft.getInstance();
 
+    public static boolean isMoving() {
+        return mc.player.zza != 0 || mc.player.xxa != 0;
+    }
+
     public static double getDirection() {
         float yaw = mc.player.getYRot();
         float forward = mc.player.zza;

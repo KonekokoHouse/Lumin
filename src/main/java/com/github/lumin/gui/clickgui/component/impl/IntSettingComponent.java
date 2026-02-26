@@ -80,7 +80,7 @@ public class IntSettingComponent extends Component {
         float valueMinW = set.font().getWidth(String.valueOf(setting.getMin()), textScale);
         float valueMaxW = set.font().getWidth(String.valueOf(setting.getMax()), textScale);
         float valuePercentW = set.font().getWidth("100%", textScale);
-        float valueBoxW = Math.max(valueMinW, Math.max(valueMaxW, valuePercentW)) + valueInnerPad * 2.0f + 8.0f * scale;
+        float valueBoxW = Math.max(valueMinW, Math.max(valueMaxW, valuePercentW)) + valueInnerPad * 6.0f + 8.0f * scale; // 数值底下圆角矩形长
         float valueBoxH = Math.max(0.0f, getHeight() - 4.0f * scale);
         float valueBoxX = getX() + getWidth() - padding - valueBoxW;
         float valueBoxY = getY() + (getHeight() - valueBoxH) / 2.0f;
@@ -98,7 +98,7 @@ public class IntSettingComponent extends Component {
         float valueTextY = valueBoxY + (valueBoxH - set.font().getHeight(textScale)) / 2.0f - 0.5f * scale;
         set.font().addText(valueStr, valueX, valueTextY, textScale, new Color(200, 200, 200));
 
-        float sliderWidth = 68.0f * scale;
+        float sliderWidth = 70.0f * scale; // 条长
         float sliderHeight = 3.0f * scale;
         float sliderX = valueBoxX - padding - sliderWidth;
         float sliderY = getY() + (getHeight() - sliderHeight) / 2.0f;
@@ -132,7 +132,7 @@ public class IntSettingComponent extends Component {
         filledW = Mth.clamp(filledW, 0.0f, sliderWidth);
 
         if (filledW > 0) {
-            set.bottomRoundRect().addRoundRect(sliderX, sliderY, filledW, sliderHeight, sliderHeight / 2.0f, new Color(55, 180, 90));
+            set.bottomRoundRect().addRoundRect(sliderX, sliderY, filledW, sliderHeight, sliderHeight / 2.0f, new Color(148, 148, 148));
         }
 
         float knobSize = 8.0f * scale;

@@ -2,7 +2,6 @@ package com.github.lumin.mixins;
 
 import com.github.lumin.events.MotionEvent;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -26,44 +25,34 @@ public class MixinLocalPlayer {
         }
     }
 
-    @Inject(method = "sendPosition", at = @At("RETURN"))
-    private void onPostSendPosition(CallbackInfo ci) {
-        lumin$motionEvent = null;
-    }
-
     @Redirect(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getX()D"))
     private double redirectGetX(LocalPlayer instance) {
-        return lumin$motionEvent != null ? lumin$motionEvent.getX() : instance.getX();
+        return lumin$motionEvent.getX();
     }
 
     @Redirect(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getY()D"))
     private double redirectGetY(LocalPlayer instance) {
-        return lumin$motionEvent != null ? lumin$motionEvent.getY() : instance.getY();
+        return lumin$motionEvent.getY();
     }
 
     @Redirect(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getZ()D"))
     private double redirectGetZ(LocalPlayer instance) {
-        return lumin$motionEvent != null ? lumin$motionEvent.getZ() : instance.getZ();
-    }
-
-    @Redirect(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;position()Lnet/minecraft/world/phys/Vec3;"))
-    private Vec3 redirectPosition(LocalPlayer instance) {
-        return lumin$motionEvent != null ? new Vec3(lumin$motionEvent.getX(), lumin$motionEvent.getY(), lumin$motionEvent.getZ()) : instance.position();
+        return lumin$motionEvent.getZ();
     }
 
     @Redirect(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getYRot()F"))
     private float redirectGetYRot(LocalPlayer instance) {
-        return lumin$motionEvent != null ? lumin$motionEvent.getYaw() : instance.getYRot();
+        return lumin$motionEvent.getYaw();
     }
 
     @Redirect(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getXRot()F"))
     private float redirectGetXRot(LocalPlayer instance) {
-        return lumin$motionEvent != null ? lumin$motionEvent.getPitch() : instance.getXRot();
+        return lumin$motionEvent.getPitch();
     }
 
     @Redirect(method = "sendPosition", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;onGround()Z"))
     private boolean redirectOnGround(LocalPlayer instance) {
-        return lumin$motionEvent != null ? lumin$motionEvent.isOnGround() : instance.onGround();
+        return lumin$motionEvent.isOnGround();
     }
 
 }

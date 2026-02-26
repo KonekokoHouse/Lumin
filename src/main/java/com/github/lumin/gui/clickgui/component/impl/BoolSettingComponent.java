@@ -37,7 +37,7 @@ public class BoolSettingComponent extends Component {
         float switchX = getX() + getWidth() - 6.0f * scale - switchW;
         float switchY = getY() + (getHeight() - switchH) / 2.0f;
 
-        Color trackColor = setting.getValue() ? new Color(55, 180, 90) : new Color(60, 60, 60);
+        Color trackColor = setting.getValue() ? new Color(148, 148, 148) : new Color(60, 60, 60);
         set.bottomRoundRect().addRoundRect(switchX, switchY, switchW, switchH, switchH / 2.0f, trackColor);
 
         float thumbSize = switchH - 2.0f * scale;
