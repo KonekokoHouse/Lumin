@@ -25,11 +25,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import org.joml.Vector2f;
@@ -61,10 +58,6 @@ public class Scaffold extends Module {
     private final BoolSetting shrink = boolSetting("Shrink", "收缩", true, render::getValue);
     private final ColorSetting sideColor = colorSetting("Side Color", "侧面颜色", new Color(255, 183, 197, 100), render::getValue);
     private final ColorSetting lineColor = colorSetting("Line Color", "线条颜色", new Color(255, 105, 180), render::getValue);
-
-    private static final double[] placeOffsets = new double[]{
-            0.03125, 0.09375, 0.15625, 0.21875, 0.28125, 0.34375, 0.40625, 0.46875, 0.53125, 0.59375, 0.65625, 0.71875, 0.78125, 0.84375, 0.90625, 0.96875
-    };
 
     private int yLevel;
     private int airTicks;
@@ -236,7 +229,7 @@ public class Scaffold extends Module {
 
         boolean hasRotated = RaytraceUtils.overBlock(Managers.ROTATION.getRotation(), blockInfo.dir, blockInfo.position, sideCheck.getValue());
         if (hasRotated) {
-            InteractionResult result = mc.gameMode.useItemOn(mc.player, item.getHand(), new BlockHitResult(blockInfo.hitVec, blockInfo.dir, blockInfo.position, false));
+            InteractionResult result = mc.gameMode.useItemOn(mc.player, item.getHand(), new BlockHitResult(getVec3(blockInfo.position, blockInfo.dir), blockInfo.dir, blockInfo.position, false));
             if (result.consumesAction()) {
                 if (swingHand.getValue()) {
                     mc.player.swing(item.getHand());
@@ -290,7 +283,7 @@ public class Scaffold extends Module {
             Vec3i baseBlock = pos.offset(dir.getUnitVec3i());
             BlockPos baseBlockPos = new BlockPos(baseBlock.getX(), baseBlock.getY(), baseBlock.getZ());
 
-            //if (!mc.level.getBlockState(baseBlockPos).canBeReplaced()) continue;
+            if (!mc.level.getBlockState(baseBlockPos).entityCanStandOn(mc.level, baseBlockPos, mc.player)) continue;
 
             Vec3 relevant = hit.subtract(baseVec);
             if (relevant.lengthSqr() <= 4.5 * 4.5 && relevant.dot(new Vec3(dir.getUnitVec3i())) >= 0) {
@@ -305,74 +298,11 @@ public class Scaffold extends Module {
     }
 
     private Vector2f getRotation(BlockInfo blockCache) {
-        if (onAir()) {
-            return RotationUtils.calculate(blockCache.position, blockCache.dir);
-        }
-
-        double[] x = placeOffsets;
-        double[] y = placeOffsets;
-        double[] z = placeOffsets;
-
-        BlockState state = mc.level.getBlockState(blockCache.position);
-        VoxelShape shape = state.getCollisionShape(mc.level, blockCache.position);
-        if (shape.isEmpty()) return RotationUtils.calculate(blockCache.position.getCenter());
-
-        AABB box = shape.bounds();
-
-        switch (blockCache.dir) {
-            case NORTH -> z = new double[]{box.minZ};
-            case EAST -> x = new double[]{box.maxX};
-            case SOUTH -> z = new double[]{box.maxZ};
-            case WEST -> x = new double[]{box.minX};
-            case DOWN -> y = new double[]{box.minY};
-            case UP -> y = new double[]{box.maxY};
-        }
-
-        float bestYaw = -1000.0F;
-        float bestPitch = -1000.0F;
-        float bestDiff = Float.MAX_VALUE;
-        Vec3 bestHitVec = null;
-
-        float baseYaw = Mth.wrapDegrees(mc.player.getYRot() - 180);
-        float basePitch = mc.player.getXRot();
-
-        for (double dx : x) {
-            for (double dy : y) {
-                for (double dz : z) {
-
-                    double finalX = blockCache.position.getX() + dx;
-                    double finalY = blockCache.position.getY() + dy;
-                    double finalZ = blockCache.position.getZ() + dz;
-
-                    if (x.length > 1) finalX = blockCache.position.getX() + box.minX + dx * (box.maxX - box.minX);
-                    if (y.length > 1) finalY = blockCache.position.getY() + box.minY + dy * (box.maxY - box.minY);
-                    if (z.length > 1) finalZ = blockCache.position.getZ() + box.minZ + dz * (box.maxZ - box.minZ);
-
-                    Vec3 hitVec = new Vec3(finalX, finalY, finalZ);
-
-                    Vector2f rotation = RotationUtils.calculate(hitVec);
-                    float totalDiff = Math.abs(rotation.x - baseYaw) + Math.abs(rotation.y - basePitch);
-
-                    if (totalDiff < bestDiff) {
-                        boolean overBlock = RaytraceUtils.overBlock(rotation, blockCache.dir, blockCache.position, sideCheck.getValue());
-
-                        if (overBlock) {
-                            bestYaw = rotation.x;
-                            bestPitch = rotation.y;
-                            bestDiff = totalDiff;
-                            bestHitVec = hitVec;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (bestYaw != -1000.0F) {
-            blockCache.hitVec = bestHitVec;
-            return new Vector2f(bestYaw, bestPitch);
-        }
-
-        return RotationUtils.calculate(blockCache.position.getCenter());
+        Vector2f calculate = onAir() ? RotationUtils.calculate(blockCache.position, blockCache.dir) : RotationUtils.calculate(blockCache.position.getCenter());
+        Vector2f reverseYaw = new Vector2f(Mth.wrapDegrees(mc.player.getYRot() - 180), calculate.y);
+        boolean hasRotated = RaytraceUtils.overBlock(reverseYaw, blockCache.position, false);
+        if (hasRotated) return reverseYaw;
+        else return calculate;
     }
 
     private boolean onAir() {
@@ -381,19 +311,7 @@ public class Scaffold extends Module {
         return mc.level.getBlockState(base).getBlock() instanceof AirBlock || mc.level.getBlockState(base).getBlock() instanceof WaterlilyBlock;
     }
 
-    private static class BlockInfo {
-        private final BlockPos blockPos;
-        private final BlockPos position;
-        private final Direction dir;
-        private Vec3 hitVec;
-
-        public BlockInfo(BlockPos blockPos, BlockPos position, Direction dir) {
-            this.blockPos = blockPos;
-            this.position = position;
-            this.dir = dir;
-            this.hitVec = new Vec3(position.getX() + 0.5, position.getY() + 0.5, position.getZ() + 0.5)
-                    .add(new Vec3(dir.getUnitVec3i()).scale(0.5));
-        }
+    private record BlockInfo(BlockPos blockPos, BlockPos position, Direction dir) {
     }
 
 }

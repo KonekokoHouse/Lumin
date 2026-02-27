@@ -109,7 +109,7 @@ public class RaytraceUtils {
     }
 
     public static boolean overBlock(final Vector2f rotation, final Direction direction, final BlockPos pos, final boolean strict) {
-        Vec3 cameraPos = mc.player.getPosition(1.0F);
+        Vec3 cameraPos = mc.player.getEyePosition(1.0F);
         Vec3 rotationVec = Vec3.directionFromRotation(rotation.y, rotation.x);
         Vec3 reachVec = cameraPos.add(rotationVec.scale(4.5));
 
