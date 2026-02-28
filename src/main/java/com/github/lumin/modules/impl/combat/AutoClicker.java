@@ -28,7 +28,7 @@ public class AutoClicker extends Module {
     private long readyTime = 0;
 
     public AutoClicker() {
-        super("AutoClicker", "连点器", "Automatically clicks when holding left click", "长按左键自动连点", Category.COMBAT);
+        super("AutoClicker", "连点器", "b", "b", Category.COMBAT);
     }
 
     @SubscribeEvent

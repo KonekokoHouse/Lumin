@@ -41,7 +41,7 @@ public class AimAssist extends Module {
     private LivingEntity currentTarget;
 
     public AimAssist() {
-        super("AimAssist", "AimAssist", "Automatically faces selected entities around you.", "自动瞄准", Category.COMBAT);
+        super("AimAssist", "AimAssist", "Zimiaowaigua", "自动瞄准", Category.COMBAT);
     }
 
     @Override
@@ -78,11 +78,7 @@ public class AimAssist extends Module {
 
             // Process smoothing
             AngleSmooth smoother = getAngleSmooth();
-            if (smoother != null) {
-                targetRotation = smoother.process(playerRotation, idealRotation);
-            } else {
-                targetRotation = idealRotation;
-            }
+            targetRotation = smoother.process(playerRotation, idealRotation);
         } else {
             targetRotation = null;
         }
@@ -101,7 +97,7 @@ public class AimAssist extends Module {
             float timerSpeed = 1.0f; // Assuming normal speed
 
             // Interpolate rotation: current + (target - current) * factor
-            // This logic mimics the kotlin reference: 
+            // This logic mimics the kotlin reference:
             // currentRotation.yaw + (rotation.yaw - currentRotation.yaw) * (timerSpeed * partialTicks)
 
             float yawDiff = targetRotation.x - playerRotation.x;
@@ -153,15 +149,11 @@ public class AimAssist extends Module {
     }
 
     private AngleSmooth getAngleSmooth() {
-        String modeName = mode.getValue();
-        switch (modeName) {
-            case "Fast":
-                return new LinearAngleSmooth(speed.getValue());
-            case "Legit":
-                return new InterpolationAngleSmooth(strength.getValue());
-            default:
-                return new LinearAngleSmooth(speed.getValue());
-        }
+        return switch (mode.getValue()) {
+            case "Fast" -> new LinearAngleSmooth(speed.getValue().floatValue());
+            case "Legit" -> new InterpolationAngleSmooth(strength.getValue().floatValue());
+            default -> null;
+        };
     }
 
     // Inner classes for Smoothing logic
@@ -169,39 +161,27 @@ public class AimAssist extends Module {
         Vector2f process(Vector2f current, Vector2f target);
     }
 
-    private static class LinearAngleSmooth implements AngleSmooth {
-        private final double speed;
-
-        public LinearAngleSmooth(double speed) {
-            this.speed = speed;
-        }
-
+    private record LinearAngleSmooth(float speed) implements AngleSmooth {
         @Override
         public Vector2f process(Vector2f current, Vector2f target) {
             float yawDiff = Mth.wrapDegrees(target.x - current.x);
             float pitchDiff = target.y - current.y;
 
-            float yawChange = (float) Mth.clamp(yawDiff, -speed, speed);
-            float pitchChange = (float) Mth.clamp(pitchDiff, -speed, speed);
+            float yawChange = Mth.clamp(yawDiff, -speed, speed);
+            float pitchChange = Mth.clamp(pitchDiff, -speed, speed);
 
             return new Vector2f(current.x + yawChange, current.y + pitchChange);
         }
     }
 
-    private static class InterpolationAngleSmooth implements AngleSmooth {
-        private final double strength;
-
-        public InterpolationAngleSmooth(double strength) {
-            this.strength = strength;
-        }
-
+    private record InterpolationAngleSmooth(float strength) implements AngleSmooth {
         @Override
         public Vector2f process(Vector2f current, Vector2f target) {
             float yawDiff = Mth.wrapDegrees(target.x - current.x);
             float pitchDiff = target.y - current.y;
 
-            float yawChange = (float) (yawDiff * strength);
-            float pitchChange = (float) (pitchDiff * strength);
+            float yawChange = yawDiff * strength;
+            float pitchChange = pitchDiff * strength;
 
             return new Vector2f(current.x + yawChange, current.y + pitchChange);
         }
