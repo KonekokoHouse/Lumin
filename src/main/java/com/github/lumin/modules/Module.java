@@ -2,7 +2,7 @@ package com.github.lumin.modules;
 
 import com.github.lumin.Lumin;
 import com.github.lumin.modules.impl.client.InterFace;
-import com.github.lumin.settings.AbstractSetting;
+import com.github.lumin.settings.Setting;
 import com.github.lumin.settings.impl.*;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.common.NeoForge;
@@ -21,7 +21,7 @@ public class Module {
 
     public Category category;
 
-    public int keyBind;
+    private int keyBind = -1;
 
     public enum BindMode {Toggle, Hold}
 
@@ -29,7 +29,7 @@ public class Module {
 
     private boolean enabled;
 
-    public final List<AbstractSetting<?>> settings = new ArrayList<>();
+    public final List<Setting<?>> settings = new ArrayList<>();
 
     //private final BoolSetting hidden; // 控制是否在ModuleListHud中显示
 
@@ -92,12 +92,12 @@ public class Module {
     public void reset() {
         setEnabled(false);
         bindMode = BindMode.Toggle;
-        for (AbstractSetting<?> setting : settings) {
+        for (Setting<?> setting : settings) {
             setting.reset();
         }
     }
 
-    private <T extends AbstractSetting<?>> T addSetting(T setting) {
+    private <T extends Setting<?>> T addSetting(T setting) {
         settings.add(setting);
         return setting;
     }
@@ -106,8 +106,16 @@ public class Module {
     //    return hidden.getValue();
     //}
 
-    public List<AbstractSetting<?>> getSettings() {
+    public List<Setting<?>> getSettings() {
         return settings;
+    }
+
+    public int getKeyBind() {
+        return keyBind;
+    }
+
+    public void setKeyBind(int keyBind) {
+        this.keyBind = keyBind;
     }
 
     public BindMode getBindMode() {
@@ -142,11 +150,11 @@ public class Module {
         return chineseDescription;
     }
 
-    protected IntSetting intSetting(String englishName, String chineseName, int defaultValue, int min, int max, int step, AbstractSetting.Dependency dependency) {
+    protected IntSetting intSetting(String englishName, String chineseName, int defaultValue, int min, int max, int step, Setting.Dependency dependency) {
         return addSetting(new IntSetting(englishName, chineseName, defaultValue, min, max, step, dependency, false));
     }
 
-    protected IntSetting intSetting(String englishName, String chineseName, int defaultValue, int min, int max, int step, AbstractSetting.Dependency dependency, boolean percentageMode) {
+    protected IntSetting intSetting(String englishName, String chineseName, int defaultValue, int min, int max, int step, Setting.Dependency dependency, boolean percentageMode) {
         return addSetting(new IntSetting(englishName, chineseName, defaultValue, min, max, step, dependency, percentageMode));
     }
 
@@ -154,7 +162,7 @@ public class Module {
         return addSetting(new IntSetting(englishName, chineseName, defaultValue, min, max, step));
     }
 
-    protected BoolSetting boolSetting(String englishName, String chineseName, boolean defaultValue, AbstractSetting.Dependency dependency) {
+    protected BoolSetting boolSetting(String englishName, String chineseName, boolean defaultValue, Setting.Dependency dependency) {
         return addSetting(new BoolSetting(englishName, chineseName, defaultValue, dependency));
     }
 
@@ -162,11 +170,11 @@ public class Module {
         return addSetting(new BoolSetting(englishName, chineseName, defaultValue));
     }
 
-    protected DoubleSetting doubleSetting(String englishName, String chineseName, double defaultValue, double min, double max, double step, AbstractSetting.Dependency dependency) {
+    protected DoubleSetting doubleSetting(String englishName, String chineseName, double defaultValue, double min, double max, double step, Setting.Dependency dependency) {
         return addSetting(new DoubleSetting(englishName, chineseName, defaultValue, min, max, step, dependency, false));
     }
 
-    protected DoubleSetting doubleSetting(String englishName, String chineseName, double defaultValue, double min, double max, double step, AbstractSetting.Dependency dependency, boolean percentageMode) {
+    protected DoubleSetting doubleSetting(String englishName, String chineseName, double defaultValue, double min, double max, double step, Setting.Dependency dependency, boolean percentageMode) {
         return addSetting(new DoubleSetting(englishName, chineseName, defaultValue, min, max, step, dependency, percentageMode));
     }
 
@@ -174,7 +182,7 @@ public class Module {
         return addSetting(new DoubleSetting(englishName, chineseName, defaultValue, min, max, step));
     }
 
-    protected StringSetting stringSetting(String englishName, String chineseName, String defaultValue, AbstractSetting.Dependency dependency) {
+    protected StringSetting stringSetting(String englishName, String chineseName, String defaultValue, Setting.Dependency dependency) {
         return addSetting(new StringSetting(englishName, chineseName, defaultValue, dependency));
     }
 
@@ -182,7 +190,7 @@ public class Module {
         return addSetting(new StringSetting(englishName, chineseName, defaultValue));
     }
 
-    protected ModeSetting modeSetting(String englishName, String chineseName, String defaultValue, String[] modes, AbstractSetting.Dependency dependency) {
+    protected ModeSetting modeSetting(String englishName, String chineseName, String defaultValue, String[] modes, Setting.Dependency dependency) {
         return addSetting(new ModeSetting(englishName, chineseName, defaultValue, modes, dependency));
     }
 
@@ -190,7 +198,7 @@ public class Module {
         return addSetting(new ModeSetting(englishName, chineseName, defaultValue, modes));
     }
 
-    protected ColorSetting colorSetting(String englishName, String chineseName, Color defaultValue, AbstractSetting.Dependency dependency) {
+    protected ColorSetting colorSetting(String englishName, String chineseName, Color defaultValue, Setting.Dependency dependency) {
         return addSetting(new ColorSetting(englishName, chineseName, defaultValue, dependency));
     }
 

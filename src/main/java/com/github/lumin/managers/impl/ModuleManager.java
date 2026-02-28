@@ -58,7 +58,7 @@ public class ModuleManager {
 
     public void onKeyEvent(int keyCode, int action) {
         for (final var module : modules) {
-            if (module.keyBind == keyCode) {
+            if (module.getKeyBind() == keyCode) {
                 if (module.getBindMode() == Module.BindMode.Hold) {
                     if (action == InputConstants.PRESS || action == InputConstants.REPEAT) {
                         module.setEnabled(true);

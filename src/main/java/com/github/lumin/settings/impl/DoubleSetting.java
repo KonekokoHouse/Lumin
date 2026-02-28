@@ -1,9 +1,9 @@
 package com.github.lumin.settings.impl;
 
-import com.github.lumin.settings.AbstractSetting;
+import com.github.lumin.settings.Setting;
 import net.minecraft.util.Mth;
 
-public class DoubleSetting extends AbstractSetting<Double> {
+public class DoubleSetting extends Setting<Double> {
 
     private final double min;
     private final double max;

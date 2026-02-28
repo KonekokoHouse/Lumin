@@ -2,7 +2,7 @@ package com.github.lumin.settings;
 
 import com.github.lumin.modules.impl.client.InterFace;
 
-public abstract class AbstractSetting<V> {
+public class Setting<V> {
 
     protected final String englishName;
     protected final String chineseName;
@@ -12,14 +12,18 @@ public abstract class AbstractSetting<V> {
 
     protected final Dependency dependency;
 
-    public AbstractSetting(String englishName, String chineseName, Dependency dependency) {
+    public Setting(String englishName, String chineseName, Dependency dependency) {
         this.englishName = englishName;
         this.chineseName = chineseName;
         this.dependency = dependency;
     }
 
-    public AbstractSetting(String englishName, String chineseName) {
+    public Setting(String englishName, String chineseName) {
         this(englishName, chineseName, () -> true);
+    }
+
+    public String getDisplayName() {
+        return InterFace.isEnglish() ? englishName : chineseName;
     }
 
     public String getEnglishName() {
@@ -28,10 +32,6 @@ public abstract class AbstractSetting<V> {
 
     public String getChineseName() {
         return chineseName;
-    }
-
-    public String getDisplayName() {
-        return InterFace.isEnglish() ? englishName : chineseName;
     }
 
     public V getValue() {

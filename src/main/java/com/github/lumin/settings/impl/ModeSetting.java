@@ -1,8 +1,8 @@
 package com.github.lumin.settings.impl;
 
-import com.github.lumin.settings.AbstractSetting;
+import com.github.lumin.settings.Setting;
 
-public class ModeSetting extends AbstractSetting<String> {
+public class ModeSetting extends Setting<String> {
 
     private final String[] modes;
 

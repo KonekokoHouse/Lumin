@@ -10,6 +10,7 @@ import com.github.lumin.settings.impl.ModeSetting;
 import java.awt.*;
 
 public class InterFace extends Module {
+
     public static final InterFace INSTANCE = new InterFace();
 
     public InterFace() {
@@ -40,4 +41,5 @@ public class InterFace extends Module {
     public static Color getSecondColor() {
         return INSTANCE.secondColor.getValue();
     }
+
 }

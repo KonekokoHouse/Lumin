@@ -5,7 +5,7 @@ import com.github.lumin.gui.IComponent;
 import com.github.lumin.gui.clickgui.component.impl.*;
 import com.github.lumin.modules.Module;
 import com.github.lumin.modules.impl.client.InterFace;
-import com.github.lumin.settings.AbstractSetting;
+import com.github.lumin.settings.Setting;
 import com.github.lumin.settings.impl.*;
 import com.github.lumin.utils.render.MouseUtils;
 import net.minecraft.client.input.CharacterEvent;
@@ -31,7 +31,7 @@ public class ModuleComponent implements IComponent {
     public ModuleComponent(Module module) {
         this.module = module;
 
-        for (AbstractSetting<?> setting : module.getSettings()) {
+        for (Setting<?> setting : module.getSettings()) {
             if (setting instanceof BoolSetting boolValue) {
                 settings.add(new BoolSettingComponent(boolValue));
             } else if (setting instanceof IntSetting intSetting) {
@@ -221,7 +221,7 @@ public class ModuleComponent implements IComponent {
     }
 
     private String getKeyBindText() {
-        int keyBind = module.keyBind;
+        int keyBind = module.getKeyBind();
         if (keyBind <= 0) return InterFace.isEnglish() ? "None" : "无";
         int scancode = GLFW.glfwGetKeyScancode(keyBind);
         String name = GLFW.glfwGetKeyName(keyBind, scancode);
@@ -315,12 +315,12 @@ public class ModuleComponent implements IComponent {
                 return true;
             }
             if (key == GLFW.GLFW_KEY_BACKSPACE || key == GLFW.GLFW_KEY_DELETE) {
-                module.keyBind = 0;
+                module.setKeyBind(0);
                 bindingKey = false;
                 return true;
             }
             if (key != GLFW.GLFW_KEY_UNKNOWN) {
-                module.keyBind = key;
+                module.setKeyBind(key);
                 bindingKey = false;
                 return true;
             }

@@ -86,9 +86,14 @@ public class Lumin {
 
     @SubscribeEvent
     static void onClientSetup(FMLClientSetupEvent event) {
-        LOGGER.info("Welcome to Lumin Meow~");
+        LOGGER.info("Welcome to Lumin, Meow~");
 
         Managers.initManagers();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            Managers.CONFIG.saveNow();
+            Lumin.LOGGER.info("お兄ちゃん、私はあなたを一番愛しています~");
+        }));
 
         Lumin.LOGGER.info("Lumin has loaded successfully, Meow~");
     }

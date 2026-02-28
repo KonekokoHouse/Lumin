@@ -9,7 +9,6 @@ import com.github.lumin.modules.Module;
 import com.google.common.base.Suppliers;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
-import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
 import java.util.function.Supplier;
@@ -20,7 +19,6 @@ public class RenderTest extends Module {
 
     private RenderTest() {
         super("RenderTest", "渲染测试", "idk", "idk", Category.VISUAL);
-        keyBind = GLFW.GLFW_KEY_U;
     }
 
     private final Supplier<RectRenderer> rectRendererSupplier = Suppliers.memoize(RectRenderer::new);

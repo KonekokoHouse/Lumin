@@ -1,10 +1,10 @@
 package com.github.lumin.settings.impl;
 
-import com.github.lumin.settings.AbstractSetting;
+import com.github.lumin.settings.Setting;
 
 import java.awt.*;
 
-public class ColorSetting extends AbstractSetting<Color> {
+public class ColorSetting extends Setting<Color> {
     private final boolean allowAlpha;
 
     public ColorSetting(String englishName, String chineseName, Color defaultValue) {

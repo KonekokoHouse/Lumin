@@ -4,15 +4,12 @@ import com.github.lumin.gui.clickgui.ClickGuiScreen;
 import com.github.lumin.modules.Category;
 import com.github.lumin.modules.Module;
 
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT_SHIFT;
-
 public class ClickGui extends Module {
 
     public static final ClickGui INSTANCE = new ClickGui();
 
     public ClickGui() {
         super("ClickGui", "控制面板", "idk", "idk", Category.CLIENT);
-        keyBind = GLFW_KEY_RIGHT_SHIFT;
     }
 
     @Override

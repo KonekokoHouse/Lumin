@@ -1,8 +1,8 @@
 package com.github.lumin.settings.impl;
 
-import com.github.lumin.settings.AbstractSetting;
+import com.github.lumin.settings.Setting;
 
-public class StringSetting extends AbstractSetting<String> {
+public class StringSetting extends Setting<String> {
 
     public StringSetting(String englishName, String chineseName, String defaultValue, Dependency dependency) {
         super(englishName, chineseName, dependency);

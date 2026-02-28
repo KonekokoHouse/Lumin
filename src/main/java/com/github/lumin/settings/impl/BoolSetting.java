@@ -1,8 +1,8 @@
 package com.github.lumin.settings.impl;
 
-import com.github.lumin.settings.AbstractSetting;
+import com.github.lumin.settings.Setting;
 
-public class BoolSetting extends AbstractSetting<Boolean> {
+public class BoolSetting extends Setting<Boolean> {
 
     public BoolSetting(String name, String chineseName, boolean defaultValue, Dependency dependency) {
         super(name, chineseName, dependency);

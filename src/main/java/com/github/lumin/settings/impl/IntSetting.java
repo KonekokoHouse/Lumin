@@ -1,9 +1,9 @@
 package com.github.lumin.settings.impl;
 
-import com.github.lumin.settings.AbstractSetting;
+import com.github.lumin.settings.Setting;
 import net.minecraft.util.Mth;
 
-public class IntSetting extends AbstractSetting<Integer> {
+public class IntSetting extends Setting<Integer> {
 
     private final int min;
     private final int max;
