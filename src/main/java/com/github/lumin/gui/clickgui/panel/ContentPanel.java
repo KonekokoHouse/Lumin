@@ -3,6 +3,7 @@ package com.github.lumin.gui.clickgui.panel;
 import com.github.lumin.graphics.renderers.RoundRectRenderer;
 import com.github.lumin.graphics.renderers.TextRenderer;
 import com.github.lumin.graphics.shaders.BlurShader;
+import com.github.lumin.graphics.text.StaticFontLoader;
 import com.github.lumin.gui.IComponent;
 import com.github.lumin.gui.clickgui.component.ModuleComponent;
 import com.github.lumin.managers.Managers;
@@ -113,11 +114,11 @@ public class ContentPanel implements IComponent {
         // Render Icon
         String returnIcon = "\uF00D";
         float iconScale = guiScale * 1.2f;
-        float iconW = set.font().getWidth(returnIcon, iconScale);
-        float iconH = set.font().getHeight(iconScale);
+        float iconW = set.font().getWidth(returnIcon, iconScale, StaticFontLoader.ICONS);
+        float iconH = set.font().getHeight(iconScale, StaticFontLoader.ICONS);
         float iconX = iconBoxX + (iconBoxWidth - iconW) / 2f;
         float iconY = boxY + (searchHeight - iconH) / 2f - guiScale;
-        set.font().addText(returnIcon, iconX, iconY, iconScale, new Color(200, 200, 200));
+        set.font().addText(returnIcon, iconX, iconY, iconScale, new Color(200, 200, 200), StaticFontLoader.ICONS);
 
         lastIconBoxX = iconBoxX;
         lastIconBoxY = boxY;
@@ -292,7 +293,7 @@ public class ContentPanel implements IComponent {
 
     }
 
-    private class ModuleCard {
+    private static class ModuleCard {
 
         private final Module module;
         private float x;
@@ -309,7 +310,7 @@ public class ContentPanel implements IComponent {
 
             boolean hovered = MouseUtils.isHovering(x, y, width, height, mouseX, mouseY);
 
-            Color bgColor = module.isEnabled() ? new Color(55, 180, 90, 130) : new Color(40, 40, 40, 130);
+            Color bgColor = module.isEnabled() ? new Color(148, 148, 148, 130) : new Color(40, 40, 40, 130);
             if (hovered) {
                 bgColor = new Color(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), Math.min(255, bgColor.getAlpha() + 30));
             }
