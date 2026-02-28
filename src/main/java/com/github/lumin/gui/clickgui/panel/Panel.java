@@ -32,24 +32,29 @@ public class Panel implements IComponent {
     public void render(RendererSet set, int mouseX, int mouseY, float deltaTicks) {
 
         float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
-
         float screenWidth = mc.getWindow().getGuiScaledWidth();
         float screenHeight = mc.getWindow().getGuiScaledHeight();
 
-        float width = screenWidth * 0.5f; // 占比为屏幕的 1/2
-        float height = width * 9.0f / 16.0f; // 16:9
+        float targetWidth = screenWidth * 0.5f;
+        float minWidth = 400f * guiScale;
+        float width = Math.max(targetWidth, minWidth);
+        float height = width * 9.0f / 16.0f;
 
-        float scaledWidth = width * guiScale;
-        float scaledHeight = height * guiScale;
+        if (height > screenHeight * 0.9f) {
+            height = screenHeight * 0.9f;
+            width = height * 16.0f / 9.0f;
+        }
 
-        float x = screenWidth / 2.0f - scaledWidth / 2.0f;
-        float y = screenHeight / 2.0f - scaledHeight / 2.0f;
+        float scaledWidth = width;
+        float scaledHeight = height;
+        float x = (screenWidth - scaledWidth) / 2.0f;
+        float y = (screenHeight - scaledHeight) / 2.0f;
 
-        float sidebarWidth = width / 4;  // 比例为1:4
+        float sidebarWidth = Math.max(120f * guiScale, width / 4);
         float contentWidth = width - sidebarWidth;
 
         sidebar.setBounds(x, y, sidebarWidth, height);
-        contentPanel.setBounds(x + sidebarWidth * guiScale, y, contentWidth, height);
+        contentPanel.setBounds(x + sidebarWidth, y, contentWidth, height);
 
         sidebar.render(this.set, mouseX, mouseY, deltaTicks);
         contentPanel.render(this.set, mouseX, mouseY, deltaTicks);
