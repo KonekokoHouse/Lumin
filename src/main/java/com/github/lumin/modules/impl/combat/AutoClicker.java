@@ -36,8 +36,7 @@ public class AutoClicker extends Module {
         if (nullCheck()) return;
 
         // Check if left mouse button is held down
-        boolean isLeftButtonDown = mc.mouseHandler.isLeftPressed();
-        boolean shouldClick = isLeftButtonDown;
+        boolean shouldClick = mc.mouseHandler.isLeftPressed();
 
         if (autoAttack.getValue() && mc.hitResult != null && mc.hitResult.getType() == HitResult.Type.ENTITY) {
             shouldClick = true;

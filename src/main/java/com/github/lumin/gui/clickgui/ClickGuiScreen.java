@@ -5,7 +5,6 @@ import com.github.lumin.graphics.shaders.BlurShader;
 import com.github.lumin.gui.clickgui.component.impl.ColorSettingComponent;
 import com.github.lumin.gui.clickgui.panel.Panel;
 import com.github.lumin.modules.impl.client.ClickGui;
-import com.github.lumin.modules.impl.client.InterFace;
 import com.github.lumin.utils.render.animation.Animation;
 import com.github.lumin.utils.render.animation.Easing;
 import net.minecraft.client.gui.GuiGraphics;
@@ -44,8 +43,8 @@ public class ClickGuiScreen extends Screen {
         openAnimation.run(1f);
         float alpha = openAnimation.getValue();
 
-        if (InterFace.INSTANCE.backgroundBlur.getValue() && InterFace.INSTANCE.blurMode.is("全屏")) {
-            BlurShader.drawQuadBlur(0, 0, guiW, guiH, InterFace.INSTANCE.blurStrength.getValue().floatValue());
+        if (ClickGui.INSTANCE.backgroundBlur.getValue() && ClickGui.INSTANCE.blurMode.is("全屏")) {
+            BlurShader.drawQuadBlur(0, 0, guiW, guiH, ClickGui.INSTANCE.blurStrength.getValue().floatValue());
         }
 
         rectRenderer.addRect(0, 0, guiW, guiH, new Color(18, 18, 18, (int)(110 * alpha)));

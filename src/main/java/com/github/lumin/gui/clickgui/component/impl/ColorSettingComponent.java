@@ -2,7 +2,7 @@ package com.github.lumin.gui.clickgui.component.impl;
 
 import com.github.lumin.graphics.shaders.BlurShader;
 import com.github.lumin.gui.Component;
-import com.github.lumin.modules.impl.client.InterFace;
+import com.github.lumin.modules.impl.client.ClickGui;
 import com.github.lumin.settings.impl.ColorSetting;
 import com.github.lumin.utils.render.MouseUtils;
 import com.github.lumin.utils.render.animation.Animation;
@@ -137,7 +137,7 @@ public class ColorSettingComponent extends Component {
 
     public void renderOverlayBlur(int mouseX, int mouseY, float partialTicks) {
         if (!opened) return;
-        if (!InterFace.INSTANCE.backgroundBlur.getValue()) return;
+        if (!ClickGui.INSTANCE.backgroundBlur.getValue()) return;
         float panelW = ColorPicker.preferredWidth(scale);
         float panelH = ColorPicker.preferredHeight(scale, setting.isAllowAlpha());
         float panelX = lastSwatchX + lastSwatchW - panelW;
@@ -154,7 +154,7 @@ public class ColorSettingComponent extends Component {
         float x = cx - w / 2.0f;
         float y = cy - h / 2.0f;
         float radius = 7.0f * scale * t;
-        BlurShader.drawRoundedBlur(x, y, w, h, radius, InterFace.INSTANCE.blurStrength.getValue().floatValue() * t);
+        BlurShader.drawRoundedBlur(x, y, w, h, radius, ClickGui.INSTANCE.blurStrength.getValue().floatValue() * t);
     }
 
     @Override

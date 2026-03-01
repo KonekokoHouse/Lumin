@@ -4,7 +4,7 @@ import com.github.lumin.graphics.shaders.BlurShader;
 import com.github.lumin.graphics.text.StaticFontLoader;
 import com.github.lumin.gui.IComponent;
 import com.github.lumin.modules.Category;
-import com.github.lumin.modules.impl.client.InterFace;
+import com.github.lumin.modules.impl.client.ClickGui;
 import com.github.lumin.utils.render.MouseUtils;
 import com.github.lumin.utils.render.animation.Animation;
 import com.github.lumin.utils.render.animation.Easing;
@@ -61,16 +61,16 @@ public class Sidebar implements IComponent {
     @Override
     public void render(RendererSet set, int mouseX, int mouseY, float deltaTicks, float alpha) {
 
-        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float guiScale = ClickGui.INSTANCE.scale.getValue().floatValue();
         float radius = guiScale * 20f;
 
         float width = this.width * guiScale;
         float height = this.height * guiScale;
 
-//        if (InterFace.INSTANCE.backgroundBlur.getValue() && InterFace.INSTANCE.blurMode.is("OnlyCategory")) {
-//            BlurShader.drawRoundedBlur(x, y, width, height, radius, InterFace.INSTANCE.blurStrength.getValue().floatValue());
+//        if (ClickGui.INSTANCE.backgroundBlur.getValue() && ClickGui.INSTANCE.blurMode.is("OnlyCategory")) {
+//            BlurShader.drawRoundedBlur(x, y, width, height, radius, ClickGui.INSTANCE.blurStrength.getValue().floatValue());
 //        }
-        BlurShader.drawRoundedBlur(x, y, width, height, radius, 0, 0, radius, new Color(0, 0, 0, 0), InterFace.INSTANCE.blurStrength.getValue().floatValue(), 15.0f);
+        BlurShader.drawRoundedBlur(x, y, width, height, radius, 0, 0, radius, new Color(0, 0, 0, 0), ClickGui.INSTANCE.blurStrength.getValue().floatValue(), 15.0f);
         set.bottomRoundRect().addRoundRect(x, y, width, height, radius, 0, 0, radius, applyAlpha(new Color(0x5F000000,true), alpha));
 
         var player = mc.player;
@@ -224,7 +224,7 @@ public class Sidebar implements IComponent {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean focused) {
-        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float guiScale = ClickGui.INSTANCE.scale.getValue().floatValue();
         float scaledWidth = width * guiScale;
         float scaledHeight = height * guiScale;
         if (!MouseUtils.isHovering(x, y, scaledWidth, scaledHeight, event.x(), event.y())) return false;
@@ -246,7 +246,7 @@ public class Sidebar implements IComponent {
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float guiScale = ClickGui.INSTANCE.scale.getValue().floatValue();
         float scaledWidth = width * guiScale;
         float scaledHeight = height * guiScale;
         return MouseUtils.isHovering(x, y, scaledWidth, scaledHeight, event.x(), event.y());

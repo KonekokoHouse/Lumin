@@ -1,6 +1,7 @@
 package com.github.lumin.settings.impl;
 
 import com.github.lumin.settings.Setting;
+
 import java.awt.*;
 
 public class ColorSetting extends Setting<Color> {
