@@ -201,7 +201,7 @@ public class ContentPanel implements IComponent {
         renderIconBox(set, iconBoxX, boxY, iconBoxWidth, searchHeight, guiScale, iconBoxHovered, "\uF00D");
 
         boolean searchHovered = MouseUtils.isHovering(searchBoxX, boxY, searchBoxWidth, searchHeight, mouseX, mouseY);
-        String placeholder = InterFace.isEnglish() ? "Search..." : "搜索...";
+        String placeholder = "搜索...";
         renderSearchBox(set, searchBoxX, boxY, searchBoxWidth, searchHeight, guiScale, listSearchFocused, searchHovered, listSearchText, placeholder);
 
         lastSearchBoxX = searchBoxX;
@@ -807,7 +807,7 @@ public class ContentPanel implements IComponent {
         float radius = guiScale * 8f;
         float panelWidth = this.width * guiScale;
         float panelHeight = this.height * guiScale;
-        BlurShader.drawRoundedBlur(x, y, panelWidth, panelHeight, 0, radius, radius, 0, new Color(30, 30, 30, 245), InterFace.INSTANCE.blurStrength.getValue().floatValue(), 1.0f);
+        BlurShader.drawRoundedBlur(x, y, panelWidth, panelHeight, 0, radius, radius, 0, new Color(0, 0, 0, 0), InterFace.INSTANCE.blurStrength.getValue().floatValue(), 15.0f);
 
         if (isSettingsActive() && !this.closeSettingsRequested) {
             this.targetState = 1;

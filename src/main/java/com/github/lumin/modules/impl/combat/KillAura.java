@@ -32,23 +32,23 @@ public class KillAura extends Module {
     public static final KillAura INSTANCE = new KillAura();
 
     public KillAura() {
-        super("Killaura", "", "Auto fuck b", "", Category.COMBAT);
+        super("Killaura", "杀戮光环", "Auto fuck b", "清者自清", Category.COMBAT);
     }
 
-    public ModeSetting movefix = modeSetting("Move Fix", "", "Silent", new String[]{"Silent", "Strict"});
-    public ModeSetting targetMode = modeSetting("Target Mode", "", "Single", new String[]{"Single", "Switch", "Multi"});
-    public DoubleSetting range = doubleSetting("Attack Range", "", 3.0, 1.0, 6.0, 0.01);
-    public DoubleSetting aimRange = doubleSetting("Aim Range", " ", 4.0, 1.0, 6.0, 0.1);
-    public IntSetting speed = intSetting("Rotation Speed", "", 10, 1, 10, 1);
-    public DoubleSetting fov = doubleSetting("Fov", " ", 360.0, 10.0, 360.0, 1.0);
-    public BoolSetting cooldownATK = boolSetting("1.9 CoolDown Attack", " ", false);
-    public BoolSetting esp = boolSetting("Target ESP", "", false);
-    public DoubleSetting cps = doubleSetting("Min APS", "", 10.0, 1.0, 20.0, 1.0);
-    public DoubleSetting maxCps = doubleSetting("Max APS", " ", 12, 1, 20, 1);
-    public BoolSetting player = boolSetting("Attack Player", "", true);
-    public BoolSetting mob = boolSetting("Attack Mob", "", true);
-    public BoolSetting animal = boolSetting("Attack Animal", "", true);
-    public BoolSetting Invisible = boolSetting("Attack Invisible", "", true);
+    public ModeSetting movefix = modeSetting("Move Fix", "移动修正模式", "Silent", new String[]{"Silent", "Strict"});
+    public ModeSetting targetMode = modeSetting("Target Mode", "目标选择方式", "Single", new String[]{"Single", "Switch", "Multi"});
+    public DoubleSetting range = doubleSetting("Attack Range", "最大攻击距离", 3.0, 1.0, 6.0, 0.01);
+    public DoubleSetting aimRange = doubleSetting("Aim Range", "最大瞄准距离", 4.0, 1.0, 6.0, 0.1);
+    public IntSetting speed = intSetting("Rotation Speed", "视角旋转速度", 10, 1, 10, 1);
+    public DoubleSetting fov = doubleSetting("Fov", "生效视野角度", 360.0, 10.0, 360.0, 1.0);
+    public BoolSetting cooldownATK = boolSetting("1.9 CoolDown Attack", "是否等待攻击冷却", false);
+    public BoolSetting esp = boolSetting("Target ESP", "显示目标轮廓", false);
+    public DoubleSetting cps = doubleSetting("Min APS", "最小每秒攻击次数", 10.0, 1.0, 20.0, 1.0);
+    public DoubleSetting maxCps = doubleSetting("Max APS", "最大每秒攻击次数", 12, 1, 20, 1);
+    public BoolSetting player = boolSetting("Attack Player", "攻击玩家", true);
+    public BoolSetting mob = boolSetting("Attack Mob", "攻击敌对生物", true);
+    public BoolSetting animal = boolSetting("Attack Animal", "攻击被动生物", true);
+    public BoolSetting Invisible = boolSetting("Attack Invisible", "攻击隐身实体", true);
 
     public static LivingEntity target;
     public static List<LivingEntity> targets = new ArrayList<>();

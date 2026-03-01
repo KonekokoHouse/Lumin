@@ -13,7 +13,7 @@ out vec4 fragColor;
 float roundedBoxSDF(vec2 center, vec2 size, vec4 r) {
     // p.x > 0: Right, p.y > 0: Bottom (assuming center is 0,0)
     // r order: TL, TR, BR, BL
-    
+
     // Select based on quadrant
     // x>0 ? (TR, BR) : (TL, BL)
     vec2 r_side = (center.x > 0.0) ? r.yz : r.xw;
@@ -53,7 +53,7 @@ void main() {
     float Brightness = Params1.w;
 
     vec2 halfSize = uSize / 2.0;
-    
+
     // Check coordinate system.
     // In BlurProgram:
     // pxY = (-y + mc.getWindow().getGuiScaledHeight() - height) * scale;
@@ -61,14 +61,14 @@ void main() {
     // This implies uLocation is Bottom-Left in OpenGL coords?
     // If gl_FragCoord is (0,0) at BL.
     // If we want consistent behavior with RoundRectRenderer (where we handled quadrants).
-    
+
     // Let's assume standard behavior:
     // gl_FragCoord is pixel pos.
     // uLocation is BL corner of the rect.
     // Center = uLocation + halfSize.
-    
+
     float dist = roundedBoxSDF(gl_FragCoord.xy - uLocation - halfSize, halfSize, radii);
-    
+
     float smoothedAlpha = (1.0 - smoothstep(0.0, 1.0, dist));
     fragColor = vec4(blur().rgb, smoothedAlpha * Brightness);
 }

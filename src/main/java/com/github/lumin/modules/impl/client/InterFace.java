@@ -17,7 +17,7 @@ public class InterFace extends Module {
         super("Interface", "界面", "idk", "idk", Category.CLIENT);
     }
 
-    public final ModeSetting language = modeSetting("Language", "语言", "English", new String[]{"English", "Chinese"});
+//    public final ModeSetting language = modeSetting("Language", "语言", "Chinese", new String[]{"English", "Chinese"});
 
     public final DoubleSetting scale = doubleSetting("Gui Scale", "界面缩放", 1.0, 0.5, 2.0, 0.05);
 
@@ -30,9 +30,6 @@ public class InterFace extends Module {
     public final DoubleSetting blurStrength = doubleSetting("Blur Strength", "模糊强度", 8.0, 1.0, 20.0, 0.5, backgroundBlur::getValue, true);
     public final ModeSetting blurMode = modeSetting("Blur Mode", "模糊方式", "OnlyCategory", new String[]{"FullScreen", "OnlyCategory"}, backgroundBlur::getValue);
 
-    public static boolean isEnglish() {
-        return INSTANCE.language.is("English");
-    }
 
     public static Color getMainColor() {
         return INSTANCE.mainColor.getValue();

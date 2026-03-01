@@ -23,7 +23,7 @@ public class Setting<V> {
     }
 
     public String getDisplayName() {
-        return InterFace.isEnglish() ? englishName : chineseName;
+        return chineseName;
     }
 
     public String getEnglishName() {

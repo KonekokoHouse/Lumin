@@ -1,16 +1,12 @@
 package com.github.lumin.modules;
 
-import com.github.lumin.modules.impl.client.InterFace;
-
-import java.util.Locale;
-
 public enum Category {
 
-    COMBAT("\uF01D", "战斗", "Attacks"),
-    PLAYER("\uF002", "玩家", "Actions"),
-    VISUAL("\uF019", "渲染", "Visuals"),
+    COMBAT("\uF01D", "战斗", "ComBat"),
+    PLAYER("\uF002", "玩家", "Player"),
+    VISUAL("\uF019", "渲染", "Render"),
     MISC("\uF008", "其他", "Others"),
-    CLIENT("\uF003", "客户端", "Config");
+    CLIENT("\uF003", "客户端", "Client");
 
     public final String icon;
     private final String cnName;
@@ -23,12 +19,6 @@ public enum Category {
     }
 
     public String getName() {
-        if (InterFace.isEnglish()) {
-            String lower = name().toLowerCase(Locale.ROOT);
-            return Character.toUpperCase(lower.charAt(0)) + lower.substring(1);
-        } else {
             return cnName;
         }
     }
-
-}

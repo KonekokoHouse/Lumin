@@ -51,7 +51,6 @@ public class ModeSettingComponent extends Component {
 
         float nameW = set.font().getWidth(name, textScale);
         float gap = 8.0f * scale;
-
         float controlH = Math.max(10.0f * scale, getHeight() - 4.0f * scale);
         float controlX = getX() + padding + nameW + gap;
         float controlY = getY() + (getHeight() - controlH) / 2.0f;
@@ -86,26 +85,31 @@ public class ModeSettingComponent extends Component {
         }
         selectedXAnimation.run(selectedX);
         float ax = selectedXAnimation.getValue();
-
         Color selectedBg = new Color(255, 255, 255, 26);
         float selRadius = Math.min(6.0f * scale, controlH / 2.0f);
-        set.bottomRoundRect().addRoundRect(ax, controlY, segW, controlH, selRadius, selectedBg);
+
+        if (selectedIndex == 0) {
+            set.bottomRoundRect().addRoundRect(ax, controlY, segW, controlH, selRadius, 0.0f, 0.0f, selRadius, selectedBg);
+        } else if (selectedIndex == modes.length - 1) {
+            set.bottomRoundRect().addRoundRect(ax, controlY, segW, controlH, 0.0f, selRadius, selRadius, 0.0f, selectedBg);
+        } else {
+            set.bottomRoundRect().addRoundRect(ax, controlY, segW, controlH, 0.0f, 0.0f, 0.0f, 0.0f, selectedBg);
+        }
 
         for (int i = 0; i < modes.length; i++) {
             float segX = controlX + segW * i;
-
             if (i > 0) {
                 set.bottomRoundRect().addRoundRect(segX, controlY + 2.0f * scale, 1.0f * scale, controlH - 4.0f * scale, 0.0f, new Color(255, 255, 255, 14));
             }
-
             String mode = modes[i] == null ? "" : modes[i];
             float maxTextW = Math.max(0.0f, segW - segInnerPad * 2.0f);
             String display = ellipsize(mode, set.font(), textScale, maxTextW);
-
             Color textColor = (i == selectedIndex) ? Color.WHITE : new Color(200, 200, 200);
+            float textHeight = set.font().getHeight(textScale);
+            float modeTextY = controlY + (controlH - textHeight) / 2.0f - 0.5f * scale;
             float modeW = set.font().getWidth(display, textScale);
             float modeX = segX + (segW - modeW) / 2.0f;
-            set.font().addText(display, modeX, textY, textScale, textColor);
+            set.font().addText(display, modeX, modeTextY, textScale, textColor);
         }
     }
 
@@ -113,14 +117,11 @@ public class ModeSettingComponent extends Component {
     public boolean mouseClicked(MouseButtonEvent event, boolean focused) {
         if (!setting.isAvailable()) return super.mouseClicked(event, focused);
         if (event.button() != 0) return super.mouseClicked(event, focused);
-
         String[] modes = setting.getModes();
         if (modes == null || modes.length == 0) return super.mouseClicked(event, focused);
-
         if (!MouseUtils.isHovering(lastControlX, lastControlY, lastControlW, lastControlH, event.x(), event.y())) {
             return super.mouseClicked(event, focused);
         }
-
         float segW = lastControlW / modes.length;
         if (segW <= 0.0f) return true;
         int index = (int) ((event.x() - lastControlX) / segW);
@@ -133,11 +134,9 @@ public class ModeSettingComponent extends Component {
         if (text == null) return "";
         if (maxWidth <= 0.0f) return "";
         if (font.getWidth(text, scale) <= maxWidth) return text;
-
         String ellipsis = "...";
         float ellipsisW = font.getWidth(ellipsis, scale);
         if (ellipsisW > maxWidth) return "";
-
         int lo = 0;
         int hi = text.length();
         while (lo < hi) {

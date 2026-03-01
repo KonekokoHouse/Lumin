@@ -73,8 +73,8 @@ public class ModuleComponent implements IComponent {
         float bindPad = 6.0f * guiScale;
         float bindBoxW = Math.max(40.0f * guiScale, bindTextW + bindPad * 2.0f);
 
-        String mode0 = InterFace.isEnglish() ? "Toggle" : "切换";
-        String mode1 = InterFace.isEnglish() ? "Hold" : "按住";
+        String mode0 = "切换";
+        String mode1 = "按住";
         float modeTextScale = 0.80f * guiScale;
         float modePad = 7.0f * guiScale;
         float segW = Math.max(set.font().getWidth(mode0, modeTextScale), set.font().getWidth(mode1, modeTextScale)) + modePad * 2.0f;
@@ -222,7 +222,7 @@ public class ModuleComponent implements IComponent {
 
     private String getKeyBindText() {
         int keyBind = module.getKeyBind();
-        if (keyBind <= 0) return InterFace.isEnglish() ? "None" : "无";
+        if (keyBind <= 0) return "无";
         int scancode = GLFW.glfwGetKeyScancode(keyBind);
         String name = GLFW.glfwGetKeyName(keyBind, scancode);
         if (name != null && !name.isEmpty()) {

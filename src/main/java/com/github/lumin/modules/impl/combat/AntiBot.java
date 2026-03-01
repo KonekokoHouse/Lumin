@@ -23,7 +23,7 @@ public class AntiBot extends Module {
     public static final AntiBot INSTANCE = new AntiBot();
 
     public AntiBot() {
-        super("AntiBot", "反人机", "Fuck bot", "no jb", Category.COMBAT);
+        super("AntiBot", "反人机", "Fuck bot", "不攻击反人类", Category.COMBAT);
     }
 
     private static final Map<UUID, Long> uuids = new ConcurrentHashMap<>();

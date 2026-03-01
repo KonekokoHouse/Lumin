@@ -127,7 +127,7 @@ public class Module {
     }
 
     public String getName() {
-        return InterFace.isEnglish() ? englishName : chineseName;
+        return chineseName;
     }
 
     public String getEnglishName() {
@@ -139,7 +139,7 @@ public class Module {
     }
 
     public String getDescription() {
-        return InterFace.isEnglish() ? englishDescription : chineseDescription;
+        return chineseDescription;
     }
 
     public String getEnglishDescription() {
