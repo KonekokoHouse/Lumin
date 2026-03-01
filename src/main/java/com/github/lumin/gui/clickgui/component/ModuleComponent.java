@@ -34,15 +34,21 @@ public class ModuleComponent implements IComponent {
     private final Animation bgAnimation = new Animation(Easing.ISLAND_OUT, 1000L);
     private final Animation exitAnimation = new Animation(Easing.ISLAND_OUT, 1000L);
     private float sourceX, sourceY, sourceW, sourceH;
+    private float targetCardX, targetCardY, targetCardW, targetCardH;
     private float exitStartX, exitStartY, exitStartW, exitStartH;
     private boolean animationInitialized = false;
     private boolean isExiting = false;
+    private boolean exitAnimationPrepared = false;
 
-    public void initAnimation(float sourceX, float sourceY, float sourceW, float sourceH) {
+    public void initAnimation(float sourceX, float sourceY, float sourceW, float sourceH, float targetX, float targetY, float targetW, float targetH) {
         this.sourceX = sourceX;
         this.sourceY = sourceY;
         this.sourceW = sourceW;
         this.sourceH = sourceH;
+        this.x = targetX;
+        this.y = targetY;
+        this.width = targetW;
+        this.height = targetH;
         this.bgAnimation.setStartValue(0.0f);
         this.bgAnimation.run(1.0f);
         this.exitAnimation.setStartValue(1.0f);
@@ -51,18 +57,27 @@ public class ModuleComponent implements IComponent {
         this.isExiting = false;
     }
 
-    public void startExitAnimation() {
+    public void startExitAnimation(float cardX, float cardY, float cardW, float cardH) {
         this.exitStartX = x;
         this.exitStartY = y;
         this.exitStartW = width;
         this.exitStartH = height;
+        this.targetCardX = cardX;
+        this.targetCardY = cardY;
+        this.targetCardW = cardW;
+        this.targetCardH = cardH;
         this.exitAnimation.setStartValue(1.0f);
         this.exitAnimation.run(0.0f);
         this.isExiting = true;
+        this.exitAnimationPrepared = true;
     }
 
     public boolean isAnimationFinished() {
         return isExiting && exitAnimation.getValue() <= 0.01f;
+    }
+
+    public boolean isExiting() {
+        return isExiting;
     }
 
     public ModuleComponent(Module module) {
@@ -95,6 +110,8 @@ public class ModuleComponent implements IComponent {
 
         if (!isExiting) {
             bgAnimation.run(1.0f);
+        } else {
+            exitAnimation.run(0.0f);
         }
         float progress = Mth.clamp(isExiting ? exitAnimation.getValue() : bgAnimation.getValue(), 0.0f, 1.0f);
 
@@ -105,11 +122,11 @@ public class ModuleComponent implements IComponent {
         float animRadius = radius;
 
         if (animationInitialized) {
-            if (isExiting) {
-                animX = sourceX + (exitStartX - sourceX) * progress;
-                animY = sourceY + (exitStartY - sourceY) * progress;
-                animW = sourceW + (exitStartW - sourceW) * progress;
-                animH = sourceH + (exitStartH - sourceH) * progress;
+            if (isExiting && exitAnimationPrepared) {
+                animX = targetCardX + (exitStartX - targetCardX) * progress;
+                animY = targetCardY + (exitStartY - targetCardY) * progress;
+                animW = targetCardW + (exitStartW - targetCardW) * progress;
+                animH = targetCardH + (exitStartH - targetCardH) * progress;
             } else {
                 animX = sourceX + (x - sourceX) * progress;
                 animY = sourceY + (y - sourceY) * progress;
@@ -476,18 +493,22 @@ public class ModuleComponent implements IComponent {
     }
 
     public void setX(float x) {
+        if (isExiting) return;
         this.x = x;
     }
 
     public void setY(float y) {
+        if (isExiting) return;
         this.y = y;
     }
 
     public void setWidth(float width) {
+        if (isExiting) return;
         this.width = width;
     }
 
     public void setHeight(float height) {
+        if (isExiting) return;
         this.height = height;
     }
 

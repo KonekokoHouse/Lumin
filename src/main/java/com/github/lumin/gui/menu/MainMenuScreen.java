@@ -43,7 +43,7 @@ public class MainMenuScreen extends Screen {
     private final Minecraft mc = Minecraft.getInstance();
     private LuminTexture backgroundTexture;
     private boolean textureLoaded = false;
-    private final Animation slideAnimation = new Animation(Easing.DYNAMIC_ISLAND, 800);
+    private final Animation slideAnimation = new Animation(Easing.SMOOTH_STEP, 800);
     private boolean isFirstRender = true;
 
     public MainMenuScreen() {

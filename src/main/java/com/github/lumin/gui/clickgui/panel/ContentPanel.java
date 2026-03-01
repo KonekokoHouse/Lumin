@@ -372,10 +372,10 @@ public class ContentPanel implements IComponent {
             for (ModuleCard card : moduleCards) {
                 if (card.width > 0 && card.height > 0 && MouseUtils.isHovering(card.x, card.y, card.width, card.height, event.x(), event.y())) {
                     requestedSettingsModule = card.module;
-                    sourceCardX = card.x;
-                    sourceCardY = card.y;
-                    sourceCardW = card.width;
-                    sourceCardH = card.height;
+                    sourceCardX = card.getRenderX();
+                    sourceCardY = card.getRenderY();
+                    sourceCardW = card.getRenderW();
+                    sourceCardH = card.getRenderH();
                     listDraggingScrollbar = false;
                     return true;
                 }
@@ -472,17 +472,19 @@ public class ContentPanel implements IComponent {
         float searchHeight = 24 * guiScale;
         float availableWidth = this.width * guiScale - padding * 2 - spacing;
 
-        lastIconBoxX = this.x + padding;
-        lastIconBoxY = this.y + padding;
-        lastIconBoxW = availableWidth * 0.1f;
-        lastIconBoxH = searchHeight;
-        renderIconBox(set, lastIconBoxX, lastIconBoxY, lastIconBoxW, searchHeight, guiScale, MouseUtils.isHovering(lastIconBoxX, lastIconBoxY, lastIconBoxW, searchHeight, mouseX, mouseY), alpha);
+        if (!settingsComponent.isExiting()) {
+            lastIconBoxX = this.x + padding;
+            lastIconBoxY = this.y + padding;
+            lastIconBoxW = availableWidth * 0.1f;
+            lastIconBoxH = searchHeight;
+            renderIconBox(set, lastIconBoxX, lastIconBoxY, lastIconBoxW, searchHeight, guiScale, MouseUtils.isHovering(lastIconBoxX, lastIconBoxY, lastIconBoxW, searchHeight, mouseX, mouseY), alpha);
 
-        lastSettingsSearchBoxX = lastIconBoxX + lastIconBoxW + spacing;
-        lastSettingsSearchBoxY = lastIconBoxY;
-        lastSettingsSearchBoxW = availableWidth * 0.9f;
-        lastSettingsSearchBoxH = searchHeight;
-        renderSearchBox(set, lastSettingsSearchBoxX, lastSettingsSearchBoxY, lastSettingsSearchBoxW, searchHeight, guiScale, settingsSearchFocused, MouseUtils.isHovering(lastSettingsSearchBoxX, lastSettingsSearchBoxY, lastSettingsSearchBoxW, searchHeight, mouseX, mouseY), settingsSearchText, alpha);
+            lastSettingsSearchBoxX = lastIconBoxX + lastIconBoxW + spacing;
+            lastSettingsSearchBoxY = lastIconBoxY;
+            lastSettingsSearchBoxW = availableWidth * 0.9f;
+            lastSettingsSearchBoxH = searchHeight;
+            renderSearchBox(set, lastSettingsSearchBoxX, lastSettingsSearchBoxY, lastSettingsSearchBoxW, searchHeight, guiScale, settingsSearchFocused, MouseUtils.isHovering(lastSettingsSearchBoxX, lastSettingsSearchBoxY, lastSettingsSearchBoxW, searchHeight, mouseX, mouseY), settingsSearchText, alpha);
+        }
 
         lastSettingsX = this.x + padding;
         lastSettingsY = lastIconBoxY + searchHeight + padding;
@@ -515,10 +517,12 @@ public class ContentPanel implements IComponent {
         setupScissor(lastSettingsX, lastSettingsY, lastSettingsW, lastSettingsH, (float) mc.getWindow().getGuiScale(), mc.getWindow().getWidth(), mc.getWindow().getHeight(), mc.getWindow().getGuiScaledHeight());
 
         RendererSet settingsSet = new RendererSet(settingsRoundRect, set.topRoundRect(), set.texture(), settingsFont, pickingRound, pickingRect, pickerRound, pickingText);
-        settingsComponent.setX(lastSettingsX);
-        settingsComponent.setY(lastSettingsY - settingsScrollOffset);
-        settingsComponent.setWidth(lastSettingsW);
-        settingsComponent.setHeight(contentH);
+        if (!settingsComponent.isExiting()) {
+            settingsComponent.setX(lastSettingsX);
+            settingsComponent.setY(lastSettingsY - settingsScrollOffset);
+            settingsComponent.setWidth(lastSettingsW);
+            settingsComponent.setHeight(contentH);
+        }
         settingsComponent.render(settingsSet, mouseX, mouseY, deltaTicks);
 
         settingsRoundRect.drawAndClear();
@@ -534,7 +538,7 @@ public class ContentPanel implements IComponent {
         pickerRound.drawAndClear();
         pickingText.drawAndClear();
 
-        if (settingsMaxScroll > 0.0f) {
+        if (settingsMaxScroll > 0.0f && !settingsComponent.isExiting()) {
             renderScrollbar(set, lastSettingsScrollbarX, lastSettingsY, lastSettingsScrollbarW, lastSettingsH, lastSettingsThumbY, lastSettingsThumbH, settingsDraggingScrollbar, MouseUtils.isHovering(lastSettingsScrollbarX, lastSettingsY, lastSettingsScrollbarW, lastSettingsH, mouseX, mouseY), MouseUtils.isHovering(lastSettingsScrollbarX, lastSettingsThumbY, lastSettingsScrollbarW, lastSettingsThumbH, mouseX, mouseY), alpha);
         }
     }
@@ -661,6 +665,26 @@ public class ContentPanel implements IComponent {
             return scaleAnimation.getValue() > 0.01f || !isAnimatingExit;
         }
 
+        private float getRenderX() {
+            float rw = width;
+            float centerX = x + width / 2.0f;
+            return centerX - rw / 2.0f;
+        }
+
+        private float getRenderY() {
+            float rh = height;
+            float centerY = y + height / 2.0f;
+            return centerY - rh / 2.0f;
+        }
+
+        private float getRenderW() {
+            return width;
+        }
+
+        private float getRenderH() {
+            return height;
+        }
+
         private void render(RoundRectRenderer round, TextRenderer text, int mouseX, int mouseY, float guiScale, float alpha) {
             if (width <= 0 || height <= 0) return;
 
@@ -745,11 +769,13 @@ public class ContentPanel implements IComponent {
             renderSettingsView(set, mouseX, mouseY, deltaTicks, alpha);
         } else if (currentState == 3) {
             closeSettingsRequested = true;
+            renderListView(set, mouseX, mouseY, deltaTicks, alpha);
             if (settingsComponent != null) {
                 if (!exitAnimationStarted) {
-                    settingsComponent.startExitAnimation();
+                    settingsComponent.startExitAnimation(sourceCardX, sourceCardY, sourceCardW, sourceCardH);
                     exitAnimationStarted = true;
                 }
+                renderSettingsView(set, mouseX, mouseY, deltaTicks, alpha);
                 if (settingsComponent.isAnimationFinished()) {
                     currentState = 0;
                     clearSettingsModule();
@@ -757,7 +783,6 @@ public class ContentPanel implements IComponent {
                     exitAnimationStarted = false;
                 }
             }
-            renderSettingsView(set, mouseX, mouseY, deltaTicks, alpha);
         } else if (currentState == 1) {
             renderSettingsView(set, mouseX, mouseY, deltaTicks, alpha);
         } else {
@@ -804,7 +829,16 @@ public class ContentPanel implements IComponent {
                 closeSettingsRequested = false;
                 setSettingsModuleWithSource(open, sourceCardX, sourceCardY, sourceCardW, sourceCardH);
                 if (settingsComponent != null) {
-                    settingsComponent.initAnimation(sourceCardX, sourceCardY, sourceCardW, sourceCardH);
+                    float padding = 8 * guiScale;
+                    float searchHeight = 24 * guiScale;
+                    float targetX = this.x + padding;
+                    float targetY = this.y + padding + searchHeight + padding;
+                    float targetW = Math.max(0.0f, this.width * guiScale - padding * 2 - 4.0f * guiScale - 4.0f * guiScale);
+                    settingsComponent.setFilterText("");
+                    int itemCount = settingsComponent.getFilteredVisibleCount();
+                    float titleH = 18.0f * guiScale;
+                    float targetH = 8.0f * guiScale + titleH + 6.0f * guiScale + (itemCount > 0 ? itemCount * 18.0f * guiScale + Math.max(0, itemCount - 1) * 4.0f * guiScale : 0) + 8.0f * guiScale;
+                    settingsComponent.initAnimation(sourceCardX, sourceCardY, sourceCardW, sourceCardH, targetX, targetY, targetW, targetH);
                 }
                 currentState = 2;
                 viewAnimation.setStartValue(0.0f);
