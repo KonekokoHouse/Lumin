@@ -14,21 +14,21 @@ public class AutoClicker extends Module {
 
     public static final AutoClicker INSTANCE = new AutoClicker();
 
-    private final ModeSetting mode = modeSetting("Mode", "模式", "1.8", new String[]{"1.8", "1.9+"});
-    private final IntSetting minCPS = intSetting("Min CPS", "最小CPS", 8, 1, 20, 1, () -> mode.is("1.8"));
-    private final IntSetting maxCPS = intSetting("Max CPS", "最大CPS", 12, 1, 20, 1, () -> mode.is("1.8"));
-    private final BoolSetting jitter = boolSetting("Jitter", "抖动", false, () -> mode.is("1.8"));
-    private final BoolSetting autoAttack = boolSetting("Auto Attack", "自动攻击", false);
+    private final ModeSetting mode = modeSetting("模式", "1.8", new String[]{"1.8", "1.9+"});
+    private final IntSetting minCPS = intSetting("最小CPS", 8, 1, 20, 1, () -> mode.is("1.8"));
+    private final IntSetting maxCPS = intSetting("最大CPS", 12, 1, 20, 1, () -> mode.is("1.8"));
+    private final BoolSetting jitter = boolSetting("抖动", false, () -> mode.is("1.8"));
+    private final BoolSetting autoAttack = boolSetting("自动攻击", false);
 
-    private final IntSetting minDelay = intSetting("Min Delay", "最小延迟", 100, 0, 500, 10, () -> mode.is("1.9+"));
-    private final IntSetting maxDelay = intSetting("Max Delay", "最大延迟", 200, 0, 500, 10, () -> mode.is("1.9+"));
+    private final IntSetting minDelay = intSetting("最小延迟", 100, 0, 500, 10, () -> mode.is("1.9+"));
+    private final IntSetting maxDelay = intSetting("最大延迟", 200, 0, 500, 10, () -> mode.is("1.9+"));
 
     private long lastClickTime = 0;
     private long nextDelay = 0;
     private long readyTime = 0;
 
     public AutoClicker() {
-        super("AutoClicker", "连点器", "b", "我不是AC我是多鼠标！", Category.COMBAT);
+        super("连点器", "我不是AC我是多鼠标！", Category.COMBAT);
     }
 
     @SubscribeEvent

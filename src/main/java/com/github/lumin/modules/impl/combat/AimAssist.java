@@ -25,23 +25,23 @@ import java.util.List;
 public class AimAssist extends Module {
     public static final AimAssist INSTANCE = new AimAssist();
 
-    public ModeSetting mode = modeSetting("Mode", "平滑模式", "Fast", new String[]{"Fast", "Legit"});
-    public DoubleSetting range = doubleSetting("Range", "目标距离", 4.2, 1.0, 8.0, 0.1);
-    public DoubleSetting speed = doubleSetting("Speed", "旋转速度", 10.0, 1.0, 180.0, 1.0);
-    public DoubleSetting strength = doubleSetting("Strength", "插值强度", 0.1, 0.01, 1.0, 0.01);
-    public BoolSetting ignoreScreen = boolSetting("Ignore Screen", "屏幕打开时忽略", true);
-    public BoolSetting ignoreInventory = boolSetting("Ignore Inventory", "物品栏打开时忽略", true);
-    public BoolSetting player = boolSetting("Target Player", "瞄准玩家", true);
-    public BoolSetting mob = boolSetting("Target Mob", "瞄准敌对生物", true);
-    public BoolSetting animal = boolSetting("Target Animal", "瞄准动物", true);
-    public BoolSetting invisible = boolSetting("Target Invisible", "瞄准隐身实体", false);
+    public ModeSetting mode = modeSetting("平滑模式", "快速", new String[]{"快速", "平稳"});
+    public DoubleSetting range = doubleSetting("目标距离", 4.2, 1.0, 8.0, 0.1);
+    public DoubleSetting speed = doubleSetting("旋转速度", 10.0, 1.0, 180.0, 1.0);
+    public DoubleSetting strength = doubleSetting("插值强度", 0.1, 0.01, 1.0, 0.01);
+    public BoolSetting ignoreScreen = boolSetting("屏幕打开时忽略", true);
+    public BoolSetting ignoreInventory = boolSetting("物品栏打开时忽略", true);
+    public BoolSetting player = boolSetting("瞄准玩家", true);
+    public BoolSetting mob = boolSetting("瞄准敌对生物", true);
+    public BoolSetting animal = boolSetting("瞄准动物", true);
+    public BoolSetting invisible = boolSetting("瞄准隐身实体", false);
 
     private Vector2f targetRotation;
     private Vector2f playerRotation;
     private LivingEntity currentTarget;
 
     public AimAssist() {
-        super("AimAssist", "自动瞄准", "Zimiaowaigua", "我练的好", Category.COMBAT);
+        super("自动瞄准", "我练的好", Category.COMBAT);
     }
 
     @Override
@@ -150,8 +150,8 @@ public class AimAssist extends Module {
 
     private AngleSmooth getAngleSmooth() {
         return switch (mode.getValue()) {
-            case "Fast" -> new LinearAngleSmooth(speed.getValue().floatValue());
-            case "Legit" -> new InterpolationAngleSmooth(strength.getValue().floatValue());
+            case "快速" -> new LinearAngleSmooth(speed.getValue().floatValue());
+            case "平稳" -> new InterpolationAngleSmooth(strength.getValue().floatValue());
             default -> null;
         };
     }

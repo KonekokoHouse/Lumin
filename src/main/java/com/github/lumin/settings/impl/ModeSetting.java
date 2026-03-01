@@ -6,15 +6,15 @@ public class ModeSetting extends Setting<String> {
 
     private final String[] modes;
 
-    public ModeSetting(String englishName, String chineseName, String defaultValue, String[] modes, Dependency dependency) {
-        super(englishName, chineseName, dependency);
+    public ModeSetting(String chineseName, String defaultValue, String[] modes, Dependency dependency) {
+        super(chineseName, dependency);
         this.value = defaultValue;
         this.defaultValue = defaultValue;
         this.modes = modes;
     }
 
-    public ModeSetting(String englishName, String chineseName, String defaultValue, String[] modes) {
-        this(englishName, chineseName, defaultValue, modes, () -> true);
+    public ModeSetting(String chineseName, String defaultValue, String[] modes) {
+        this(chineseName, defaultValue, modes, () -> true);
     }
 
     public boolean is(String string) {
@@ -22,23 +22,15 @@ public class ModeSetting extends Setting<String> {
     }
 
     public void setMode(String mode) {
-        String[] arrV = this.modes;
-        int n = arrV.length;
-        int n2 = 0;
-        while (n2 < n) {
-            String e = arrV[n2];
-            if (e == null)
-                return;
-            if (e.equalsIgnoreCase(mode)) {
+        for (String e : modes) {
+            if (e != null && e.equalsIgnoreCase(mode)) {
                 this.setValue(e);
+                return;
             }
-            ++n2;
         }
     }
 
-    public String[] getModes() {
-        return modes;
-    }
+    public String[] getModes() { return modes; }
 
     public int getModeIndex() {
         for (int i = 0; i < modes.length; i++) {
@@ -48,5 +40,4 @@ public class ModeSetting extends Setting<String> {
         }
         return 0;
     }
-
 }

@@ -1,7 +1,6 @@
 package com.github.lumin.modules;
 
 import com.github.lumin.Lumin;
-import com.github.lumin.modules.impl.client.InterFace;
 import com.github.lumin.settings.Setting;
 import com.github.lumin.settings.impl.*;
 import net.minecraft.client.Minecraft;
@@ -13,10 +12,8 @@ import java.util.List;
 
 public class Module {
 
-    private final String englishName;
     private final String chineseName;
 
-    private final String englishDescription;
     private final String chineseDescription;
 
     public Category category;
@@ -31,17 +28,12 @@ public class Module {
 
     public final List<Setting<?>> settings = new ArrayList<>();
 
-    //private final BoolSetting hidden; // 控制是否在ModuleListHud中显示
-
     protected static final Minecraft mc = Minecraft.getInstance();
 
-    public Module(String englishName, String chineseName, String englishDescription, String chineseDescription, Category category) {
-        this.englishName = englishName;
+    public Module(String chineseName, String chineseDescription, Category category) {
         this.chineseName = chineseName;
-        this.englishDescription = englishDescription;
         this.chineseDescription = chineseDescription;
         this.category = category;
-        //addSetting(this.hidden = new BoolSetting("Hidden", "隐藏", false));
     }
 
     protected boolean nullCheck() {
@@ -58,7 +50,6 @@ public class Module {
         enabled = !enabled;
 
         if (enabled) {
-            // Will throw an exception when the module doesn't have any listeners
             try {
                 NeoForge.EVENT_BUS.register(this);
             } catch (Exception ignored) {
@@ -66,7 +57,7 @@ public class Module {
 
             onEnable();
 
-            Lumin.LOGGER.info("{} has been enabled", englishName);
+            Lumin.LOGGER.info("{} 已启用", chineseName);
         } else {
             try {
                 NeoForge.EVENT_BUS.unregister(this);
@@ -75,7 +66,7 @@ public class Module {
 
             onDisable();
 
-            Lumin.LOGGER.info("{} has been disabled", englishName);
+            Lumin.LOGGER.info("{} 已禁用", chineseName);
         }
     }
 
@@ -102,10 +93,6 @@ public class Module {
         return setting;
     }
 
-    //public boolean isHidden() {
-    //    return hidden.getValue();
-    //}
-
     public List<Setting<?>> getSettings() {
         return settings;
     }
@@ -130,10 +117,6 @@ public class Module {
         return chineseName;
     }
 
-    public String getEnglishName() {
-        return englishName;
-    }
-
     public String getChineseName() {
         return chineseName;
     }
@@ -142,68 +125,64 @@ public class Module {
         return chineseDescription;
     }
 
-    public String getEnglishDescription() {
-        return englishDescription;
-    }
-
     public String getChineseDescription() {
         return chineseDescription;
     }
 
-    protected IntSetting intSetting(String englishName, String chineseName, int defaultValue, int min, int max, int step, Setting.Dependency dependency) {
-        return addSetting(new IntSetting(englishName, chineseName, defaultValue, min, max, step, dependency, false));
+    protected IntSetting intSetting(String chineseName, int defaultValue, int min, int max, int step, Setting.Dependency dependency) {
+        return addSetting(new IntSetting(chineseName, defaultValue, min, max, step, dependency, false));
     }
 
-    protected IntSetting intSetting(String englishName, String chineseName, int defaultValue, int min, int max, int step, Setting.Dependency dependency, boolean percentageMode) {
-        return addSetting(new IntSetting(englishName, chineseName, defaultValue, min, max, step, dependency, percentageMode));
+    protected IntSetting intSetting(String chineseName, int defaultValue, int min, int max, int step, Setting.Dependency dependency, boolean percentageMode) {
+        return addSetting(new IntSetting(chineseName, defaultValue, min, max, step, dependency, percentageMode));
     }
 
-    protected IntSetting intSetting(String englishName, String chineseName, int defaultValue, int min, int max, int step) {
-        return addSetting(new IntSetting(englishName, chineseName, defaultValue, min, max, step));
+    protected IntSetting intSetting(String chineseName, int defaultValue, int min, int max, int step) {
+        return addSetting(new IntSetting(chineseName, defaultValue, min, max, step));
     }
 
-    protected BoolSetting boolSetting(String englishName, String chineseName, boolean defaultValue, Setting.Dependency dependency) {
-        return addSetting(new BoolSetting(englishName, chineseName, defaultValue, dependency));
+    protected BoolSetting boolSetting(String chineseName, boolean defaultValue, Setting.Dependency dependency) {
+        return addSetting(new BoolSetting(chineseName, defaultValue, dependency));
     }
 
-    protected BoolSetting boolSetting(String englishName, String chineseName, boolean defaultValue) {
-        return addSetting(new BoolSetting(englishName, chineseName, defaultValue));
+    protected BoolSetting boolSetting(String chineseName, boolean defaultValue) {
+        return addSetting(new BoolSetting(chineseName, defaultValue));
     }
 
-    protected DoubleSetting doubleSetting(String englishName, String chineseName, double defaultValue, double min, double max, double step, Setting.Dependency dependency) {
-        return addSetting(new DoubleSetting(englishName, chineseName, defaultValue, min, max, step, dependency, false));
+    protected DoubleSetting doubleSetting(String chineseName, double defaultValue, double min, double max, double step, Setting.Dependency dependency) {
+        return addSetting(new DoubleSetting(chineseName, defaultValue, min, max, step, dependency, false));
     }
 
-    protected DoubleSetting doubleSetting(String englishName, String chineseName, double defaultValue, double min, double max, double step, Setting.Dependency dependency, boolean percentageMode) {
-        return addSetting(new DoubleSetting(englishName, chineseName, defaultValue, min, max, step, dependency, percentageMode));
+    protected DoubleSetting doubleSetting(String chineseName, double defaultValue, double min, double max, double step, Setting.Dependency dependency, boolean percentageMode) {
+        return addSetting(new DoubleSetting(chineseName, defaultValue, min, max, step, dependency, percentageMode));
     }
 
-    protected DoubleSetting doubleSetting(String englishName, String chineseName, double defaultValue, double min, double max, double step) {
-        return addSetting(new DoubleSetting(englishName, chineseName, defaultValue, min, max, step));
+    protected DoubleSetting doubleSetting(String chineseName, double defaultValue, double min, double max, double step) {
+        return addSetting(new DoubleSetting(chineseName, defaultValue, min, max, step));
     }
 
-    protected StringSetting stringSetting(String englishName, String chineseName, String defaultValue, Setting.Dependency dependency) {
-        return addSetting(new StringSetting(englishName, chineseName, defaultValue, dependency));
+    protected StringSetting stringSetting(String chineseName, String defaultValue, Setting.Dependency dependency) {
+        return addSetting(new StringSetting(chineseName, defaultValue, dependency));
     }
 
-    protected StringSetting stringSetting(String englishName, String chineseName, String defaultValue) {
-        return addSetting(new StringSetting(englishName, chineseName, defaultValue));
+    protected StringSetting stringSetting(String chineseName, String defaultValue) {
+        return addSetting(new StringSetting(chineseName, defaultValue));
     }
 
-    protected ModeSetting modeSetting(String englishName, String chineseName, String defaultValue, String[] modes, Setting.Dependency dependency) {
-        return addSetting(new ModeSetting(englishName, chineseName, defaultValue, modes, dependency));
+    protected ModeSetting modeSetting(String chineseName, String defaultValue, String[] modes, Setting.Dependency dependency) {
+        return addSetting(new ModeSetting(chineseName, defaultValue, modes, dependency));
     }
 
-    protected ModeSetting modeSetting(String englishName, String chineseName, String defaultValue, String[] modes) {
-        return addSetting(new ModeSetting(englishName, chineseName, defaultValue, modes));
+    protected ModeSetting modeSetting(String chineseName, String defaultValue, String[] modes) {
+        return addSetting(new ModeSetting(chineseName, defaultValue, modes));
     }
 
-    protected ColorSetting colorSetting(String englishName, String chineseName, Color defaultValue, Setting.Dependency dependency) {
-        return addSetting(new ColorSetting(englishName, chineseName, defaultValue, dependency));
+    protected ColorSetting colorSetting(String chineseName, Color defaultValue, Setting.Dependency dependency) {
+        return addSetting(new ColorSetting(chineseName, defaultValue, dependency));
     }
 
-    protected ColorSetting colorSetting(String englishName, String chineseName, Color defaultValue) {
-        return addSetting(new ColorSetting(englishName, chineseName, defaultValue));
+    protected ColorSetting colorSetting(String chineseName, Color defaultValue) {
+        return addSetting(new ColorSetting(chineseName, defaultValue));
     }
 
 }

@@ -7,6 +7,6 @@ public class TestC extends Module {
     public static TestC INSTANCE = new TestC();
 
     public TestC() {
-        super("TestC", "idk", "idk", "idk", Category.CLIENT);
+        super("TestC", "idk", Category.CLIENT);
     }
 }

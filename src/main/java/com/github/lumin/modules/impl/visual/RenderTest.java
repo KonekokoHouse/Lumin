@@ -18,7 +18,7 @@ public class RenderTest extends Module {
     public static final RenderTest INSTANCE = new RenderTest();
 
     private RenderTest() {
-        super("RenderTest", "渲染测试", "idk", "idk", Category.VISUAL);
+        super("渲染测试", "idk", Category.VISUAL);
     }
 
     private final Supplier<RectRenderer> rectRendererSupplier = Suppliers.memoize(RectRenderer::new);
@@ -53,9 +53,9 @@ public class RenderTest extends Module {
         rectRenderer.addHorizontalGradient(baseX, baseY + 230, 200, 40, new Color(255, 0, 0, 180), new Color(0, 255, 0, 180));
         rectRenderer.addVerticalGradient(baseX + 220, baseY + 230, 200, 40, new Color(0, 0, 255, 180), new Color(255, 255, 0, 180));
 
-        textRenderer.addText("Lumin Render Test", baseX, baseY + 290, 1.5f, new Color(255, 255, 255));
-        textRenderer.addText("Rectangles, RoundRects, Lines, Circles, Gradients", baseX, baseY + 320, 1.0f, new Color(200, 200, 200));
-        textRenderer.addText("Animation: " + String.format("%.2f", anim), baseX, baseY + 345, 1.0f, new Color(150, 255, 150));
+        textRenderer.addText("Lumin 渲染测试", baseX, baseY + 290, 1.5f, new Color(255, 255, 255));
+        textRenderer.addText("矩形、圆角矩形、线条、圆形、渐变", baseX, baseY + 320, 1.0f, new Color(200, 200, 200));
+        textRenderer.addText("动画: " + String.format("%.2f", anim), baseX, baseY + 345, 1.0f, new Color(150, 255, 150));
 
         rectRenderer.drawAndClear();
         roundRectRenderer.drawAndClear();

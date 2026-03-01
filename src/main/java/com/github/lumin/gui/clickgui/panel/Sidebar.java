@@ -57,17 +57,16 @@ public class Sidebar implements IComponent {
     public void render(RendererSet set, int mouseX, int mouseY, float deltaTicks) {
 
         float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
-        float radius = guiScale * 8f;
+        float radius = guiScale * 20f;
 
         float width = this.width * guiScale;
         float height = this.height * guiScale;
 
-        if (InterFace.INSTANCE.backgroundBlur.getValue() && InterFace.INSTANCE.blurMode.is("OnlyCategory")) {
-            BlurShader.drawRoundedBlur(x, y, width, height, radius, InterFace.INSTANCE.blurStrength.getValue().floatValue());
-        }
-
-        Color color = new Color(25, 25, 25, 130);
-        set.bottomRoundRect().addRoundRect(x, y, width, height, radius, 0, 0, radius, color);
+//        if (InterFace.INSTANCE.backgroundBlur.getValue() && InterFace.INSTANCE.blurMode.is("OnlyCategory")) {
+//            BlurShader.drawRoundedBlur(x, y, width, height, radius, InterFace.INSTANCE.blurStrength.getValue().floatValue());
+//        }
+        BlurShader.drawRoundedBlur(x, y, width, height, radius, 0, 0, radius, new Color(0, 0, 0, 0), InterFace.INSTANCE.blurStrength.getValue().floatValue(), 15.0f);
+        set.bottomRoundRect().addRoundRect(x, y, width, height, radius, 0, 0, radius, new Color(0x5F000000,true));
 
         var player = mc.player;
         String playerName = null;
@@ -84,11 +83,11 @@ public class Sidebar implements IComponent {
 
         // Outline
         float outline = 0.5f * guiScale;
-        set.bottomRoundRect().addRoundRect(headX - outline, headY - outline, headSize + outline * 2, headSize + outline * 2, radius + outline, Color.WHITE);
+        set.bottomRoundRect().addRoundRect(headX - outline, headY - outline, headSize + outline * 2, headSize + outline * 2, radius - 12 + outline, Color.WHITE);
 
         // Face
         if (skin != null) {
-            set.texture().addRoundedTexture(skin.texturePath(), headX, headY, headSize, headSize, radius, 0.125f, 0.125f, 0.25f, 0.25f, Color.WHITE);
+            set.texture().addRoundedTexture(skin.texturePath(), headX, headY, headSize, headSize, radius - 12, 0.125f, 0.125f, 0.25f, 0.25f, Color.WHITE);
         }
 
         float textX = headX + headSize + 6 * guiScale;
@@ -144,7 +143,7 @@ public class Sidebar implements IComponent {
         float categoryHeight = categoryBars.size() * (itemHeight + itemPadding) + itemPadding;
 
         if (categoryHeight > 0) {
-            set.bottomRoundRect().addRoundRect(headX, categoryY, width - padding * 2, categoryHeight, radius, new Color(35, 35, 35, 180));
+            set.bottomRoundRect().addRoundRect(headX, categoryY, width - padding * 2, categoryHeight, radius - 12, new Color(35, 35, 35, 180));
 
             float currentY = categoryY + itemPadding;
             float itemWidth = width - padding * 2 - itemPadding * 2;

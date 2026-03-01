@@ -46,7 +46,7 @@ public class Scaffold extends Module {
     public static final Scaffold INSTANCE = new Scaffold();
 
     public Scaffold() {
-        super("Scaffold", "自动搭路", "Automatically place block under your feet", "紫薇", Category.PLAYER);
+        super("自动搭路", "紫薇", Category.PLAYER);
 
         NeoForge.EVENT_BUS.addListener((RenderLevelStageEvent.AfterEntities event) -> {
             if (nullCheck()) return;
@@ -84,24 +84,24 @@ public class Scaffold extends Module {
         });
     }
 
-    private final ModeSetting mode = modeSetting("Mode", "模式", "Telly", new String[]{"GodBridge", "Telly"});
-    private final ModeSetting swapMode = modeSetting("Swap Mode", "切换模式", "Normal", new String[]{"None", "Normal", "InvSwitch", "Silent"});
-    private final BoolSetting swapBack = boolSetting("SwapBack", "停用还原", true, () -> swapMode.is("Normal"));
-    private final BoolSetting swingHand = boolSetting("Swing Hand", "挥手", true);
-    private final IntSetting tellyTick = intSetting("Telly Tick", "Telly延迟", 0, 0, 8, 1, () -> mode.is("Telly"));
-    private final BoolSetting keepY = boolSetting("Keep Y", "保持Y轴", true, () -> mode.is("Telly"));
-    private final IntSetting rotationSpeed = intSetting("Rotation Speed", "旋转速度", 10, 1, 10, 1);
-    private final IntSetting rotationBackSpeed = intSetting("Rotation Back Speed", "回转速度", 10, 0, 10, 1, () -> mode.is("Telly"));
-    private final BoolSetting sideCheck = boolSetting("Strict Side", "严格放置面", false);
-    private final BoolSetting moveFix = boolSetting("Movement Fix", "移动修复", true);
-    private final BoolSetting safeWalk = boolSetting("Safe Walk", "安全行走", true);
+    private final ModeSetting mode = modeSetting("模式", "Telly", new String[]{"神桥", "Telly"});
+    private final ModeSetting swapMode = modeSetting("切换模式", "普通", new String[]{"无", "普通", "物品栏切换", "静默"});
+    private final BoolSetting swapBack = boolSetting("停用还原", true, () -> swapMode.is("普通"));
+    private final BoolSetting swingHand = boolSetting("挥手", true);
+    private final IntSetting tellyTick = intSetting("Telly延迟", 0, 0, 8, 1, () -> mode.is("Telly"));
+    private final BoolSetting keepY = boolSetting("保持Y轴", true, () -> mode.is("Telly"));
+    private final IntSetting rotationSpeed = intSetting("旋转速度", 10, 1, 10, 1);
+    private final IntSetting rotationBackSpeed = intSetting("回转速度", 10, 0, 10, 1, () -> mode.is("Telly"));
+    private final BoolSetting sideCheck = boolSetting("严格放置面", false);
+    private final BoolSetting moveFix = boolSetting("移动修复", true);
+    private final BoolSetting safeWalk = boolSetting("安全行走", true);
 
-    private final BoolSetting render = boolSetting("Render", "渲染", true);
-    private final BoolSetting fade = boolSetting("Fade", "变淡", false, render::getValue);
-    private final IntSetting fadeTime = intSetting("FadeTime", "淡出时间", 500, 0, 3000, 50, () -> render.getValue() && fade.getValue());
-    private final BoolSetting shrink = boolSetting("Shrink", "收缩", true, render::getValue);
-    private final ColorSetting sideColor = colorSetting("Side Color", "侧面颜色", new Color(255, 183, 197, 100), render::getValue);
-    private final ColorSetting lineColor = colorSetting("Line Color", "线条颜色", new Color(255, 105, 180), render::getValue);
+    private final BoolSetting render = boolSetting("渲染", true);
+    private final BoolSetting fade = boolSetting("变淡", false, render::getValue);
+    private final IntSetting fadeTime = intSetting("淡出时间", 500, 0, 3000, 50, () -> render.getValue() && fade.getValue());
+    private final BoolSetting shrink = boolSetting("收缩", true, render::getValue);
+    private final ColorSetting sideColor = colorSetting("侧面颜色", new Color(255, 183, 197, 100), render::getValue);
+    private final ColorSetting lineColor = colorSetting("线条颜色", new Color(255, 105, 180), render::getValue);
 
     private int yLevel;
     private int airTicks;
@@ -132,7 +132,7 @@ public class Scaffold extends Module {
 
     @SubscribeEvent
     private void onMotion(MotionEvent e) {
-        if (safeWalk.getValue() && mode.is("GodBridge")) {
+        if (safeWalk.getValue() && mode.is("神桥")) {
             mc.options.keyShift.setDown(mc.player.onGround() && SafeWalk.isOnBlockEdge(0.3F));
         }
     }
@@ -170,13 +170,13 @@ public class Scaffold extends Module {
         }
 
         switch (swapMode.getValue()) {
-            case "Silent" -> {
+            case "静默" -> {
                 if (swapped) {
                     swapped = false;
                     InvUtils.swapBack();
                 }
             }
-            case "InvSwitch" -> {
+            case "物品栏切换" -> {
                 if (invSwapped) {
                     invSwapped = false;
                     InvUtils.invSwapBack();
@@ -249,7 +249,7 @@ public class Scaffold extends Module {
 
     private FindItemResult findItem() {
         switch (swapMode.getValue()) {
-            case "None" -> {
+            case "无" -> {
                 if (InvUtils.testInOffHand(itemStack -> validItem(itemStack, blockInfo.position))) {
                     return new FindItemResult(40, mc.player.getOffhandItem().getCount(), mc.player.getOffhandItem().getMaxStackSize());
                 }
@@ -258,7 +258,7 @@ public class Scaffold extends Module {
                 }
                 return new FindItemResult(-1, 0, 0);
             }
-            case "InvSwitxh" -> {
+            case "物品栏切换" -> {
                 return InvUtils.find(itemStack -> validItem(itemStack, blockInfo.position));
             }
             default -> {
@@ -272,13 +272,13 @@ public class Scaffold extends Module {
         if (!BlockUtils.canPlaceAt(blockInfo.blockPos)) return;
 
         switch (swapMode.getValue()) {
-            case "Normal" -> {
+            case "普通" -> {
                 boolean should = swapBack.getValue();
                 InvUtils.swap(item.slot(), should);
                 shouldSwapBack = should;
             }
-            case "Silent" -> swapped = InvUtils.swap(item.slot(), true);
-            case "InvSwitch" -> invSwapped = InvUtils.invSwap(item.slot());
+            case "静默" -> swapped = InvUtils.swap(item.slot(), true);
+            case "物品栏切换" -> invSwapped = InvUtils.invSwap(item.slot());
         }
 
         boolean hasRotated = RaytraceUtils.overBlock(Managers.ROTATION.getRotation(), blockInfo.dir, blockInfo.position, sideCheck.getValue());
@@ -341,7 +341,7 @@ public class Scaffold extends Module {
 
             Vec3 relevant = hit.subtract(baseVec);
             if (relevant.lengthSqr() <= 4.5 * 4.5 && relevant.dot(new Vec3(dir.getUnitVec3i())) >= 0) {
-                if (dir.getOpposite() == Direction.UP && mode.is("GodBridge") && MoveUtils.isMoving() && !mc.options.keyJump.isDown()) {
+                if (dir.getOpposite() == Direction.UP && mode.is("神桥") && MoveUtils.isMoving() && !mc.options.keyJump.isDown()) {
                     continue;
                 }
                 blockInfo = new BlockInfo(pos, new BlockPos(baseBlock), dir.getOpposite());

@@ -4,7 +4,6 @@ import com.github.lumin.modules.impl.client.InterFace;
 
 public class Setting<V> {
 
-    protected final String englishName;
     protected final String chineseName;
 
     protected V value;
@@ -12,22 +11,17 @@ public class Setting<V> {
 
     protected final Dependency dependency;
 
-    public Setting(String englishName, String chineseName, Dependency dependency) {
-        this.englishName = englishName;
+    public Setting(String chineseName, Dependency dependency) {
         this.chineseName = chineseName;
         this.dependency = dependency;
     }
 
-    public Setting(String englishName, String chineseName) {
-        this(englishName, chineseName, () -> true);
+    public Setting(String chineseName) {
+        this(chineseName, () -> true);
     }
 
     public String getDisplayName() {
         return chineseName;
-    }
-
-    public String getEnglishName() {
-        return englishName;
     }
 
     public String getChineseName() {

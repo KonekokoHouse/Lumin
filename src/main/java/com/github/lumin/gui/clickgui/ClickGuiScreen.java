@@ -36,7 +36,7 @@ public class ClickGuiScreen extends Screen {
         final int guiW = getMinecraft().getWindow().getGuiScaledWidth();
         final int guiH = getMinecraft().getWindow().getGuiScaledHeight();
 
-        if (InterFace.INSTANCE.backgroundBlur.getValue() && InterFace.INSTANCE.blurMode.is("FullScreen")) {
+        if (InterFace.INSTANCE.backgroundBlur.getValue() && InterFace.INSTANCE.blurMode.is("全屏")) {
             BlurShader.drawQuadBlur(0, 0, guiW, guiH, InterFace.INSTANCE.blurStrength.getValue().floatValue());
         }
 

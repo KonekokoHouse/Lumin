@@ -9,7 +9,7 @@ public class ClickGui extends Module {
     public static final ClickGui INSTANCE = new ClickGui();
 
     public ClickGui() {
-        super("ClickGui", "控制面板", "idk", "idk", Category.CLIENT);
+        super("控制面板", "idk", Category.CLIENT);
     }
 
     @Override

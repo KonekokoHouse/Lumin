@@ -32,23 +32,23 @@ public class KillAura extends Module {
     public static final KillAura INSTANCE = new KillAura();
 
     public KillAura() {
-        super("Killaura", "杀戮光环", "Auto fuck b", "清者自清", Category.COMBAT);
+        super("杀戮光环", "清者自清", Category.COMBAT);
     }
 
-    public ModeSetting movefix = modeSetting("Move Fix", "移动修正模式", "Silent", new String[]{"Silent", "Strict"});
-    public ModeSetting targetMode = modeSetting("Target Mode", "目标选择方式", "Single", new String[]{"Single", "Switch", "Multi"});
-    public DoubleSetting range = doubleSetting("Attack Range", "最大攻击距离", 3.0, 1.0, 6.0, 0.01);
-    public DoubleSetting aimRange = doubleSetting("Aim Range", "最大瞄准距离", 4.0, 1.0, 6.0, 0.1);
-    public IntSetting speed = intSetting("Rotation Speed", "视角旋转速度", 10, 1, 10, 1);
-    public DoubleSetting fov = doubleSetting("Fov", "生效视野角度", 360.0, 10.0, 360.0, 1.0);
-    public BoolSetting cooldownATK = boolSetting("1.9 CoolDown Attack", "是否等待攻击冷却", false);
-    public BoolSetting esp = boolSetting("Target ESP", "显示目标轮廓", false);
-    public DoubleSetting cps = doubleSetting("Min APS", "最小每秒攻击次数", 10.0, 1.0, 20.0, 1.0);
-    public DoubleSetting maxCps = doubleSetting("Max APS", "最大每秒攻击次数", 12, 1, 20, 1);
-    public BoolSetting player = boolSetting("Attack Player", "攻击玩家", true);
-    public BoolSetting mob = boolSetting("Attack Mob", "攻击敌对生物", true);
-    public BoolSetting animal = boolSetting("Attack Animal", "攻击被动生物", true);
-    public BoolSetting Invisible = boolSetting("Attack Invisible", "攻击隐身实体", true);
+    public ModeSetting movefix = modeSetting("移动修正模式", "静默", new String[]{"静默", "严格"});
+    public ModeSetting targetMode = modeSetting("目标选择方式", "单个", new String[]{"单个", "切换", "多个"});
+    public DoubleSetting range = doubleSetting("最大攻击距离", 3.0, 1.0, 6.0, 0.01);
+    public DoubleSetting aimRange = doubleSetting("最大瞄准距离", 4.0, 1.0, 6.0, 0.1);
+    public IntSetting speed = intSetting("视角旋转速度", 10, 1, 10, 1);
+    public DoubleSetting fov = doubleSetting("生效视野角度", 360.0, 10.0, 360.0, 1.0);
+    public BoolSetting cooldownATK = boolSetting("是否等待攻击冷却", false);
+    public BoolSetting esp = boolSetting("显示目标轮廓", false);
+    public DoubleSetting cps = doubleSetting("最小每秒攻击次数", 10.0, 1.0, 20.0, 1.0);
+    public DoubleSetting maxCps = doubleSetting("最大每秒攻击次数", 12, 1, 20, 1);
+    public BoolSetting player = boolSetting("攻击玩家", true);
+    public BoolSetting mob = boolSetting("攻击敌对生物", true);
+    public BoolSetting animal = boolSetting("攻击被动生物", true);
+    public BoolSetting Invisible = boolSetting("攻击隐身实体", true);
 
     public static LivingEntity target;
     public static List<LivingEntity> targets = new ArrayList<>();
@@ -75,12 +75,12 @@ public class KillAura extends Module {
             return;
         }
 
-        if (targetMode.is("Single")) {
+        if (targetMode.is("单个")) {
             target = targets.getFirst();
-        } else if (targetMode.is("Switch")) {
+        } else if (targetMode.is("切换")) {
             if (switchIndex >= targets.size()) switchIndex = 0;
             target = targets.get(switchIndex);
-        } else if (targetMode.is("Multi")) {
+        } else if (targetMode.is("多个")) {
             target = targets.getFirst();
         }
 
@@ -88,7 +88,7 @@ public class KillAura extends Module {
 
         if (target != null) {
             float[] rotations = RotationUtils.getRotationsToEntity(target);
-            boolean silent = movefix.is("Silent");
+            boolean silent = movefix.is("静默");
             Managers.ROTATION.setRotations(new Vector2f(rotations[0], rotations[1]), speed.getValue().floatValue(), MovementFix.ON, Priority.Medium);
         }
     }
@@ -100,7 +100,7 @@ public class KillAura extends Module {
         if (mc.player.isUsingItem() || mc.player.isBlocking()) return;
         if (mc.player.getAttackStrengthScale(0.5f) < 1.0f && cooldownATK.getValue()) return;
         while (attacks >= 1) {
-            if (targetMode.is("Multi")) {
+            if (targetMode.is("多个")) {
                 for (LivingEntity t : targets) {
                     if (RotationUtils.getEyeDistanceToEntity(t) <= range.getValue() && mc.hitResult.getType() == HitResult.Type.ENTITY) {
                         doAttack();
@@ -110,8 +110,8 @@ public class KillAura extends Module {
             } else {
                 if (RotationUtils.getEyeDistanceToEntity(target) <= range.getValue() && mc.hitResult.getType() == HitResult.Type.ENTITY && mc.crosshairPickEntity.is(target)) {
                     doAttack();
-                    if (targetMode.is("Switch")) switchIndex++;
-                } else if (targetMode.is("Switch")) {
+                    if (targetMode.is("切换")) switchIndex++;
+                } else if (targetMode.is("切换")) {
                     switchIndex++;
                 }
             }

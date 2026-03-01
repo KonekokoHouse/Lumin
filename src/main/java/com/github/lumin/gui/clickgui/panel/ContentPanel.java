@@ -502,7 +502,7 @@ public class ContentPanel implements IComponent {
         lastIconBoxH = searchHeight;
 
         boolean titleHovered = MouseUtils.isHovering(titleBoxX, boxY, titleBoxWidth, searchHeight, mouseX, mouseY);
-        renderSearchBox(set, titleBoxX, boxY, titleBoxWidth, searchHeight, guiScale, settingsSearchFocused, titleHovered, settingsSearchText, "Search...");
+        renderSearchBox(set, titleBoxX, boxY, titleBoxWidth, searchHeight, guiScale, settingsSearchFocused, titleHovered, settingsSearchText, "搜索...");
 
         lastSettingsSearchBoxX = titleBoxX;
         lastSettingsSearchBoxY = boxY;
@@ -804,9 +804,14 @@ public class ContentPanel implements IComponent {
     @Override
     public void render(RendererSet set, int mouseX, int mouseY, float deltaTicks) {
         float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
-        float radius = guiScale * 8f;
+        float radius = guiScale * 20f;
         float panelWidth = this.width * guiScale;
         float panelHeight = this.height * guiScale;
+//        set.topRoundRect().addRoundRect(x, y, panelWidth, panelHeight, 0, radius, radius, 0, new Color(0x5F000000, true));
+
+//        if (InterFace.INSTANCE.backgroundBlur.getValue() && InterFace.INSTANCE.blurMode.is("OnlyCategory")) {
+//            BlurShader.drawRoundedBlur(x, y, panelWidth, panelHeight, radius, InterFace.INSTANCE.blurStrength.getValue().floatValue(),15.0f);
+//        }
         BlurShader.drawRoundedBlur(x, y, panelWidth, panelHeight, 0, radius, radius, 0, new Color(0, 0, 0, 0), InterFace.INSTANCE.blurStrength.getValue().floatValue(), 15.0f);
 
         if (isSettingsActive() && !this.closeSettingsRequested) {

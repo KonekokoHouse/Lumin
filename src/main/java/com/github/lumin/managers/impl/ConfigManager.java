@@ -68,7 +68,7 @@ public class ConfigManager {
                 continue;
             }
 
-            JsonObject moduleObj = getObject(modulesObj, module.getEnglishName());
+            JsonObject moduleObj = getObject(modulesObj, module.getChineseName());
             if (moduleObj == null) {
                 continue;
             }
@@ -91,7 +91,7 @@ public class ConfigManager {
             JsonObject settingsObj = getObject(moduleObj, "settings");
             if (settingsObj != null) {
                 for (Setting<?> setting : module.getSettings()) {
-                    JsonElement value = settingsObj.get(setting.getEnglishName());
+                    JsonElement value = settingsObj.get(setting.getChineseName());
                     applySetting(setting, value);
                 }
             }
@@ -132,7 +132,7 @@ public class ConfigManager {
                 root = new JsonObject();
             }
         } catch (Exception e) {
-            Lumin.LOGGER.error("Failed to read config file: {}", configFile, e);
+            Lumin.LOGGER.error("读取配置文件失败: {}", configFile, e);
             root = new JsonObject();
         }
     }
@@ -175,12 +175,12 @@ public class ConfigManager {
                 }
                 JsonElement value = serializeSetting(setting);
                 if (value != null) {
-                    settingsObj.add(setting.getEnglishName(), value);
+                    settingsObj.add(setting.getChineseName(), value);
                 }
             }
             moduleObj.add("settings", settingsObj);
 
-            modulesObj.add(module.getEnglishName(), moduleObj);
+            modulesObj.add(module.getChineseName(), moduleObj);
         }
 
         return modulesObj;
@@ -212,7 +212,7 @@ public class ConfigManager {
             );
             dirty = false;
         } catch (IOException e) {
-            Lumin.LOGGER.error("Failed to write config file: {}", configFile, e);
+            Lumin.LOGGER.error("写入配置文件失败: {}", configFile, e);
         }
     }
 
