@@ -32,7 +32,7 @@ public class ModeSettingComponent extends Component {
         if (!setting.isAvailable()) return;
 
         boolean hovered = ColorSettingComponent.isMouseOutOfPicker(mouseX, mouseY) && MouseUtils.isHovering(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY);
-        Color bg = hovered ? new Color(255, 255, 255, 18) : new Color(255, 255, 255, 10);
+        Color bg = hovered ? new Color(255, 255, 255, (int)(18 * alpha)) : new Color(255, 255, 255, (int)(10 * alpha));
         set.bottomRoundRect().addRoundRect(getX(), getY(), getWidth(), getHeight(), 6.0f * scale, bg);
 
         String name = setting.getDisplayName();
@@ -42,7 +42,7 @@ public class ModeSettingComponent extends Component {
         float textScale = 0.85f * scale;
         float textY = getY() + (getHeight() - set.font().getHeight(textScale)) / 2.0f - 0.5f * scale;
         float padding = 6.0f * scale;
-        set.font().addText(name, getX() + padding, textY, textScale, Color.WHITE);
+        set.font().addText(name, getX() + padding, textY, textScale, new Color(255, 255, 255, (int)(255 * alpha)));
 
         if (modes.length == 0) {
             lastControlW = 0.0f;
@@ -59,7 +59,7 @@ public class ModeSettingComponent extends Component {
         if (controlW <= 8.0f * scale) {
             String value = String.valueOf(setting.getValue());
             float valueW = set.font().getWidth(value, textScale);
-            set.font().addText(value, getX() + getWidth() - padding - valueW, textY, textScale, new Color(200, 200, 200));
+            set.font().addText(value, getX() + getWidth() - padding - valueW, textY, textScale, new Color(200, 200, 200, (int)(255 * alpha)));
             lastControlW = 0.0f;
             return;
         }
@@ -70,7 +70,7 @@ public class ModeSettingComponent extends Component {
         lastControlH = controlH;
 
         float radius = Math.min(6.0f * scale, controlH / 2.0f);
-        set.bottomRoundRect().addRoundRect(controlX, controlY, controlW, controlH, radius, new Color(0, 0, 0, 70));
+        set.bottomRoundRect().addRoundRect(controlX, controlY, controlW, controlH, radius, new Color(0, 0, 0, (int)(70 * alpha)));
 
         int selectedIndex = setting.getModeIndex();
         selectedIndex = Math.max(0, Math.min(selectedIndex, modes.length - 1));
@@ -81,11 +81,15 @@ public class ModeSettingComponent extends Component {
         float selectedX = controlX + segW * selectedIndex;
         if (!highlightInitialized) {
             selectedXAnimation.setStartValue(selectedX);
+            selectedXAnimation.setValue(selectedX);
             highlightInitialized = true;
+        }
+        if (!selectedXAnimation.isFinished()) {
+            selectedXAnimation.setStartValue(selectedX);
         }
         selectedXAnimation.run(selectedX);
         float ax = selectedXAnimation.getValue();
-        Color selectedBg = new Color(255, 255, 255, 26);
+        Color selectedBg = new Color(255, 255, 255, (int)(26 * alpha));
         float selRadius = Math.min(6.0f * scale, controlH / 2.0f);
 
         if (selectedIndex == 0) {
@@ -99,12 +103,12 @@ public class ModeSettingComponent extends Component {
         for (int i = 0; i < modes.length; i++) {
             float segX = controlX + segW * i;
             if (i > 0) {
-                set.bottomRoundRect().addRoundRect(segX, controlY + 2.0f * scale, 1.0f * scale, controlH - 4.0f * scale, 0.0f, new Color(255, 255, 255, 14));
+                set.bottomRoundRect().addRoundRect(segX, controlY + 2.0f * scale, 1.0f * scale, controlH - 4.0f * scale, 0.0f, new Color(255, 255, 255, (int)(14 * alpha)));
             }
             String mode = modes[i] == null ? "" : modes[i];
             float maxTextW = Math.max(0.0f, segW - segInnerPad * 2.0f);
             String display = ellipsize(mode, set.font(), textScale, maxTextW);
-            Color textColor = (i == selectedIndex) ? Color.WHITE : new Color(200, 200, 200);
+            Color textColor = (i == selectedIndex) ? new Color(255, 255, 255, (int)(255 * alpha)) : new Color(200, 200, 200, (int)(255 * alpha));
             float textHeight = set.font().getHeight(textScale);
             float modeTextY = controlY + (controlH - textHeight) / 2.0f - 0.5f * scale;
             float modeW = set.font().getWidth(display, textScale);

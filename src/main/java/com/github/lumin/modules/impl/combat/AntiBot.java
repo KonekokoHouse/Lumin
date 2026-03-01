@@ -36,6 +36,7 @@ public class AntiBot extends Module {
 
     @SubscribeEvent
     public void onRespawn(PlayerTickEvent.Pre event) {
+        if (mc.player == null) return;
         if (mc.player.tickCount <= 1) {
             ids.clear();
             uuids.clear();

@@ -37,7 +37,9 @@ public class ContentPanel implements IComponent {
     private Category currentCategory;
 
     private final Animation viewAnimation = new Animation(Easing.EASE_OUT_QUAD, 150L);
+    private float sourceCardX, sourceCardY, sourceCardW, sourceCardH;
     private boolean closeSettingsRequested;
+    private boolean exitAnimationStarted;
     private int currentState = 0;
     private int targetState = 0;
 
@@ -370,6 +372,10 @@ public class ContentPanel implements IComponent {
             for (ModuleCard card : moduleCards) {
                 if (card.width > 0 && card.height > 0 && MouseUtils.isHovering(card.x, card.y, card.width, card.height, event.x(), event.y())) {
                     requestedSettingsModule = card.module;
+                    sourceCardX = card.x;
+                    sourceCardY = card.y;
+                    sourceCardW = card.width;
+                    sourceCardH = card.height;
                     listDraggingScrollbar = false;
                     return true;
                 }
@@ -429,6 +435,14 @@ public class ContentPanel implements IComponent {
         settingsMaxScroll = 0.0f;
         settingsDraggingScrollbar = false;
         settingsExitRequested = false;
+    }
+
+    private void setSettingsModuleWithSource(Module module, float cardX, float cardY, float cardW, float cardH) {
+        this.sourceCardX = cardX;
+        this.sourceCardY = cardY;
+        this.sourceCardW = cardW;
+        this.sourceCardH = cardH;
+        setSettingsModule(module);
     }
 
     private void clearSettingsModule() {
@@ -721,6 +735,7 @@ public class ContentPanel implements IComponent {
             } else {
                 currentState = 3;
                 viewAnimation.setStartValue(1.0f);
+                exitAnimationStarted = false;
             }
         }
 
@@ -729,9 +744,20 @@ public class ContentPanel implements IComponent {
             if (viewAnimation.getValue() >= 0.99f) currentState = 1;
             renderSettingsView(set, mouseX, mouseY, deltaTicks, alpha);
         } else if (currentState == 3) {
-            viewAnimation.run(0.0f);
-            if (viewAnimation.getValue() <= 0.01f) { currentState = 0; clearSettingsModule(); }
-            renderListView(set, mouseX, mouseY, deltaTicks, alpha);
+            closeSettingsRequested = true;
+            if (settingsComponent != null) {
+                if (!exitAnimationStarted) {
+                    settingsComponent.startExitAnimation();
+                    exitAnimationStarted = true;
+                }
+                if (settingsComponent.isAnimationFinished()) {
+                    currentState = 0;
+                    clearSettingsModule();
+                    closeSettingsRequested = false;
+                    exitAnimationStarted = false;
+                }
+            }
+            renderSettingsView(set, mouseX, mouseY, deltaTicks, alpha);
         } else if (currentState == 1) {
             renderSettingsView(set, mouseX, mouseY, deltaTicks, alpha);
         } else {
@@ -776,7 +802,10 @@ public class ContentPanel implements IComponent {
             Module open = consumeRequestedSettingsModule();
             if (open != null) {
                 closeSettingsRequested = false;
-                setSettingsModule(open);
+                setSettingsModuleWithSource(open, sourceCardX, sourceCardY, sourceCardW, sourceCardH);
+                if (settingsComponent != null) {
+                    settingsComponent.initAnimation(sourceCardX, sourceCardY, sourceCardW, sourceCardH);
+                }
                 currentState = 2;
                 viewAnimation.setStartValue(0.0f);
                 return true;

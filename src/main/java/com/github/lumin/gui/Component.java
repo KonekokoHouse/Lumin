@@ -5,6 +5,7 @@ import com.github.lumin.utils.render.MouseUtils;
 public class Component implements IComponent {
     private float x, y, width, height;
     protected float scale = 1.0f;
+    protected float alpha = 1.0f;
 
     public boolean isHovered(float mouseX, float mouseY) {
         return MouseUtils.isHovering(x, y, width, height, mouseX, mouseY);
@@ -52,5 +53,13 @@ public class Component implements IComponent {
 
     public void setScale(float scale) {
         this.scale = scale;
+    }
+
+    public void setAlpha(float alpha) {
+        this.alpha = alpha;
+    }
+
+    public float getAlpha() {
+        return alpha;
     }
 }

@@ -8,9 +8,12 @@ import com.github.lumin.modules.impl.client.ClickGui;
 import com.github.lumin.settings.Setting;
 import com.github.lumin.settings.impl.*;
 import com.github.lumin.utils.render.MouseUtils;
+import com.github.lumin.utils.render.animation.Animation;
+import com.github.lumin.utils.render.animation.Easing;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.util.Mth;
 import org.lwjgl.glfw.GLFW;
 
 import java.awt.*;
@@ -27,6 +30,40 @@ public class ModuleComponent implements IComponent {
     private float lastBindModeX, lastBindModeY, lastBindModeW, lastBindModeH;
     private boolean bindingKey;
     private float lastBindListenX, lastBindListenY, lastBindListenW, lastBindListenH;
+
+    private final Animation bgAnimation = new Animation(Easing.ISLAND_OUT, 1000L);
+    private final Animation exitAnimation = new Animation(Easing.ISLAND_OUT, 1000L);
+    private float sourceX, sourceY, sourceW, sourceH;
+    private float exitStartX, exitStartY, exitStartW, exitStartH;
+    private boolean animationInitialized = false;
+    private boolean isExiting = false;
+
+    public void initAnimation(float sourceX, float sourceY, float sourceW, float sourceH) {
+        this.sourceX = sourceX;
+        this.sourceY = sourceY;
+        this.sourceW = sourceW;
+        this.sourceH = sourceH;
+        this.bgAnimation.setStartValue(0.0f);
+        this.bgAnimation.run(1.0f);
+        this.exitAnimation.setStartValue(1.0f);
+        this.exitAnimation.run(1.0f);
+        this.animationInitialized = true;
+        this.isExiting = false;
+    }
+
+    public void startExitAnimation() {
+        this.exitStartX = x;
+        this.exitStartY = y;
+        this.exitStartW = width;
+        this.exitStartH = height;
+        this.exitAnimation.setStartValue(1.0f);
+        this.exitAnimation.run(0.0f);
+        this.isExiting = true;
+    }
+
+    public boolean isAnimationFinished() {
+        return isExiting && exitAnimation.getValue() <= 0.01f;
+    }
 
     public ModuleComponent(Module module) {
         this.module = module;
@@ -56,11 +93,48 @@ public class ModuleComponent implements IComponent {
         float rowGap = 4.0f * guiScale;
         float radius = 8.0f * guiScale;
 
-        set.bottomRoundRect().addRoundRect(x, y, width, height, radius, new Color(25, 25, 25, 140));
+        if (!isExiting) {
+            bgAnimation.run(1.0f);
+        }
+        float progress = Mth.clamp(isExiting ? exitAnimation.getValue() : bgAnimation.getValue(), 0.0f, 1.0f);
+
+        float animX = x;
+        float animY = y;
+        float animW = width;
+        float animH = height;
+        float animRadius = radius;
+
+        if (animationInitialized) {
+            if (isExiting) {
+                animX = sourceX + (exitStartX - sourceX) * progress;
+                animY = sourceY + (exitStartY - sourceY) * progress;
+                animW = sourceW + (exitStartW - sourceW) * progress;
+                animH = sourceH + (exitStartH - sourceH) * progress;
+            } else {
+                animX = sourceX + (x - sourceX) * progress;
+                animY = sourceY + (y - sourceY) * progress;
+                animW = sourceW + (width - sourceW) * progress;
+                animH = sourceH + (height - sourceH) * progress;
+            }
+            animRadius = radius * progress + (sourceW * 0.1f) * (1.0f - progress);
+        }
+
+        if (animW > 0.5f && animH > 0.5f) {
+            set.bottomRoundRect().addRoundRect(animX, animY, animW, animH, animRadius, new Color(25, 25, 25, (int)(140 * progress)));
+        }
+
+        if (progress <= 0.01f) return;
+
+        int contentAlpha = (int)(255 * progress);
+        Color textColor = new Color(255, 255, 255, contentAlpha);
+        Color dimTextColor = new Color(200, 200, 200, contentAlpha);
+        Color boxBgColor = new Color(0, 0, 0, (int)(70 * progress));
+        Color selectedBgColor = new Color(255, 255, 255, (int)(26 * progress));
+        Color dividerColor = new Color(255, 255, 255, (int)(14 * progress));
 
         float titleScale = 1.15f * guiScale;
-        float titleY = y + padding - guiScale;
-        set.font().addText(module.getName(), x + padding, titleY, titleScale, Color.WHITE);
+        float titleY = animY + padding - guiScale;
+        set.font().addText(module.getName(), animX + padding, titleY, titleScale, textColor);
 
         float titleH = set.font().getHeight(titleScale);
         float headerY = titleY - guiScale;
@@ -82,7 +156,7 @@ public class ModuleComponent implements IComponent {
 
         float gap = 6.0f * guiScale;
         float totalW = bindBoxW + gap + modeW;
-        float rightX = x + width - padding - totalW;
+        float rightX = animX + animW - padding - totalW;
 
         lastBindBoxX = rightX;
         lastBindBoxY = headerY;
@@ -90,12 +164,12 @@ public class ModuleComponent implements IComponent {
         lastBindBoxH = headerH;
 
         float bindRadius = Math.min(6.0f * guiScale, headerH / 2.0f);
-        set.bottomRoundRect().addRoundRect(rightX, headerY, bindBoxW, headerH, bindRadius, new Color(0, 0, 0, 70));
+        set.bottomRoundRect().addRoundRect(rightX, headerY, bindBoxW, headerH, bindRadius, boxBgColor);
 
         float bindTextX = rightX + (bindBoxW - bindTextW) / 2.0f;
         float bindTextY = headerY + (headerH - set.font().getHeight(bindTextScale)) / 2.0f - guiScale;
         if (!bindingKey) {
-            set.font().addText(bindText, bindTextX, bindTextY, bindTextScale, new Color(200, 200, 200));
+            set.font().addText(bindText, bindTextX, bindTextY, bindTextScale, dimTextColor);
         }
 
         lastBindListenX = rightX;
@@ -104,7 +178,7 @@ public class ModuleComponent implements IComponent {
         lastBindListenH = headerH;
 
         if (bindingKey) {
-            Color listenBg = new Color(255, 255, 255, 22);
+            Color listenBg = new Color(255, 255, 255, (int)(22 * progress));
             set.bottomRoundRect().addRoundRect(lastBindListenX, lastBindListenY, lastBindListenW, lastBindListenH, bindRadius, listenBg);
 
             if (System.currentTimeMillis() % 1000 > 500) {
@@ -112,7 +186,7 @@ public class ModuleComponent implements IComponent {
                 float lineH = 1.5f * guiScale;
                 float lineX = lastBindListenX + (lastBindListenW - lineW) / 2.0f;
                 float lineY = lastBindListenY + (lastBindListenH / 2.0f) + 3.0f * guiScale;
-                set.bottomRoundRect().addRoundRect(lineX, lineY, lineW, lineH, 0.0f, new Color(200, 200, 200));
+                set.bottomRoundRect().addRoundRect(lineX, lineY, lineW, lineH, 0.0f, dimTextColor);
             }
         }
 
@@ -124,37 +198,41 @@ public class ModuleComponent implements IComponent {
         lastBindModeH = headerH;
 
         float modeRadius = Math.min(6.0f * guiScale, headerH / 2.0f);
-        set.bottomRoundRect().addRoundRect(modeX, headerY, modeW, headerH, modeRadius, new Color(0, 0, 0, 70));
+        set.bottomRoundRect().addRoundRect(modeX, headerY, modeW, headerH, modeRadius, boxBgColor);
 
         int selectedIndex = module.getBindMode() == Module.BindMode.Hold ? 1 : 0;
-        java.awt.Color selectedBg = new java.awt.Color(255, 255, 255, 26);
         if (selectedIndex == 0) {
-            set.bottomRoundRect().addRoundRect(modeX, headerY, segW, headerH, modeRadius, 0.0f, 0.0f, modeRadius, selectedBg);
+            set.bottomRoundRect().addRoundRect(modeX, headerY, segW, headerH, modeRadius, 0.0f, 0.0f, modeRadius, selectedBgColor);
         } else {
-            set.bottomRoundRect().addRoundRect(modeX + segW, headerY, segW, headerH, 0.0f, modeRadius, modeRadius, 0.0f, selectedBg);
+            set.bottomRoundRect().addRoundRect(modeX + segW, headerY, segW, headerH, 0.0f, modeRadius, modeRadius, 0.0f, selectedBgColor);
         }
 
-        set.bottomRoundRect().addRoundRect(modeX + segW, headerY + 2.0f * guiScale, 1.0f * guiScale, headerH - 4.0f * guiScale, 0.0f, new Color(255, 255, 255, 14));
+        set.bottomRoundRect().addRoundRect(modeX + segW, headerY + 2.0f * guiScale, 1.0f * guiScale, headerH - 4.0f * guiScale, 0.0f, dividerColor);
 
         float modeTextY = headerY + (headerH - set.font().getHeight(modeTextScale)) / 2.0f - guiScale;
         float mode0W = set.font().getWidth(mode0, modeTextScale);
         float mode1W = set.font().getWidth(mode1, modeTextScale);
-        set.font().addText(mode0, modeX + (segW - mode0W) / 2.0f, modeTextY, modeTextScale, selectedIndex == 0 ? Color.WHITE : new Color(200, 200, 200));
-        set.font().addText(mode1, modeX + segW + (segW - mode1W) / 2.0f, modeTextY, modeTextScale, selectedIndex == 1 ? Color.WHITE : new Color(200, 200, 200));
+        set.font().addText(mode0, modeX + (segW - mode0W) / 2.0f, modeTextY, modeTextScale, selectedIndex == 0 ? textColor : dimTextColor);
+        set.font().addText(mode1, modeX + segW + (segW - mode1W) / 2.0f, modeTextY, modeTextScale, selectedIndex == 1 ? textColor : dimTextColor);
 
-        float cursorY = y + padding + set.font().getHeight(titleScale) + 6.0f * guiScale;
-        float itemX = x + padding;
-        float itemW = Math.max(0.0f, width - padding * 2);
+        float cursorY = animY + padding + set.font().getHeight(titleScale) + 6.0f * guiScale;
+        float itemX = animX + padding;
+        float itemW = Math.max(0.0f, animW - padding * 2);
 
-        for (Component setting : settings) {
-            if (!isSettingVisible(setting)) continue;
-            setting.setScale(guiScale);
-            setting.setX(itemX);
-            setting.setY(cursorY);
-            setting.setWidth(itemW);
-            setting.setHeight(rowH);
-            setting.render(set, mouseX, mouseY, partialTicks);
-            cursorY += rowH + rowGap;
+        if (progress > 0.01f) {
+            float bgBottom = animY + animH;
+            for (Component setting : settings) {
+                if (!isSettingVisible(setting)) continue;
+                if (cursorY + rowH > bgBottom) break;
+                setting.setScale(guiScale);
+                setting.setAlpha(progress);
+                setting.setX(itemX);
+                setting.setY(cursorY);
+                setting.setWidth(itemW);
+                setting.setHeight(rowH);
+                setting.render(set, mouseX, mouseY, partialTicks);
+                cursorY += rowH + rowGap;
+            }
         }
     }
 

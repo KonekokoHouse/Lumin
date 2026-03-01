@@ -70,7 +70,7 @@ public class ColorSettingComponent extends Component {
         if (!setting.isAvailable()) return;
 
         boolean hovered = isMouseOutOfPicker(mouseX, mouseY) && MouseUtils.isHovering(getX(), getY(), getWidth(), getHeight(), mouseX, mouseY);
-        Color bg = hovered ? new Color(255, 255, 255, 18) : new Color(255, 255, 255, 10);
+        Color bg = hovered ? new Color(255, 255, 255, (int)(18 * alpha)) : new Color(255, 255, 255, (int)(10 * alpha));
         set.bottomRoundRect().addRoundRect(getX(), getY(), getWidth(), getHeight(), 6.0f * scale, bg);
 
         String name = setting.getDisplayName();
@@ -79,7 +79,7 @@ public class ColorSettingComponent extends Component {
 
         float textScale = 0.85f * scale;
         float textY = getY() + (getHeight() - set.font().getHeight(textScale)) / 2.0f - 0.5f * scale;
-        set.font().addText(name, getX() + 6.0f * scale, textY, textScale, Color.WHITE);
+        set.font().addText(name, getX() + 6.0f * scale, textY, textScale, new Color(255, 255, 255, (int)(255 * alpha)));
 
         float sw = 10.0f * scale;
         float sx = getX() + getWidth() - 6.0f * scale - sw;
@@ -89,10 +89,11 @@ public class ColorSettingComponent extends Component {
         lastSwatchW = sw;
         lastSwatchH = sw;
 
-        set.bottomRoundRect().addRoundRect(sx, sy, sw, sw, 3.0f * scale, value);
+        Color swatchColor = value == null ? new Color(128, 128, 128, (int)(255 * alpha)) : new Color(value.getRed(), value.getGreen(), value.getBlue(), (int)(255 * alpha));
+        set.bottomRoundRect().addRoundRect(sx, sy, sw, sw, 3.0f * scale, swatchColor);
 
         float hexW = set.font().getWidth(hex, textScale);
-        set.font().addText(hex, sx - 6.0f * scale - hexW, textY, textScale, new Color(200, 200, 200));
+        set.font().addText(hex, sx - 6.0f * scale - hexW, textY, textScale, new Color(200, 200, 200, (int)(255 * alpha)));
     }
 
     public boolean isOpened() {
