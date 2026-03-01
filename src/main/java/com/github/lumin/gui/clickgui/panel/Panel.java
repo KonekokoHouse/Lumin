@@ -4,7 +4,7 @@ import com.github.lumin.graphics.renderers.RoundRectRenderer;
 import com.github.lumin.graphics.renderers.TextRenderer;
 import com.github.lumin.graphics.renderers.TextureRenderer;
 import com.github.lumin.gui.IComponent;
-import com.github.lumin.modules.impl.client.InterFace;
+import com.github.lumin.modules.impl.client.ClickGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -31,7 +31,7 @@ public class Panel implements IComponent {
 
     public void render(RendererSet set, int mouseX, int mouseY, float deltaTicks) {
 
-        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float guiScale = ClickGui.INSTANCE.scale.getValue().floatValue();
         float screenWidth = mc.getWindow().getGuiScaledWidth();
         float screenHeight = mc.getWindow().getGuiScaledHeight();
 

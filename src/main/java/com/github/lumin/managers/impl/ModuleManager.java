@@ -9,6 +9,7 @@ import com.github.lumin.modules.impl.combat.KillAura;
 import com.github.lumin.modules.impl.player.SafeWalk;
 import com.github.lumin.modules.impl.player.Scaffold;
 import com.github.lumin.modules.impl.player.Sprint;
+import com.github.lumin.modules.impl.visual.Nametags;
 import com.github.lumin.modules.impl.visual.RenderTest;
 import com.mojang.blaze3d.platform.InputConstants;
 
@@ -26,7 +27,6 @@ public class ModuleManager {
 
                 // Client
                 ClickGui.INSTANCE,
-                InterFace.INSTANCE,
                 Test1.INSTANCE,
                 Test2.INSTANCE,
                 Test3.INSTANCE,
@@ -49,6 +49,7 @@ public class ModuleManager {
                 Sprint.INSTANCE,
 
                 // Visual
+                Nametags.INSTANCE,
                 RenderTest.INSTANCE
 
         );

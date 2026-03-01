@@ -5,6 +5,8 @@ import com.github.lumin.graphics.renderers.RectRenderer;
 import com.github.lumin.graphics.renderers.RoundRectRenderer;
 import com.github.lumin.graphics.renderers.TextRenderer;
 import com.github.lumin.graphics.renderers.TextureRenderer;
+import com.github.lumin.utils.render.animation.Animation;
+import com.github.lumin.utils.render.animation.Easing;
 import com.github.lumin.utils.resources.ResourceLocationUtils;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -12,8 +14,6 @@ import com.mojang.blaze3d.textures.AddressMode;
 import com.mojang.blaze3d.textures.FilterMode;
 import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.textures.TextureFormat;
-import com.github.lumin.utils.render.animation.Animation;
-import com.github.lumin.utils.render.animation.Easing;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -77,7 +77,8 @@ public class MainMenuScreen extends Screen {
                         backgroundTexture = new LuminTexture(texture, view, sampler);
                     }
                 }
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
             textureLoaded = true;
         }
 

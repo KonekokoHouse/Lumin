@@ -30,7 +30,9 @@ public class ModeSetting extends Setting<String> {
         }
     }
 
-    public String[] getModes() { return modes; }
+    public String[] getModes() {
+        return modes;
+    }
 
     public int getModeIndex() {
         for (int i = 0; i < modes.length; i++) {

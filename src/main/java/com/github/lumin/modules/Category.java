@@ -19,6 +19,6 @@ public enum Category {
     }
 
     public String getName() {
-            return cnName;
-        }
+        return cnName;
     }
+}

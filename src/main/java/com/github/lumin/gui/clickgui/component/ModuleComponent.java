@@ -4,7 +4,7 @@ import com.github.lumin.gui.Component;
 import com.github.lumin.gui.IComponent;
 import com.github.lumin.gui.clickgui.component.impl.*;
 import com.github.lumin.modules.Module;
-import com.github.lumin.modules.impl.client.InterFace;
+import com.github.lumin.modules.impl.client.ClickGui;
 import com.github.lumin.settings.Setting;
 import com.github.lumin.settings.impl.*;
 import com.github.lumin.utils.render.MouseUtils;
@@ -50,7 +50,7 @@ public class ModuleComponent implements IComponent {
 
     @Override
     public void render(RendererSet set, int mouseX, int mouseY, float partialTicks) {
-        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float guiScale = ClickGui.INSTANCE.scale.getValue().floatValue();
         float padding = 8.0f * guiScale;
         float rowH = 18.0f * guiScale;
         float rowGap = 4.0f * guiScale;

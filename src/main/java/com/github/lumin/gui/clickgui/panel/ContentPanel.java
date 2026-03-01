@@ -11,7 +11,7 @@ import com.github.lumin.gui.clickgui.component.impl.ColorSettingComponent;
 import com.github.lumin.managers.Managers;
 import com.github.lumin.modules.Category;
 import com.github.lumin.modules.Module;
-import com.github.lumin.modules.impl.client.InterFace;
+import com.github.lumin.modules.impl.client.ClickGui;
 import com.github.lumin.utils.render.MouseUtils;
 import com.github.lumin.utils.render.animation.Animation;
 import com.github.lumin.utils.render.animation.Easing;
@@ -200,7 +200,7 @@ public class ContentPanel implements IComponent {
     private float handleMouseScroll(float scrollTarget, float maxScroll, float areaX, float areaY, float areaW, float areaH, float scrollbarW, double mouseX, double mouseY, double scrollY) {
         if (maxScroll <= 0.0f) return scrollTarget;
         if (!MouseUtils.isHovering(areaX, areaY, areaW + scrollbarW, areaH, mouseX, mouseY)) return scrollTarget;
-        float step = 24.0f * InterFace.INSTANCE.scale.getValue().floatValue();
+        float step = 24.0f * ClickGui.INSTANCE.scale.getValue().floatValue();
         return Mth.clamp(scrollTarget - (float) scrollY * step, 0.0f, maxScroll);
     }
 
@@ -219,7 +219,7 @@ public class ContentPanel implements IComponent {
     }
 
     private void renderListView(RendererSet set, int mouseX, int mouseY, float deltaTicks) {
-        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float guiScale = ClickGui.INSTANCE.scale.getValue().floatValue();
         float padding = 8 * guiScale;
         float spacing = 4 * guiScale;
         float searchHeight = 24 * guiScale;
@@ -320,14 +320,17 @@ public class ContentPanel implements IComponent {
     }
 
     private boolean listViewMouseClicked(MouseButtonEvent event, boolean focused) {
-        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float guiScale = ClickGui.INSTANCE.scale.getValue().floatValue();
         float panelWidth = this.width * guiScale;
         float panelHeight = this.height * guiScale;
 
         if (!MouseUtils.isHovering(x, y, panelWidth, panelHeight, event.x(), event.y())) return false;
 
         if (MouseUtils.isHovering(lastSearchBoxX, lastSearchBoxY, lastSearchBoxW, lastSearchBoxH, event.x(), event.y())) {
-            if (event.button() == 1) { listSearchText = ""; listScrollTarget = 0.0f; }
+            if (event.button() == 1) {
+                listSearchText = "";
+                listScrollTarget = 0.0f;
+            }
             listSearchFocused = true;
             return true;
         }
@@ -372,7 +375,7 @@ public class ContentPanel implements IComponent {
 
     private boolean listViewMouseReleased(MouseButtonEvent event) {
         listDraggingScrollbar = false;
-        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float guiScale = ClickGui.INSTANCE.scale.getValue().floatValue();
         return MouseUtils.isHovering(x, y, this.width * guiScale, this.height * guiScale, event.x(), event.y());
     }
 
@@ -383,7 +386,10 @@ public class ContentPanel implements IComponent {
 
     private boolean listViewKeyPressed(KeyEvent event) {
         if (!listSearchFocused) return false;
-        if (handleSearchKey(event, new StringBuilder(listSearchText), () -> { listSearchText = ""; listScrollTarget = 0.0f; })) {
+        if (handleSearchKey(event, new StringBuilder(listSearchText), () -> {
+            listSearchText = "";
+            listScrollTarget = 0.0f;
+        })) {
             if (event.key() == GLFW.GLFW_KEY_BACKSPACE && !listSearchText.isEmpty()) {
                 listSearchText = listSearchText.substring(0, listSearchText.length() - 1);
                 listScrollTarget = 0.0f;
@@ -443,7 +449,7 @@ public class ContentPanel implements IComponent {
     private void renderSettingsView(RendererSet set, int mouseX, int mouseY, float deltaTicks) {
         if (settingsComponent == null) return;
 
-        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float guiScale = ClickGui.INSTANCE.scale.getValue().floatValue();
         float padding = 8 * guiScale;
         float spacing = 4 * guiScale;
         float searchHeight = 24 * guiScale;
@@ -518,7 +524,7 @@ public class ContentPanel implements IComponent {
 
     private boolean settingsViewMouseClicked(MouseButtonEvent event, boolean focused) {
         if (settingsComponent == null) return false;
-        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float guiScale = ClickGui.INSTANCE.scale.getValue().floatValue();
         float panelWidth = this.width * guiScale;
         float panelHeight = this.height * guiScale;
 
@@ -534,7 +540,10 @@ public class ContentPanel implements IComponent {
         }
 
         if (MouseUtils.isHovering(lastSettingsSearchBoxX, lastSettingsSearchBoxY, lastSettingsSearchBoxW, lastSettingsSearchBoxH, event.x(), event.y())) {
-            if (event.button() == 1) { settingsSearchText = ""; settingsScrollTarget = 0.0f; }
+            if (event.button() == 1) {
+                settingsSearchText = "";
+                settingsScrollTarget = 0.0f;
+            }
             settingsSearchFocused = true;
             return true;
         }
@@ -564,7 +573,7 @@ public class ContentPanel implements IComponent {
         if (ColorSettingComponent.hasActivePicker() || settingsComponent.hasDraggingSetting()) {
             return settingsComponent.mouseReleased(event);
         }
-        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float guiScale = ClickGui.INSTANCE.scale.getValue().floatValue();
         return MouseUtils.isHovering(x, y, this.width * guiScale, this.height * guiScale, event.x(), event.y()) && settingsComponent.mouseReleased(event);
     }
 
@@ -659,9 +668,9 @@ public class ContentPanel implements IComponent {
 
     @Override
     public void render(RendererSet set, int mouseX, int mouseY, float deltaTicks) {
-        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float guiScale = ClickGui.INSTANCE.scale.getValue().floatValue();
         float radius = guiScale * 20f;
-        BlurShader.drawRoundedBlur(x, y, this.width * guiScale, this.height * guiScale, 0, radius, radius, 0, new Color(0, 0, 0, 0), InterFace.INSTANCE.blurStrength.getValue().floatValue(), 15.0f);
+        BlurShader.drawRoundedBlur(x, y, this.width * guiScale, this.height * guiScale, 0, radius, radius, 0, new Color(0, 0, 0, 0), ClickGui.INSTANCE.blurStrength.getValue().floatValue(), 15.0f);
 
         targetState = (isSettingsActive() && !this.closeSettingsRequested) ? 1 : 0;
 
@@ -681,7 +690,10 @@ public class ContentPanel implements IComponent {
             renderSettingsView(set, mouseX, mouseY, deltaTicks);
         } else if (currentState == 3) {
             viewAnimation.run(0.0f);
-            if (viewAnimation.getValue() <= 0.01f) { currentState = 0; clearSettingsModule(); }
+            if (viewAnimation.getValue() <= 0.01f) {
+                currentState = 0;
+                clearSettingsModule();
+            }
             renderListView(set, mouseX, mouseY, deltaTicks);
         } else if (currentState == 1) {
             renderSettingsView(set, mouseX, mouseY, deltaTicks);
@@ -692,7 +704,7 @@ public class ContentPanel implements IComponent {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean focused) {
-        float guiScale = InterFace.INSTANCE.scale.getValue().floatValue();
+        float guiScale = ClickGui.INSTANCE.scale.getValue().floatValue();
         if (currentState == 2 || currentState == 3) return true;
 
         if (ColorSettingComponent.hasActivePicker() && ColorSettingComponent.isMouseOutOfPicker((int) event.x(), (int) event.y())) {
