@@ -251,7 +251,9 @@ public class ContentPanel implements IComponent {
 
         List<ModuleCard> visibleCards = new ArrayList<>();
         for (ModuleCard card : moduleCards) {
-            if (!listSearchText.isEmpty() && !card.module.getName().toLowerCase().startsWith(listSearchText.toLowerCase())) {
+            boolean matchesSearch = listSearchText.isEmpty() || card.module.getName().toLowerCase().startsWith(listSearchText.toLowerCase());
+            card.updateVisibility(matchesSearch);
+            if (!matchesSearch && card.scaleAnimation.getValue() <= 0.01f) {
                 card.width = 0;
                 card.height = 0;
                 continue;
@@ -296,14 +298,21 @@ public class ContentPanel implements IComponent {
 
         float listBottom = this.y + this.height * guiScale - padding;
         int visibleIndex = 0;
-        for (ModuleCard card : visibleCards) {
+        for (ModuleCard card : moduleCards) {
+            boolean matchesSearch = listSearchText.isEmpty() || card.module.getName().toLowerCase().startsWith(listSearchText.toLowerCase());
+            card.updateVisibility(matchesSearch);
+            if (!matchesSearch && card.scaleAnimation.getValue() <= 0.01f) {
+                card.width = 0;
+                card.height = 0;
+                continue;
+            }
             int row = visibleIndex / columns;
             int col = visibleIndex % columns;
             card.x = lastListX + col * (cardWidth + itemGap);
             card.y = lastListY + row * (cardHeight + itemGap) - listScrollOffset;
             card.width = cardWidth;
             card.height = cardHeight;
-            if (card.y + cardHeight >= lastListY && card.y <= listBottom) {
+            if (card.shouldRender() && card.y + cardHeight >= lastListY && card.y <= listBottom) {
                 card.render(listRoundRect, listFont, mouseX, mouseY, guiScale, alpha);
             }
             visibleIndex++;
@@ -610,14 +619,40 @@ public class ContentPanel implements IComponent {
         final Module module;
         private final Animation hoverAnimation = new Animation(Easing.EASE_OUT_QUAD, 120L);
         private final Animation enabledAnimation = new Animation(Easing.EASE_OUT_QUAD, 160L);
+        private final Animation scaleAnimation = new Animation(Easing.EASE_OUT_EXPO, 350L);
+        private boolean wasVisible = false;
+        private boolean isAnimatingExit = false;
 
         private ModuleCard(Module module) {
             this.module = module;
             enabledAnimation.setStartValue(module.isEnabled() ? 1.0f : 0.0f);
+            scaleAnimation.setStartValue(0.0f);
+            scaleAnimation.run(1.0f);
+        }
+
+        private void updateVisibility(boolean visible) {
+            if (visible && !wasVisible) {
+                isAnimatingExit = false;
+                scaleAnimation.setStartValue(0.0f);
+                scaleAnimation.run(1.0f);
+            } else if (!visible && wasVisible) {
+                isAnimatingExit = true;
+                scaleAnimation.setStartValue(1.0f);
+                scaleAnimation.run(0.0f);
+            }
+            wasVisible = visible;
+        }
+
+        private boolean shouldRender() {
+            return scaleAnimation.getValue() > 0.01f || !isAnimatingExit;
         }
 
         private void render(RoundRectRenderer round, TextRenderer text, int mouseX, int mouseY, float guiScale, float alpha) {
             if (width <= 0 || height <= 0) return;
+
+            scaleAnimation.run(isAnimatingExit ? 0.0f : 1.0f);
+            float scaleProgress = Mth.clamp(scaleAnimation.getValue(), 0.0f, 1.0f);
+            if (scaleProgress <= 0.01f) return;
 
             boolean hovered = MouseUtils.isHovering(x, y, width, height, mouseX, mouseY);
             hoverAnimation.run(hovered ? 1.0f : 0.0f);
@@ -632,17 +667,25 @@ public class ContentPanel implements IComponent {
             int b = (int) (offColor.getBlue() + (onColor.getBlue() - offColor.getBlue()) * et);
             int a = Mth.clamp((int) (offColor.getAlpha() + (onColor.getAlpha() - offColor.getAlpha()) * et) + (int) (24.0f * ht), 0, 255);
 
-            float scale = 1.0f + 0.02f * ht;
-            float rw = width * scale;
-            float rh = height * scale;
-            round.addRoundRect(x - (rw - width) / 2.0f, y - (rh - height) / 2.0f, rw, rh, 10f * guiScale, new Color(r, g, b, (int)(a * alpha)));
+            float baseScale = 0.5f + 0.5f * scaleProgress;
+            float hoverScale = 1.0f + 0.02f * ht;
+            float totalScale = baseScale * hoverScale;
+            float rw = width * totalScale;
+            float rh = height * totalScale;
+            float centerX = x + width / 2.0f;
+            float centerY = y + height / 2.0f;
+            float renderX = centerX - rw / 2.0f;
+            float renderY = centerY - rh / 2.0f;
 
-            float nameScale = 1.1f * guiScale;
+            int animAlpha = (int)(a * alpha * scaleProgress);
+            round.addRoundRect(renderX, renderY, rw, rh, 10f * guiScale * totalScale, new Color(r, g, b, animAlpha));
+
+            float nameScale = 1.1f * guiScale * scaleProgress;
             float maxNameWidth = rw - 14 * guiScale;
             float nameWidth = text.getWidth(module.getName(), nameScale);
             if (nameWidth > maxNameWidth && nameWidth > 0) nameScale *= maxNameWidth / nameWidth;
 
-            float descScale = 0.62f * guiScale;
+            float descScale = 0.62f * guiScale * scaleProgress;
             float maxDescWidth = rw - 16 * guiScale;
             float descWidth = text.getWidth(module.getDescription(), descScale);
             if (descWidth > maxDescWidth && descWidth > 0) descScale *= maxDescWidth / descWidth;
@@ -650,10 +693,11 @@ public class ContentPanel implements IComponent {
             float nameHeight = text.getHeight(nameScale);
             float descHeight = text.getHeight(descScale);
             float blockHeight = nameHeight + 3 * guiScale + descHeight;
-            float startY = y - (rh - height) / 2.0f + (rh - blockHeight) / 2f;
+            float startY = renderY + (rh - blockHeight) / 2f;
 
-            text.addText(module.getName(), x - (rw - width) / 2.0f + (rw - (nameWidth > maxNameWidth ? maxNameWidth : nameWidth)) / 2f, startY - 0.6f * guiScale, nameScale, applyAlpha(Color.WHITE, alpha));
-            text.addText(module.getDescription(), x - (rw - width) / 2.0f + (rw - (descWidth > maxDescWidth ? maxDescWidth : descWidth)) / 2f, startY + nameHeight + 3 * guiScale - 0.2f * guiScale, descScale, applyAlpha(new Color(200, 200, 200), alpha));
+            int textAlpha = (int)(255 * alpha * scaleProgress);
+            text.addText(module.getName(), renderX + (rw - (Math.min(nameWidth, maxNameWidth))) / 2f, startY - 0.6f * guiScale, nameScale, new Color(255, 255, 255, textAlpha));
+            text.addText(module.getDescription(), renderX + (rw - (Math.min(descWidth, maxDescWidth))) / 2f, startY + nameHeight + 3 * guiScale - 0.2f * guiScale, descScale, new Color(200, 200, 200, textAlpha));
         }
     }
 
