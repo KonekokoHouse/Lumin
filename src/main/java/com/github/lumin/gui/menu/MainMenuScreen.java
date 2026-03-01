@@ -32,7 +32,7 @@ import java.awt.*;
 import java.io.InputStream;
 import java.util.Optional;
 
-public class CustomMainMenuScreen extends Screen {
+public class MainMenuScreen extends Screen {
 
     private static final Identifier BACKGROUND_TEXTURE = ResourceLocationUtils.getIdentifier("textures/gui/mainmenu/1.png");
 
@@ -46,7 +46,7 @@ public class CustomMainMenuScreen extends Screen {
     private final Animation slideAnimation = new Animation(Easing.DYNAMIC_ISLAND, 800);
     private boolean isFirstRender = true;
 
-    public CustomMainMenuScreen() {
+    public MainMenuScreen() {
         super(Component.literal("主菜单"));
     }
 

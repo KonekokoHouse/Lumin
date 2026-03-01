@@ -1,6 +1,6 @@
 package com.github.lumin.mixins;
 
-import com.github.lumin.gui.menu.CustomMainMenuScreen;
+import com.github.lumin.gui.menu.MainMenuScreen;
 import com.github.lumin.modules.impl.client.ClickGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -22,7 +22,7 @@ public class MixinTitleScreen {
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof TitleScreen) {
-            mc.setScreen(new CustomMainMenuScreen());
+            mc.setScreen(new MainMenuScreen());
         }
     }
 
